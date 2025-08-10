@@ -216,3 +216,106 @@ console.log('big breath mitigation distribution test passed');
   console.log('average time reporting test passed');
 }
 
+// Monsters only heal when below 25% HP and healing is capped
+{
+  const seq = [0, 0, 0, 0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 10, attack: 0, defense: 0, agility: 10 };
+  const monster = {
+    name: 'Healer',
+    hp: 25,
+    maxHp: 100,
+    attack: 50,
+    defense: 0,
+    agility: 10,
+    xp: 0,
+    supportAbility: 'heal',
+    supportChance: 1,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 1,
+    heroSpellTime: 1,
+    enemyAttackTime: 1,
+    enemySpellTime: 1,
+    enemyBreathTime: 1,
+    enemyDodgeTime: 1,
+  });
+  Math.random = orig;
+  assert(!result.log.includes('Monster casts HEAL'));
+  console.log('monster heal threshold (no heal) test passed');
+}
+
+{
+  const seq = [0, 0, 0, 0, 0, 0.99, 0, 0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 1, attack: 0, defense: 0, agility: 10 };
+  const monster = {
+    name: 'Healer',
+    hp: 20,
+    maxHp: 100,
+    attack: 50,
+    defense: 0,
+    agility: 10,
+    xp: 0,
+    supportAbility: 'healmore',
+    supportChance: 1,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 1,
+    heroSpellTime: 1,
+    enemyAttackTime: 1,
+    enemySpellTime: 1,
+    enemyBreathTime: 1,
+    enemyDodgeTime: 1,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Monster casts HEALMORE and heals 80 HP.'));
+  console.log('monster heal threshold (heal and cap) test passed');
+}
+
+// Hero healing is capped at maximum HP
+{
+  const seq = [0, 0.5, 0, 0, 0.99];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 100,
+    attack: 0,
+    defense: 0,
+    agility: 0,
+    mp: 8,
+    spells: ['HEALMORE'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'BadGuy',
+    hp: 1,
+    attack: 300,
+    defense: 0,
+    agility: 1,
+    xp: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 1,
+    heroSpellTime: 1,
+    enemyAttackTime: 1,
+    enemySpellTime: 1,
+    enemyBreathTime: 1,
+    enemyDodgeTime: 1,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Hero casts HEALMORE and heals 75 HP.'));
+  console.log('hero heal cap test passed');
+}
+
