@@ -194,6 +194,7 @@
         <label>Enemy Dodge Time (frames) <input type="number" id="enemy-dodge-time" value="60" /></label>
         <label>Pre-Battle Time (frames) <input type="number" id="pre-battle-time" value="140" /></label>
         <label>Post-Battle Time (frames) <input type="number" id="post-battle-time" value="200" /></label>
+        <label>Between Fights Time (frames) <input type="number" id="frames-between-fights" value="30" /></label>
       </details>
       <label>Mode
         <select id="sim-mode">
@@ -332,6 +333,9 @@
         enemyDodgeTime: Number(document.getElementById('enemy-dodge-time').value),
         preBattleTime: Number(document.getElementById('pre-battle-time').value),
         postBattleTime: Number(document.getElementById('post-battle-time').value),
+        framesBetweenFights: Number(
+          document.getElementById('frames-between-fights').value,
+        ),
       };
       const iterations = Number(document.getElementById('iterations').value);
       const mode = document.getElementById('sim-mode').value;

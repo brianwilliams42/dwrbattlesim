@@ -36,10 +36,12 @@ const settings = {
   postBattleTime: 200,
   heroAttackTime: 120,
   heroSpellTime: 180,
+  herbTime: 150,
   enemyAttackTime: 150,
   enemySpellTime: 170,
   enemyBreathTime: 160,
   enemyDodgeTime: 60,
+  framesBetweenFights: 30,
 };
 
 const {

@@ -527,8 +527,9 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
 }
 
 function healBetweenFights(hero, monster, settings) {
-  const { heroSpellTime = 180, herbTime = 150 } = settings;
-  let frames = 30;
+  const heroSpellTime = settings.heroSpellTime;
+  const herbTime = settings.herbTime;
+  let framesBetweenFights = settings.framesBetweenFights;
   let mp = 0;
   const maxDmg = maxMonsterDamage(hero, monster);
   while (hero.hp < hero.maxHp && hero.hp <= 2 * maxDmg) {
@@ -543,7 +544,7 @@ function healBetweenFights(hero, monster, settings) {
       hero.hp += actual;
       hero.mp -= HERO_SPELL_COST.HEAL;
       mp += HERO_SPELL_COST.HEAL;
-      frames += heroSpellTime;
+      framesBetweenFights += heroSpellTime;
       continue;
     }
     if (
@@ -554,7 +555,7 @@ function healBetweenFights(hero, monster, settings) {
       const actual = Math.min(heal, hero.maxHp - hero.hp);
       hero.hp += actual;
       hero.herbs--;
-      frames += herbTime;
+      framesBetweenFights += herbTime;
       continue;
     }
     if (
@@ -566,12 +567,12 @@ function healBetweenFights(hero, monster, settings) {
       hero.hp += actual;
       hero.mp -= HERO_SPELL_COST.HEALMORE;
       mp += HERO_SPELL_COST.HEALMORE;
-      frames += heroSpellTime;
+      framesBetweenFights += heroSpellTime;
       continue;
     }
     break;
   }
-  return { frames, mpSpent: mp };
+  return { frames: framesBetweenFights, mpSpent: mp };
 }
 
 export function simulateRepeated(heroStats, monsterStats, settings = {}, iterations = 1) {
