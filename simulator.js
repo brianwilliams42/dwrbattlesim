@@ -154,21 +154,21 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   if (heroRoll < enemyRoll) {
     log.push('Monster ambushes!');
     runMonsterTurn();
-    if (hero.hp <= 0 || monster.fled) {
-      timeFrames += monster.fled ? 45 : postBattleTime;
-      const winner = monster.fled ? 'fled' : 'monster';
-      const timeSeconds = timeFrames / 60;
-      return {
-        winner,
-        rounds,
-        timeFrames,
-        timeSeconds,
-        xpGained: 0,
-        xpPerMinute: 0,
-        mpSpent,
-        log,
-      };
-    }
+  }
+  if (hero.hp <= 0 || monster.fled) {
+    timeFrames += monster.fled ? 45 : postBattleTime;
+    const winner = monster.fled ? 'fled' : 'monster';
+    const timeSeconds = timeFrames / 60;
+    return {
+      winner,
+      rounds,
+      timeFrames,
+      timeSeconds,
+      xpGained: 0,
+      xpPerMinute: 0,
+      mpSpent,
+      log,
+    };
   }
 
   function determineHeroAction() {

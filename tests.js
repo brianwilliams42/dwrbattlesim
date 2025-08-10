@@ -273,6 +273,47 @@ console.log('big breath mitigation distribution test passed');
   assert.strictEqual(result.timeFrames, 45);
   console.log('ambush flee logic test passed');
 }
+
+// Metal Slime ambush flee ends battle without hero action
+{
+  const seq = [0, 0.99, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 100,
+    attack: 50,
+    strength: 50,
+    defense: 40,
+    agility: 30,
+    mp: 0,
+  };
+  const monster = {
+    name: 'Metal Slime',
+    hp: 3,
+    attack: 10,
+    defense: 127,
+    agility: 255,
+    xp: 255,
+    hurtResist: 15,
+    dodge: 1,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert.deepStrictEqual(result.log, ['Monster ambushes!', 'Monster runs away!']);
+  assert.strictEqual(result.winner, 'fled');
+  assert.strictEqual(result.rounds, 0);
+  console.log('metal slime ambush flee test passed');
+}
 // simulateMany returns average battle time in seconds
 {
   const seq = [0.5, 0, 0, 0.5, 0.5, 0.5];
