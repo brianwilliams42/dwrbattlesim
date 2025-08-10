@@ -40,29 +40,61 @@
       gap: 20px;
       margin-bottom: 10px;
     }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    #sim-form,
+    #results {
+      flex: 1 1 400px;
+    }
+    #results {
+      border: 2px solid #555;
+      background-color: #111;
+      padding: 15px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #results section {
+      margin-bottom: 20px;
+    }
+    #results h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+    #results pre {
+      margin: 0;
+    }
   </style>
 </head>
 <body>
-  <h1>Dragon Warrior Battle Simulator</h1>
-  <div class="sprites">
-    <svg class="sprite" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-      <rect width="16" height="16" fill="#000" />
-      <rect x="7" y="2" width="2" height="2" fill="#f2d7b0" />
-      <rect x="7" y="4" width="2" height="4" fill="#00f" />
-      <rect x="9" y="5" width="3" height="1" fill="#ccc" />
-      <rect x="7" y="8" width="1" height="3" fill="#f2d7b0" />
-      <rect x="8" y="8" width="1" height="3" fill="#f2d7b0" />
-      <rect x="6" y="5" width="1" height="2" fill="#f2d7b0" />
-    </svg>
-    <svg class="sprite" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-      <rect width="16" height="16" fill="#000" />
-      <path d="M8 3 L4 8 L4 12 L12 12 L12 8 Z" fill="#00f" />
-      <rect x="6" y="8" width="1" height="1" fill="#fff" />
-      <rect x="9" y="8" width="1" height="1" fill="#fff" />
-      <rect x="7" y="10" width="2" height="1" fill="#f00" />
-    </svg>
-  </div>
-  <form id="sim-form">
+  <div class="container">
+    <h1>Dragon Warrior Battle Simulator</h1>
+    <div class="sprites">
+      <svg class="sprite" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+        <rect width="16" height="16" fill="#000" />
+        <rect x="7" y="2" width="2" height="2" fill="#f2d7b0" />
+        <rect x="7" y="4" width="2" height="4" fill="#00f" />
+        <rect x="9" y="5" width="3" height="1" fill="#ccc" />
+        <rect x="7" y="8" width="1" height="3" fill="#f2d7b0" />
+        <rect x="8" y="8" width="1" height="3" fill="#f2d7b0" />
+        <rect x="6" y="5" width="1" height="2" fill="#f2d7b0" />
+      </svg>
+      <svg class="sprite" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+        <rect width="16" height="16" fill="#000" />
+        <path d="M8 3 L4 8 L4 12 L12 12 L12 8 Z" fill="#00f" />
+        <rect x="6" y="8" width="1" height="1" fill="#fff" />
+        <rect x="9" y="8" width="1" height="1" fill="#fff" />
+        <rect x="7" y="10" width="2" height="1" fill="#f00" />
+      </svg>
+    </div>
+    <div class="layout">
+      <form id="sim-form">
     <fieldset>
       <legend>Hero Stats</legend>
       <label>HP <input type="number" id="hero-hp" value="100" /></label>
@@ -162,13 +194,25 @@
     </fieldset>
     <button type="submit">Simulate</button>
   </form>
-  <pre id="results"></pre>
+  <div id="results">
+    <section>
+      <h2>Battle Metrics</h2>
+      <pre id="metrics"></pre>
+    </section>
+    <section>
+      <h2>Sample Battle</h2>
+      <pre id="sample-battle"></pre>
+    </section>
+  </div>
+    </div>
+  </div>
 
   <script type="module">
     import { simulateMany, simulateBattle } from './simulator.js';
 
     const form = document.getElementById('sim-form');
-    const results = document.getElementById('results');
+    const metricsEl = document.getElementById('metrics');
+    const sampleEl = document.getElementById('sample-battle');
     const enemySelect = document.getElementById('enemy-select');
     const usePreset = document.getElementById('use-preset');
     const monsterStats = document.getElementById('monster-stats');
@@ -282,13 +326,13 @@
       };
       const example = simulateBattle(hero, exampleMonster, settings);
 
-      results.textContent =
+      metricsEl.textContent =
         `Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
         `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
         `Average MP spent per battle: ${summary.averageMPSpent.toFixed(2)}\n` +
-        `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}\n\n` +
-        `Sample Battle (MP Spent: ${example.mpSpent})\n` +
-        example.log.join('\n');
+        `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}`;
+      sampleEl.textContent =
+        `MP Spent: ${example.mpSpent}\n` + example.log.join('\n');
     });
   </script>
 </body>
