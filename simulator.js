@@ -626,8 +626,8 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
       if (i === 0) {
         lifeLog.push(
           fights === 0
-            ? `Starting fight against ${m.name} (${m.hp} HP).`
-            : `Starting next fight against ${m.name} (${m.hp} HP).`
+            ? `Starting fight against ${m.name} (${hero.hp} HP).`
+            : `Starting next fight against ${m.name} (${hero.hp} HP).`
         );
       }
       const result = simulateBattle(hero, m, settings);

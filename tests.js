@@ -6,6 +6,7 @@ import {
   mitigateDamage,
   simulateBattle,
   simulateMany,
+  simulateRepeated,
   baseMaxDamage,
 } from './simulator.js';
 
@@ -684,5 +685,32 @@ console.log('big breath mitigation distribution test passed');
   assert(result.log.includes('Hero uses Fairy Water for 1 damage.'));
   assert.strictEqual(result.fairyWatersUsed, 2);
   console.log('metal slime fairy water test passed');
+}
+
+// simulateRepeated logs hero HP at start of each fight
+{
+  const hero = {
+    hp: 10,
+    attack: 0,
+    strength: 0,
+    defense: 0,
+    agility: 0,
+  };
+  const monster = {
+    name: 'Slime',
+    hp: 5,
+    attack: 100,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+  };
+  const result = simulateRepeated(
+    hero,
+    monster,
+    { preBattleTime: 0, postBattleTime: 0, framesBetweenFights: 0 },
+    1,
+  );
+  assert.strictEqual(result.log[0], 'Starting fight against Slime (10 HP).');
+  console.log('starting fight log hero HP test passed');
 }
 
