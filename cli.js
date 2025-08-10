@@ -6,7 +6,7 @@ const hero = {
   defense: 40,
   agility: 30,
   mp: 50,
-  spells: ['HURT', 'HEAL'],
+  spells: ['HURT', 'HEAL', 'STOPSPELL'],
   armor: 'none',
   fairyFlute: true,
 };
@@ -19,6 +19,7 @@ const monster = {
   xp: 120,
   hurtResist: 0.25,
   dodge: 2,
+  stopspellResist: 0.5,
   supportAbility: 'sleep',
   supportChance: 0.25,
   attackAbility: 'hurt',

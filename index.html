@@ -23,6 +23,7 @@
       <label><input type="checkbox" id="hero-hurtmore" /> HURTMORE</label>
       <label><input type="checkbox" id="hero-heal" /> HEAL</label>
       <label><input type="checkbox" id="hero-healmore" /> HEALMORE</label>
+      <label><input type="checkbox" id="hero-stopspell" /> STOPSPELL</label>
       <label>Armor
         <select id="hero-armor">
           <option value="none">None</option>
@@ -43,6 +44,20 @@
       <label>Agility <input type="number" id="mon-agility" value="20" /></label>
       <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
       <label>HURT Resist (0-15) <input type="number" id="hurt-resist" value="0" /></label>
+      <label>Stopspell Resist
+        <select id="stopspell-resist">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+      </label>
       <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
       <label>Support Ability
         <select id="mon-support">
@@ -122,6 +137,7 @@
       document.getElementById('mon-agility').value = chosen.agility;
       document.getElementById('hurt-resist').value = chosen.hurtResist;
       document.getElementById('mon-dodge').value = chosen.dodge ?? 2;
+      document.getElementById('stopspell-resist').value = chosen.stopspellResist ?? 0;
     });
 
     form.addEventListener('submit', (e) => {
@@ -139,6 +155,7 @@
           ...(document.getElementById('hero-hurtmore').checked ? ['HURTMORE'] : []),
           ...(document.getElementById('hero-heal').checked ? ['HEAL'] : []),
           ...(document.getElementById('hero-healmore').checked ? ['HEALMORE'] : []),
+          ...(document.getElementById('hero-stopspell').checked ? ['STOPSPELL'] : []),
         ],
       };
       const monster = {
@@ -150,6 +167,7 @@
         xp: Number(document.getElementById('mon-xp').value),
         hurtResist: Number(document.getElementById('hurt-resist').value) / 16,
         dodge: Number(document.getElementById('mon-dodge').value),
+        stopspellResist: Number(document.getElementById('stopspell-resist').value) / 16,
         supportAbility: document.getElementById('mon-support').value,
         supportChance: Number(document.getElementById('mon-support-chance').value),
         attackAbility: document.getElementById('mon-attack-ability').value,

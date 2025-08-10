@@ -51,6 +51,7 @@ const HERO_SPELL_COST = {
   HURTMORE: 5,
   HEAL: 3,
   HEALMORE: 8,
+  STOPSPELL: 2,
 };
 
 export function simulateBattle(heroStats, monsterStats, settings = {}) {
@@ -89,6 +90,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   monster.maxHp = monster.maxHp ?? monster.hp;
   monster.asleep = false;
   monster.sleepTurns = 0;
+  monster.stopspelled = monster.stopspelled || false;
+  monster.stopspellResist = monster.stopspellResist || 0;
   let monsterMaxDamage = Math.floor(Math.max(0, (monster.attack - hero.defense) / 2));
   if (monster.attackAbility) {
     let abilityMax = 0;
@@ -141,11 +144,26 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     }
     if (hero.stopspelled) return 'attack';
     if (hero.spells) {
-      if (hero.hp <= monsterMaxDamage) {
+      let currentMaxDamage = monsterMaxDamage;
+      if (
+        monster.stopspelled &&
+        (monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore')
+      ) {
+        currentMaxDamage = Math.floor(Math.max(0, (monster.attack - hero.defense) / 2));
+      }
+      if (hero.hp <= currentMaxDamage) {
         if (hero.spells.includes('HEALMORE') && hero.mp >= HERO_SPELL_COST.HEALMORE)
           return 'HEALMORE';
         if (hero.spells.includes('HEAL') && hero.mp >= HERO_SPELL_COST.HEAL)
           return 'HEAL';
+      }
+      if (
+        hero.spells.includes('STOPSPELL') &&
+        hero.mp >= HERO_SPELL_COST.STOPSPELL &&
+        !monster.stopspelled &&
+        (monster.supportAbility || monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore')
+      ) {
+        return 'STOPSPELL';
       }
       let best = 'attack';
       let bestDamage = averagePhysicalDamage(hero, monster);
@@ -187,6 +205,19 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       monster.sleepTurns = 0;
       timeFrames += 480;
       log.push('Hero plays the Fairy Flute!');
+      return;
+    }
+    if (action === 'STOPSPELL') {
+      const success = Math.random() < (monster.stopspellResist || 0);
+      hero.mp -= HERO_SPELL_COST.STOPSPELL;
+      mpSpent += HERO_SPELL_COST.STOPSPELL;
+      timeFrames += heroSpellTime;
+      if (success) {
+        monster.stopspelled = true;
+        log.push('Hero casts STOPSPELL. Monster is affected.');
+      } else {
+        log.push('Hero casts STOPSPELL, but it fails.');
+      }
       return;
     }
     if (action === 'HURTMORE' || action === 'HURT') {
@@ -254,6 +285,13 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         useSupport = false;
       }
       if (useSupport) {
+        if (monster.stopspelled) {
+          timeFrames += enemySpellTime - 60;
+          log.push(
+            `Monster tries to cast ${monster.supportAbility.toUpperCase()}, but is stopspelled.`
+          );
+          return;
+        }
         if (monster.supportAbility === 'sleep') {
           hero.asleep = true;
           hero.sleepTurns = 0;
@@ -288,11 +326,16 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       let dmg = 0;
       if (monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore') {
         const spell = monster.attackAbility.toUpperCase();
-        dmg = castHurtSpell(spell);
-        if (hero.hurtMitigation) dmg = mitigateDamage(dmg);
-        hero.hp -= dmg;
-        timeFrames += enemySpellTime;
-        log.push(`Monster casts ${spell} for ${dmg} damage.`);
+        if (monster.stopspelled) {
+          timeFrames += enemySpellTime - 60;
+          log.push(`Monster tries to cast ${spell}, but is stopspelled.`);
+        } else {
+          dmg = castHurtSpell(spell);
+          if (hero.hurtMitigation) dmg = mitigateDamage(dmg);
+          hero.hp -= dmg;
+          timeFrames += enemySpellTime;
+          log.push(`Monster casts ${spell} for ${dmg} damage.`);
+        }
         return;
       }
       if (monster.attackAbility === 'smallbreath' || monster.attackAbility === 'bigbreath') {
