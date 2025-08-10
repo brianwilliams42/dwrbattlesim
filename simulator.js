@@ -1,0 +1,292 @@
+export function computeDamage(attacker, defender, rng = Math.random) {
+  const maxDamage = Math.max(0, (attacker.attack - defender.defense) / 2);
+  const minQ = Math.floor((maxDamage / 2) * 4);
+  const maxQ = Math.floor(maxDamage * 4);
+  const roll = minQ + Math.floor(rng() * (maxQ - minQ + 1));
+  const dmg = Math.floor(roll / 4);
+  return Math.max(0, dmg);
+}
+
+function averagePhysicalDamage(attacker, defender) {
+  const maxDamage = Math.max(0, (attacker.attack - defender.defense) / 2);
+  const minQ = Math.floor((maxDamage / 2) * 4);
+  const maxQ = Math.floor(maxDamage * 4);
+  let total = 0;
+  for (let q = minQ; q <= maxQ; q++) {
+    total += Math.floor(q / 4);
+  }
+  const count = maxQ - minQ + 1;
+  return count > 0 ? total / count : 0;
+}
+
+function castHurtSpell(name, resist) {
+  const resisted = Math.random() < resist;
+  if (resisted) return 0;
+  if (name === 'HURTMORE') {
+    return 58 + Math.floor(Math.random() * 8); // 58-65
+  }
+  return 9 + Math.floor(Math.random() * 8); // HURT: 9-16
+}
+
+function castHealSpell(name) {
+  if (name === 'HEALMORE') {
+    return 85 + Math.floor(Math.random() * 16); // 85-100
+  }
+  return 18 + Math.floor(Math.random() * 8); // HEAL: 18-25
+}
+
+const HERO_SPELL_COST = {
+  HURT: 2,
+  HURTMORE: 5,
+  HEAL: 3,
+  HEALMORE: 8,
+};
+
+export function simulateBattle(heroStats, monsterStats, settings = {}) {
+  const {
+    heroAttackTime = 120,
+    heroSpellTime = 180,
+    enemyAttackTime = 150,
+    enemySpellTime = 170,
+    enemyBreathTime = 160,
+    enemyDodgeTime = 60,
+    preBattleTime = 140,
+    postBattleTime = 200,
+  } = settings;
+
+  let log = [];
+  let timeFrames = preBattleTime;
+  let rounds = 0;
+  let mpSpent = 0;
+
+  const hero = {
+    ...heroStats,
+    mp: heroStats.mp ?? 0,
+    maxHp: heroStats.hp,
+    stopspelled: false,
+    asleep: false,
+    sleepTurns: 0,
+  };
+  const monster = { ...monsterStats };
+  monster.dodge = monster.dodge ?? 2;
+  monster.maxHp = monster.maxHp ?? monster.hp;
+  const monsterMaxDamage = Math.floor(Math.max(0, (monster.attack - hero.defense) / 2));
+
+  const heroRoll = hero.agility * Math.floor(Math.random() * 256);
+  const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
+  if (heroRoll < enemyRoll) {
+    const dmg = computeDamage(monster, hero);
+    hero.hp -= dmg;
+    timeFrames += enemyAttackTime;
+    log.push(`Monster ambushes for ${dmg} damage!`);
+    if (hero.hp <= 0) {
+      timeFrames += postBattleTime;
+      const timeSeconds = timeFrames / 60;
+      return {
+        winner: 'monster',
+        rounds,
+        timeFrames,
+        timeSeconds,
+        xpGained: 0,
+        xpPerMinute: 0,
+        log,
+      };
+    }
+  }
+
+  function determineHeroAction() {
+    if (hero.stopspelled) return 'attack';
+    if (hero.spells) {
+      if (hero.hp <= monsterMaxDamage) {
+        if (hero.spells.includes('HEALMORE') && hero.mp >= HERO_SPELL_COST.HEALMORE)
+          return 'HEALMORE';
+        if (hero.spells.includes('HEAL') && hero.mp >= HERO_SPELL_COST.HEAL)
+          return 'HEAL';
+      }
+      let best = 'attack';
+      let bestDamage = averagePhysicalDamage(hero, monster);
+      if (hero.spells.includes('HURTMORE') && hero.mp >= HERO_SPELL_COST.HURTMORE) {
+        const avg = 61.5 * (1 - (monster.hurtResist || 0));
+        if (avg > bestDamage) {
+          bestDamage = avg;
+          best = 'HURTMORE';
+        }
+      }
+      if (hero.spells.includes('HURT') && hero.mp >= HERO_SPELL_COST.HURT) {
+        const avg = 12.5 * (1 - (monster.hurtResist || 0));
+        if (avg > bestDamage) {
+          bestDamage = avg;
+          best = 'HURT';
+        }
+      }
+      return best;
+    }
+    return 'attack';
+  }
+
+  function runHeroTurn() {
+    if (hero.asleep) {
+      if (hero.sleepTurns >= 1 && Math.random() < 0.5) {
+        hero.asleep = false;
+        hero.sleepTurns = 0;
+      } else {
+        timeFrames += 60;
+        hero.sleepTurns++;
+        log.push('Hero is asleep.');
+        return;
+      }
+    }
+
+    const action = determineHeroAction();
+    if (action === 'HURTMORE' || action === 'HURT') {
+      const dmg = castHurtSpell(action, monster.hurtResist || 0);
+      monster.hp -= dmg;
+      hero.mp -= HERO_SPELL_COST[action];
+      mpSpent += HERO_SPELL_COST[action];
+      timeFrames += heroSpellTime;
+      log.push(
+        dmg > 0
+          ? `Hero casts ${action} for ${dmg} damage.`
+          : `Monster resists ${action}.`
+      );
+      return;
+    }
+    if (action === 'HEAL' || action === 'HEALMORE') {
+      const heal = castHealSpell(action);
+      hero.hp = Math.min(hero.hp + heal, hero.maxHp);
+      hero.mp -= HERO_SPELL_COST[action];
+      mpSpent += HERO_SPELL_COST[action];
+      timeFrames += heroSpellTime;
+      log.push(`Hero casts ${action} and heals ${heal} HP.`);
+      return;
+    }
+
+    const dodgeChance = (monster.dodge || 0) / 64;
+    if (Math.random() < dodgeChance) {
+      timeFrames += enemyDodgeTime;
+      log.push('Monster dodges the attack!');
+    } else {
+      const dmg = computeDamage(hero, monster);
+      monster.hp -= dmg;
+      timeFrames += heroAttackTime;
+      log.push(`Hero attacks for ${dmg} damage.`);
+    }
+  }
+
+  function runMonsterTurn() {
+    if (monster.supportAbility) {
+      let useSupport = Math.random() < (monster.supportChance || 0);
+      if (monster.supportAbility === 'sleep' && hero.asleep) useSupport = false;
+      if (monster.supportAbility === 'stopspell' && hero.stopspelled) useSupport = false;
+      if (
+        (monster.supportAbility === 'heal' || monster.supportAbility === 'healmore') &&
+        monster.hp < monster.maxHp / 4
+      ) {
+        useSupport = false;
+      }
+      if (useSupport) {
+        if (monster.supportAbility === 'sleep') {
+          hero.asleep = true;
+          hero.sleepTurns = 0;
+          timeFrames += enemySpellTime;
+          log.push('Monster casts SLEEP.');
+          return;
+        }
+        if (monster.supportAbility === 'stopspell') {
+          timeFrames += enemySpellTime;
+          log.push('Monster casts STOPSPELL.');
+          if (!hero.stopspellImmune && Math.random() < 0.5) {
+            hero.stopspelled = true;
+            log.push('Hero is affected by STOPSPELL.');
+          } else {
+            log.push('But nothing happens.');
+          }
+          return;
+        }
+        if (monster.supportAbility === 'heal' || monster.supportAbility === 'healmore') {
+          const heal = castHealSpell(monster.supportAbility.toUpperCase());
+          monster.hp = Math.min(monster.hp + heal, monster.maxHp);
+          timeFrames += enemySpellTime;
+          log.push(
+            `Monster casts ${monster.supportAbility.toUpperCase()} and heals ${heal} HP.`
+          );
+          return;
+        }
+      }
+    }
+
+    const action = monster.action || 'attack';
+    const dmg = computeDamage(monster, hero);
+    hero.hp -= dmg;
+    if (action === 'spell') {
+      timeFrames += enemySpellTime;
+      log.push(`Monster casts a spell for ${dmg} damage.`);
+    } else if (action === 'breath') {
+      timeFrames += enemyBreathTime;
+      log.push(`Monster breathes for ${dmg} damage.`);
+    } else {
+      timeFrames += enemyAttackTime;
+      log.push(`Monster attacks for ${dmg} damage.`);
+    }
+  }
+
+  function turnOrder() {
+    return hero.agility >= monster.agility ? ['hero', 'monster'] : ['monster', 'hero'];
+  }
+
+  while (hero.hp > 0 && monster.hp > 0) {
+    rounds++;
+    for (const actor of turnOrder()) {
+      if (actor === 'hero') {
+        runHeroTurn();
+      } else {
+        runMonsterTurn();
+      }
+      if (hero.hp <= 0 || monster.hp <= 0) break;
+    }
+  }
+
+  timeFrames += postBattleTime;
+  const winner = hero.hp > 0 ? 'hero' : 'monster';
+  const xpGained = winner === 'hero' ? monsterStats.xp : 0;
+  const timeSeconds = timeFrames / 60;
+  const xpPerMinute = xpGained * 60 / timeSeconds;
+
+  return {
+    winner,
+    rounds,
+    timeFrames,
+    timeSeconds,
+    xpGained,
+    xpPerMinute,
+    mpSpent,
+    log,
+  };
+}
+
+export function simulateMany(hero, monster, settings = {}, iterations = 1) {
+  let totalXP = 0;
+  let totalFrames = 0;
+  let wins = 0;
+  let totalMP = 0;
+  for (let i = 0; i < iterations; i++) {
+    const hpMax = monster.hp;
+    const hpMin = Math.ceil(hpMax * 0.75);
+    const m = {
+      ...monster,
+      hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
+      maxHp: hpMax,
+    };
+    const result = simulateBattle(hero, m, settings);
+    totalXP += result.xpGained;
+    totalFrames += result.timeFrames;
+    totalMP += result.mpSpent;
+    if (result.winner === 'hero') wins++;
+  }
+  const averageXPPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
+  return {
+    winRate: wins / iterations,
+    averageXPPerMinute,
+    averageMPSpent: totalMP / iterations,
+  };
+}

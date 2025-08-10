@@ -1,0 +1,344 @@
+[
+  {
+    "hp": 2,
+    "name": "Slime",
+    "attack": 5,
+    "defense": 1,
+    "agility": 3,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 3,
+    "name": "Red Slime",
+    "attack": 7,
+    "defense": 1,
+    "agility": 3,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 5,
+    "name": "Drakee",
+    "attack": 9,
+    "defense": 3,
+    "agility": 6,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 3,
+    "name": "Metal Slime",
+    "attack": 10,
+    "defense": 127,
+    "agility": 255,
+    "hurtResist": 15,
+    "dodge": 2
+  },
+  {
+    "hp": 7,
+    "name": "Ghost",
+    "attack": 11,
+    "defense": 4,
+    "agility": 8,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 12,
+    "name": "Magician",
+    "attack": 11,
+    "defense": 6,
+    "agility": 12,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 13,
+    "name": "Magidrakee",
+    "attack": 14,
+    "defense": 7,
+    "agility": 14,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 13,
+    "name": "Scorpion",
+    "attack": 18,
+    "defense": 8,
+    "agility": 16,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 23,
+    "name": "Poltergeist",
+    "attack": 18,
+    "defense": 10,
+    "agility": 20,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 22,
+    "name": "Druin",
+    "attack": 20,
+    "defense": 9,
+    "agility": 18,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 16,
+    "name": "Drakeema",
+    "attack": 22,
+    "defense": 13,
+    "agility": 26,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 20,
+    "name": "Droll",
+    "attack": 24,
+    "defense": 12,
+    "agility": 24,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 24,
+    "name": "Skeleton",
+    "attack": 28,
+    "defense": 11,
+    "agility": 22,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 28,
+    "name": "Warlock",
+    "attack": 28,
+    "defense": 11,
+    "agility": 22,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 18,
+    "name": "Metal Scorpion",
+    "attack": 36,
+    "defense": 21,
+    "agility": 42,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 33,
+    "name": "Wolf",
+    "attack": 40,
+    "defense": 15,
+    "agility": 30,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 33,
+    "name": "Specter",
+    "attack": 40,
+    "defense": 19,
+    "agility": 38,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 39,
+    "name": "Wraith",
+    "attack": 44,
+    "defense": 17,
+    "agility": 34,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 35,
+    "name": "Druinlord",
+    "attack": 47,
+    "defense": 20,
+    "agility": 40,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 50,
+    "name": "***Goldman",
+    "attack": 48,
+    "defense": 20,
+    "agility": 40,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 37,
+    "name": "Wolflord",
+    "attack": 50,
+    "defense": 18,
+    "agility": 36,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 44,
+    "name": "Drollmagi",
+    "attack": 52,
+    "defense": 25,
+    "agility": 50,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 37,
+    "name": "***Wyvern",
+    "attack": 56,
+    "defense": 24,
+    "agility": 48,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 40,
+    "name": "***Rogue Scorpion",
+    "attack": 60,
+    "defense": 45,
+    "agility": 90,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 40,
+    "name": "***Wraith Knight",
+    "attack": 68,
+    "defense": 28,
+    "agility": 56,
+    "hurtResist": 3,
+    "dodge": 2
+  },
+  {
+    "hp": 47,
+    "name": "***Knight",
+    "attack": 76,
+    "defense": 39,
+    "agility": 78,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 48,
+    "name": "***Magiwyvern",
+    "attack": 78,
+    "defense": 34,
+    "agility": 68,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 38,
+    "name": "***Demon Knight",
+    "attack": 79,
+    "defense": 32,
+    "agility": 64,
+    "hurtResist": 15,
+    "dodge": 2
+  },
+  {
+    "hp": 65,
+    "name": "***Wizard",
+    "attack": 80,
+    "defense": 35,
+    "agility": 70,
+    "hurtResist": 15,
+    "dodge": 2
+  },
+  {
+    "hp": 70,
+    "name": "***Werewolf",
+    "attack": 86,
+    "defense": 35,
+    "agility": 70,
+    "hurtResist": 0,
+    "dodge": 2
+  },
+  {
+    "hp": 74,
+    "name": "***Starwyvern",
+    "attack": 86,
+    "defense": 40,
+    "agility": 80,
+    "hurtResist": 1,
+    "dodge": 2
+  },
+  {
+    "hp": 72,
+    "name": "***Green Dragon",
+    "attack": 88,
+    "defense": 37,
+    "agility": 74,
+    "hurtResist": 2,
+    "dodge": 2
+  },
+  {
+    "hp": 67,
+    "name": "Axe Knight",
+    "attack": 94,
+    "defense": 41,
+    "agility": 82,
+    "hurtResist": 1,
+    "dodge": 2
+  },
+  {
+    "hp": 98,
+    "name": "Blue Dragon",
+    "attack": 98,
+    "defense": 42,
+    "agility": 84,
+    "hurtResist": 7,
+    "dodge": 2
+  },
+  {
+    "hp": 135,
+    "name": "Stoneman",
+    "attack": 100,
+    "defense": 20,
+    "agility": 40,
+    "hurtResist": 7,
+    "dodge": 2
+  },
+  {
+    "hp": 99,
+    "name": "Armored Knight",
+    "attack": 105,
+    "defense": 43,
+    "agility": 86,
+    "hurtResist": 1,
+    "dodge": 2
+  },
+  {
+    "hp": 153,
+    "name": "Golem",
+    "attack": 120,
+    "defense": 30,
+    "agility": 60,
+    "hurtResist": 15,
+    "dodge": 2
+  },
+  {
+    "hp": 106,
+    "name": "Red Dragon",
+    "attack": 120,
+    "defense": 45,
+    "agility": 90,
+    "hurtResist": 15,
+    "dodge": 2
+  }
+]
