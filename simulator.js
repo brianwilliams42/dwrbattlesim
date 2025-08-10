@@ -211,7 +211,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     }
 
     if (hero.fairyWater > 0) {
-      const avg = 12.5;
+      const avg = monster.name === 'Metal Slime' ? 0.5 : 12.5;
       if (avg > bestDamage) {
         bestDamage = avg;
         best = 'FAIRY_WATER';
@@ -289,7 +289,12 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       return;
     }
     if (action === 'FAIRY_WATER') {
-      const dmg = 9 + Math.floor(Math.random() * 8);
+      const dmg =
+        monster.name === 'Metal Slime'
+          ? Math.random() < 0.5
+            ? 0
+            : 1
+          : 9 + Math.floor(Math.random() * 8);
       monster.hp -= dmg;
       hero.fairyWater--;
       fairyWatersUsed++;
