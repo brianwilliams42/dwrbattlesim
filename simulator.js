@@ -1,5 +1,9 @@
-export function computeDamage(attacker, defender, rng = Math.random) {
-  const maxDamage = Math.max(0, (attacker.attack - defender.defense) / 2);
+export function baseMaxDamage(attack, defense) {
+  return Math.max(0, (attack - defense) / 2);
+}
+
+export function computeDamage(attack, defense, rng = Math.random) {
+  const maxDamage = baseMaxDamage(attack, defense);
   const minQ = Math.floor((maxDamage / 2) * 4);
   const maxQ = Math.floor(maxDamage * 4);
   const roll = minQ + Math.floor(rng() * (maxQ - minQ + 1));
@@ -7,8 +11,8 @@ export function computeDamage(attacker, defender, rng = Math.random) {
   return Math.max(0, dmg);
 }
 
-function averagePhysicalDamage(attacker, defender) {
-  const maxDamage = Math.max(0, (attacker.attack - defender.defense) / 2);
+function averagePhysicalDamage(attack, defense) {
+  const maxDamage = baseMaxDamage(attack, defense);
   const minQ = Math.floor((maxDamage / 2) * 4);
   const maxQ = Math.floor(maxDamage * 4);
   let total = 0;
@@ -102,7 +106,9 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   monster.sleepTurns = 0;
   monster.stopspelled = monster.stopspelled || false;
   monster.stopspellResist = monster.stopspellResist || 0;
-  let monsterMaxDamage = Math.floor(Math.max(0, (monster.attack - hero.defense) / 2));
+  let monsterMaxDamage = Math.floor(
+    baseMaxDamage(monster.attack, hero.defense / 2),
+  );
   if (monster.attackAbility) {
     let abilityMax = 0;
     switch (monster.attackAbility) {
@@ -129,10 +135,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const heroRoll = hero.agility * Math.floor(Math.random() * 256);
   const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
   if (heroRoll < enemyRoll) {
-    const dmg = computeDamage(monster, hero);
-    hero.hp -= dmg;
-    timeFrames += enemyAttackTime;
-    log.push(`Monster ambushes for ${dmg} damage!`);
+    log.push('Monster ambushes!');
+    runMonsterTurn();
     if (hero.hp <= 0) {
       timeFrames += postBattleTime;
       const timeSeconds = timeFrames / 60;
@@ -160,7 +164,9 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         monster.stopspelled &&
         (monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore')
       ) {
-        currentMaxDamage = Math.floor(Math.max(0, (monster.attack - hero.defense) / 2));
+        currentMaxDamage = Math.floor(
+          baseMaxDamage(monster.attack, hero.defense / 2),
+        );
       }
       if (hero.hp <= currentMaxDamage) {
         if (hero.spells.includes('HEALMORE') && hero.mp >= HERO_SPELL_COST.HEALMORE)
@@ -177,7 +183,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         return 'STOPSPELL';
       }
       let best = 'attack';
-      let bestDamage = averagePhysicalDamage(hero, monster);
+      let bestDamage = averagePhysicalDamage(hero.attack, monster.defense);
       if (hero.spells.includes('HURTMORE') && hero.mp >= HERO_SPELL_COST.HURTMORE) {
         const avg = 61.5 * (1 - (monster.hurtResist || 0));
         if (avg > bestDamage) {
@@ -219,7 +225,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       return;
     }
     if (action === 'STOPSPELL') {
-      const success = Math.random() < (monster.stopspellResist || 0);
+      const success = Math.random() >= (monster.stopspellResist || 0);
       hero.mp -= HERO_SPELL_COST.STOPSPELL;
       mpSpent += HERO_SPELL_COST.STOPSPELL;
       timeFrames += heroSpellTime;
@@ -257,9 +263,9 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     const dodgeChance = (monster.dodge || 0) / 64;
     if (Math.random() < dodgeChance) {
       timeFrames += enemyDodgeTime;
-      log.push('Monster dodges the attack!');
+      log.push('Hero attacks, but the monster dodges!');
     } else {
-      const dmg = computeDamage(hero, monster);
+      const dmg = computeDamage(hero.attack, monster.defense);
       monster.hp -= dmg;
       timeFrames += heroAttackTime;
       log.push(`Hero attacks for ${dmg} damage.`);
@@ -361,7 +367,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         return;
       }
     }
-    const dmg = computeDamage(monster, hero);
+    const dmg = computeDamage(monster.attack, hero.defense / 2);
     hero.hp -= dmg;
     timeFrames += enemyAttackTime;
     log.push(`Monster attacks for ${dmg} damage.`);
