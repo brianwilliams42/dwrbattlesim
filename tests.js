@@ -6,22 +6,23 @@ import {
   mitigateDamage,
   simulateBattle,
   simulateMany,
+  baseMaxDamage,
 } from './simulator.js';
 
-function averageDamage(attacker, defender) {
-  const maxDamage = Math.max(0, (attacker.attack - defender.defense) / 2);
+function averageDamage(attack, defense) {
+  const maxDamage = baseMaxDamage(attack, defense);
   const minQ = Math.floor((maxDamage / 2) * 4);
   const maxQ = Math.floor(maxDamage * 4);
   const n = maxQ - minQ + 1;
   let total = 0;
   for (let i = 0; i < n; i++) {
     const rng = () => (i + 0.5) / n;
-    total += computeDamage(attacker, defender, rng);
+    total += computeDamage(attack, defense, rng);
   }
   return total / n;
 }
 
-const avg = averageDamage({ attack: 130 }, { defense: 100 });
+const avg = averageDamage(130, 100);
 assert(Math.abs(avg - 10.875) < 0.01);
 
 console.log('computeDamage average test passed');
@@ -82,7 +83,7 @@ console.log('big breath mitigation distribution test passed');
 
 // Stopspell prevents enemy spells and shortens their casting time by 60 frames
 {
-  const seq = [0, 0, 0, 0, 0.5];
+  const seq = [0, 0, 0.5, 0, 0.99, 0.5];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
