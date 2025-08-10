@@ -344,13 +344,18 @@
         mode === 'repeated'
           ? simulateRepeated(hero, monster, settings, iterations)
           : simulateMany(hero, monster, settings, iterations);
-      const hpMax = monster.hp;
-      const hpMin = Math.ceil(hpMax * 0.75);
-      const exampleMonster = {
-        ...monster,
-        hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
-      };
-      const example = simulateBattle(hero, exampleMonster, settings);
+      let example;
+      if (mode === 'repeated') {
+        example = summary;
+      } else {
+        const hpMax = monster.hp;
+        const hpMin = Math.ceil(hpMax * 0.75);
+        const exampleMonster = {
+          ...monster,
+          hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
+        };
+        example = simulateBattle(hero, exampleMonster, settings);
+      }
 
       metricsEl.textContent =
         mode === 'repeated'

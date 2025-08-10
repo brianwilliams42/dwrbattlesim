@@ -459,8 +459,16 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   while (hero.hp > 0 && monster.hp > 0 && !monster.fled) {
     rounds++;
     runHeroTurn();
-    if (hero.hp <= 0 || monster.hp <= 0 || monster.fled) break;
+    if (monster.hp <= 0) {
+      log.push('Monster is defeated.');
+      break;
+    }
+    if (hero.hp <= 0 || monster.fled) break;
     runMonsterTurn();
+    if (hero.hp <= 0) {
+      log.push('Hero is defeated.');
+      break;
+    }
     if (monster.fled) break;
   }
 
@@ -531,6 +539,8 @@ function healBetweenFights(hero, monster, settings) {
   const herbTime = settings.herbTime;
   let framesBetweenFights = settings.framesBetweenFights;
   let mp = 0;
+  let herbsUsed = 0;
+  const log = [];
   const maxDmg = maxMonsterDamage(hero, monster);
   while (hero.hp < hero.maxHp && hero.hp <= 2 * maxDmg) {
     const deficit = hero.maxHp - hero.hp;
@@ -545,6 +555,7 @@ function healBetweenFights(hero, monster, settings) {
       hero.mp -= HERO_SPELL_COST.HEAL;
       mp += HERO_SPELL_COST.HEAL;
       framesBetweenFights += heroSpellTime;
+      log.push(`Hero casts HEAL and heals ${actual} HP.`);
       continue;
     }
     if (
@@ -555,7 +566,9 @@ function healBetweenFights(hero, monster, settings) {
       const actual = Math.min(heal, hero.maxHp - hero.hp);
       hero.hp += actual;
       hero.herbs--;
+      herbsUsed++;
       framesBetweenFights += herbTime;
+      log.push(`Hero uses an herb and heals ${actual} HP.`);
       continue;
     }
     if (
@@ -568,11 +581,12 @@ function healBetweenFights(hero, monster, settings) {
       hero.mp -= HERO_SPELL_COST.HEALMORE;
       mp += HERO_SPELL_COST.HEALMORE;
       framesBetweenFights += heroSpellTime;
+      log.push(`Hero casts HEALMORE and heals ${actual} HP.`);
       continue;
     }
     break;
   }
-  return { frames: framesBetweenFights, mpSpent: mp };
+  return { frames: framesBetweenFights, mpSpent: mp, herbsUsed, log };
 }
 
 export function simulateRepeated(heroStats, monsterStats, settings = {}, iterations = 1) {
@@ -581,6 +595,10 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
   let totalKills = 0;
   let totalMP = 0;
   let totalFights = 0;
+  let sampleLog = [];
+  let sampleMpSpent = 0;
+  let sampleHerbsUsed = 0;
+  let sampleFairyWatersUsed = 0;
   for (let i = 0; i < iterations; i++) {
     let hero = {
       ...heroStats,
@@ -594,6 +612,9 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
     let kills = 0;
     let mpSpent = 0;
     let fights = 0;
+    let herbsUsed = 0;
+    let fairyWatersUsed = 0;
+    const lifeLog = [];
     while (hero.hp > 0) {
       const hpMax = monsterStats.hp;
       const hpMin = Math.ceil(hpMax * 0.75);
@@ -602,14 +623,26 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
         hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
         maxHp: hpMax,
       };
+      if (i === 0) {
+        lifeLog.push(
+          fights === 0
+            ? `Starting fight against ${m.name} (${m.hp} HP).`
+            : `Starting next fight against ${m.name} (${m.hp} HP).`
+        );
+      }
       const result = simulateBattle(hero, m, settings);
       frames += result.timeFrames;
       mpSpent += result.mpSpent;
+      herbsUsed += result.herbsUsed;
+      fairyWatersUsed += result.fairyWatersUsed;
       fights++;
       hero.hp = result.heroHp;
       hero.mp -= result.mpSpent;
       hero.herbs -= result.herbsUsed;
       hero.fairyWater -= result.fairyWatersUsed;
+      if (i === 0) {
+        lifeLog.push(...result.log);
+      }
       if (result.winner === 'hero') {
         xp += result.xpGained;
         kills++;
@@ -618,12 +651,22 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
       const heal = healBetweenFights(hero, monsterStats, settings);
       frames += heal.frames;
       mpSpent += heal.mpSpent;
+      herbsUsed += heal.herbsUsed;
+      if (i === 0 && heal.log.length > 0) {
+        lifeLog.push(...heal.log);
+      }
     }
     totalXP += xp;
     totalFrames += frames;
     totalKills += kills;
     totalMP += mpSpent;
     totalFights += fights;
+    if (i === 0) {
+      sampleLog = lifeLog;
+      sampleMpSpent = mpSpent;
+      sampleHerbsUsed = herbsUsed;
+      sampleFairyWatersUsed = fairyWatersUsed;
+    }
   }
   const averageXPPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
   return {
@@ -631,5 +674,9 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
     averageXPPerMinute,
     averageKills: totalKills / iterations,
     averageMPPerFight: totalFights === 0 ? 0 : totalMP / totalFights,
+    mpSpent: sampleMpSpent,
+    herbsUsed: sampleHerbsUsed,
+    fairyWatersUsed: sampleFairyWatersUsed,
+    log: sampleLog,
   };
 }
