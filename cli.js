@@ -2,7 +2,7 @@ import { simulateMany } from './simulator.js';
 
 const hero = {
   hp: 100,
-  attack: 50,
+  strength: 50,
   defense: 40,
   agility: 30,
   mp: 50,
@@ -10,6 +10,10 @@ const hero = {
   armor: 'none',
   fairyFlute: true,
 };
+const weaponAttack = 20; // Broad Sword
+const fightersRing = false;
+const deathNecklace = false;
+hero.attack = hero.strength + weaponAttack + (fightersRing ? 2 : 0) + (deathNecklace ? 10 : 0);
 const monster = {
   name: 'Golem',
   hp: 80,

@@ -59,13 +59,14 @@ console.log('big breath mitigation distribution test passed');
 }
 // Fairy Flute forces the Golem to sleep for one turn and gives a 33% wake chance afterward
 {
-  const seq = [0, 0, 0, 0.2, 0];
+  const seq = [0, 0, 0, 0.2, 0, 0.5];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 1,
     attack: 0,
+    strength: 50,
     defense: 0,
     agility: 50,
     mp: 0,
@@ -83,13 +84,14 @@ console.log('big breath mitigation distribution test passed');
 
 // Stopspell prevents enemy spells and shortens their casting time by 60 frames
 {
-  const seq = [0, 0, 0.5, 0, 0.99, 0.5];
+  const seq = [0, 0, 0.5, 0.3, 0.99, 0.5, 0];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 10,
     attack: 100,
+    strength: 100,
     defense: 0,
     agility: 50,
     mp: 10,
@@ -132,6 +134,7 @@ console.log('big breath mitigation distribution test passed');
   const hero = {
     hp: 10,
     attack: 100,
+    strength: 100,
     defense: 0,
     agility: 1,
   };
@@ -162,11 +165,11 @@ console.log('big breath mitigation distribution test passed');
 
 // Ambush uses full monster turn logic including support abilities
 {
-  const seq = [0, 0.99, 0, 0];
+  const seq = [0, 0.99, 0.5, 0, 0.5];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 0, defense: 0, agility: 10 };
+  const hero = { hp: 10, attack: 0, strength: 50, defense: 0, agility: 10 };
   const monster = {
     name: 'Mage',
     hp: 10,
@@ -195,7 +198,7 @@ console.log('big breath mitigation distribution test passed');
 }
 // simulateMany returns average battle time in seconds
 {
-  const hero = { hp: 10, attack: 100, defense: 0, agility: 10 };
+  const hero = { hp: 10, attack: 100, strength: 100, defense: 0, agility: 10 };
   const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 0 };
   const summary = simulateMany(
     hero,
@@ -222,7 +225,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 0, defense: 0, agility: 10 };
+  const hero = { hp: 10, attack: 0, strength: 50, defense: 0, agility: 10 };
   const monster = {
     name: 'Healer',
     hp: 25,
@@ -254,7 +257,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 1, attack: 0, defense: 0, agility: 10 };
+  const hero = { hp: 1, attack: 0, strength: 50, defense: 0, agility: 10 };
   const monster = {
     name: 'Healer',
     hp: 20,
@@ -290,6 +293,7 @@ console.log('big breath mitigation distribution test passed');
   const hero = {
     hp: 100,
     attack: 0,
+    strength: 200,
     defense: 0,
     agility: 0,
     mp: 8,
@@ -317,5 +321,30 @@ console.log('big breath mitigation distribution test passed');
   Math.random = orig;
   assert(result.log.includes('Hero casts HEALMORE and heals 75 HP.'));
   console.log('hero heal cap test passed');
+}
+
+// Monster may flee if the hero's strength is at least twice its attack
+{
+  const seq = [0, 0, 0.5, 0, 0.1];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 10, attack: 0, strength: 20, defense: 0, agility: 10 };
+  const monster = { name: 'Runner', hp: 10, attack: 10, defense: 0, agility: 10, xp: 5 };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 200,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert.strictEqual(result.winner, 'fled');
+  assert.strictEqual(result.timeFrames, 45);
+  assert(result.log.includes('Monster runs away!'));
+  console.log('monster flee test passed');
 }
 

@@ -106,6 +106,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   monster.sleepTurns = 0;
   monster.stopspelled = monster.stopspelled || false;
   monster.stopspellResist = monster.stopspellResist || 0;
+  monster.fled = false;
   let monsterMaxDamage = Math.floor(
     baseMaxDamage(monster.attack, hero.defense / 2),
   );
@@ -292,6 +293,15 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         return;
       }
     }
+    if (
+      hero.strength != null &&
+      hero.strength >= 2 * monster.attack &&
+      Math.random() < 0.25
+    ) {
+      monster.fled = true;
+      log.push('Monster runs away!');
+      return;
+    }
     if (monster.supportAbility) {
       let useSupport = Math.random() < (monster.supportChance || 0);
       if (monster.supportAbility === 'sleep' && hero.asleep) useSupport = false;
@@ -380,10 +390,11 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     runHeroTurn();
     if (hero.hp <= 0 || monster.hp <= 0) break;
     runMonsterTurn();
+    if (monster.fled) break;
   }
 
-  timeFrames += postBattleTime;
-  const winner = hero.hp > 0 ? 'hero' : 'monster';
+  timeFrames += monster.fled ? 45 : postBattleTime;
+  const winner = monster.fled ? 'fled' : hero.hp > 0 ? 'hero' : 'monster';
   const xpGained = winner === 'hero' ? monsterStats.xp : 0;
   const timeSeconds = timeFrames / 60;
   const xpPerMinute = xpGained * 60 / timeSeconds;
