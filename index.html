@@ -110,42 +110,40 @@
         <label>Defense <input type="number" id="mon-defense" value="30" /></label>
         <label>Agility <input type="number" id="mon-agility" value="20" /></label>
         <label>HURT Resist (0-15) <input type="number" id="hurt-resist" value="0" /></label>
-        <label>Stopspell Resist (0-15) <input type="number" id="stopspell-resist" value="0" /></label>
         <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
-        <label>Support Ability
-          <select id="mon-support">
-            <option value="">None</option>
-            <option value="sleep">Sleep</option>
-            <option value="stopspell">Stopspell</option>
-            <option value="heal">Heal</option>
-            <option value="healmore">Healmore</option>
-          </select>
-        </label>
-        <label>Support Chance
-          <select id="mon-support-chance">
-            <option value="0.25">25%</option>
-            <option value="0.5">50%</option>
-            <option value="0.75">75%</option>
-          </select>
-        </label>
-        <label>Attack Ability
-          <select id="mon-attack-ability">
-            <option value="">None</option>
-            <option value="hurt">HURT</option>
-            <option value="hurtmore">HURTMORE</option>
-            <option value="smallbreath">Small Breath</option>
-            <option value="bigbreath">Big Breath</option>
-          </select>
-        </label>
-        <label>Attack Chance
-          <select id="mon-attack-chance">
-            <option value="0.25">25%</option>
-            <option value="0.5">50%</option>
-            <option value="0.75">75%</option>
-          </select>
-        </label>
+        <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
       </div>
-      <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
+      <label>Stopspell Resist (0-15) <input type="number" id="stopspell-resist" value="0" /></label>
+      <label>Support Ability
+        <select id="mon-support">
+          <option value="">None</option>
+          <option value="sleep">Sleep</option>
+          <option value="stopspell">Stopspell</option>
+          <option value="heal">Heal</option>
+          <option value="healmore">Healmore</option>
+        </select>
+        Chance
+        <select id="mon-support-chance">
+          <option value="0.25">25%</option>
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+        </select>
+      </label>
+      <label>Attack Ability
+        <select id="mon-attack-ability">
+          <option value="">None</option>
+          <option value="hurt">HURT</option>
+          <option value="hurtmore">HURTMORE</option>
+          <option value="smallbreath">Small Breath</option>
+          <option value="bigbreath">Big Breath</option>
+        </select>
+        Chance
+        <select id="mon-attack-chance">
+          <option value="0.25">25%</option>
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+        </select>
+      </label>
     </fieldset>
     <fieldset>
       <legend>Simulation Settings</legend>
@@ -184,7 +182,7 @@
       document.getElementById('mon-agility').value = chosen.agility;
       document.getElementById('hurt-resist').value = chosen.hurtResist;
       document.getElementById('mon-dodge').value = chosen.dodge ?? 2;
-      document.getElementById('stopspell-resist').value = chosen.stopspellResist ?? 0;
+      document.getElementById('mon-xp').value = chosen.xp ?? 0;
     }
 
     function toggleMonsterStats() {
