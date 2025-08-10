@@ -11,6 +11,7 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - Hero attack is derived from Strength, chosen weapon, and optional gear (Fighter's Ring +2 attack, Death Necklace +10 attack).
 - Hero picks the offensive action (attack, HURT, HURTMORE, or Fairy Water) with the highest expected damage.
 - Physical attacks have a 1/32 chance to become critical hits dealing 50–100% of attack power and adding 40 frames.
+- When the hero's attack is less than the monster's defense + 2, normal attack damage is replaced with a 50% chance of dealing 0 or 1 damage.
 - Monsters may flee at the start of their turn if the hero's strength is at least twice the monster's attack (25% chance), ending the battle early with a 45-frame message and no experience.
 - Enemies have a configurable chance to dodge attacks (default 2/64).
 - Tracks total battle time in frames (60 frames = 1 second) using default action timings:

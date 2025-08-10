@@ -2,7 +2,15 @@ export function baseMaxDamage(attack, defense) {
   return Math.max(0, (attack - defense) / 2);
 }
 
-export function computeDamage(attack, defense, rng = Math.random) {
+export function computeDamage(
+  attack,
+  defense,
+  rng = Math.random,
+  heroAttack = false,
+) {
+  if (heroAttack && attack < defense + 2) {
+    return rng() < 0.5 ? 0 : 1;
+  }
   const maxDamage = baseMaxDamage(attack, defense);
   const minQ = Math.floor((maxDamage / 2) * 4);
   const maxQ = Math.floor(maxDamage * 4);
@@ -11,7 +19,8 @@ export function computeDamage(attack, defense, rng = Math.random) {
   return Math.max(0, dmg);
 }
 
-function averagePhysicalDamage(attack, defense) {
+function averagePhysicalDamage(attack, defense, heroAttack = false) {
+  if (heroAttack && attack < defense + 2) return 0.5;
   const maxDamage = baseMaxDamage(attack, defense);
   const minQ = Math.floor((maxDamage / 2) * 4);
   const maxQ = Math.floor(maxDamage * 4);
@@ -194,7 +203,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     }
 
     let best = 'attack';
-    let bestDamage = averagePhysicalDamage(hero.attack, monster.defense);
+    let bestDamage = averagePhysicalDamage(hero.attack, monster.defense, true);
 
     if (!hero.stopspelled && hero.spells) {
       if (hero.spells.includes('HURTMORE') && hero.mp >= HERO_SPELL_COST.HURTMORE) {
@@ -319,7 +328,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         timeFrames += heroAttackTime + heroCriticalTime;
         log.push(`Hero performs a critical hit for ${dmg} damage.`);
       } else {
-        const dmg = computeDamage(hero.attack, monster.defense);
+        const dmg = computeDamage(hero.attack, monster.defense, Math.random, true);
         monster.hp -= dmg;
         timeFrames += heroAttackTime;
         log.push(`Hero attacks for ${dmg} damage.`);

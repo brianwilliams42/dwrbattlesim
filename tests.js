@@ -27,6 +27,17 @@ assert(Math.abs(avg - 10.875) < 0.01);
 
 console.log('computeDamage average test passed');
 
+// When hero attack is less than monster defense + 2, damage is 0 or 1
+{
+  const lowAttack = 5;
+  const highDefense = 10;
+  const dmgLow = computeDamage(lowAttack, highDefense, () => 0.49, true);
+  const dmgHigh = computeDamage(lowAttack, highDefense, () => 0.5, true);
+  assert.strictEqual(dmgLow, 0);
+  assert.strictEqual(dmgHigh, 1);
+  console.log('hero weak attack damage test passed');
+}
+
 const counts = {};
 for (let i = 0; i < 8; i++) {
   const rng = () => (i + 0.5) / 8;
