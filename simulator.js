@@ -156,6 +156,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   monster.stopspellResist = monster.stopspellResist || 0;
   monster.fled = false;
   let monsterMaxDamage = maxMonsterDamage(hero, monster);
+  let monsterHpKnownMax = monster.maxHp;
 
   const heroRoll = hero.agility * Math.floor(Math.random() * 256);
   const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
@@ -239,6 +240,16 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       }
     }
 
+    if (best === 'HURTMORE' || best === 'HURT') {
+      const maxPhysicalDamage =
+        hero.attack < monster.defense + 2
+          ? 1
+          : Math.floor(baseMaxDamage(hero.attack, monster.defense));
+      if (maxPhysicalDamage >= monsterHpKnownMax) {
+        best = 'attack';
+      }
+    }
+
     return best;
   }
 
@@ -279,6 +290,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     if (action === 'HURTMORE' || action === 'HURT') {
       const dmg = castHurtSpell(action, monster.hurtResist || 0);
       monster.hp -= dmg;
+      monsterHpKnownMax = Math.max(0, monsterHpKnownMax - dmg);
       hero.mp -= HERO_SPELL_COST[action];
       mpSpent += HERO_SPELL_COST[action];
       timeFrames += heroSpellTime;
@@ -317,6 +329,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
             : 1
           : 9 + Math.floor(Math.random() * 8);
       monster.hp -= dmg;
+      monsterHpKnownMax = Math.max(0, monsterHpKnownMax - dmg);
       hero.fairyWater--;
       fairyWatersUsed++;
       timeFrames += fairyWaterTime;
@@ -334,11 +347,13 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         const max = hero.attack;
         const dmg = min + Math.floor(Math.random() * (max - min + 1));
         monster.hp -= dmg;
+        monsterHpKnownMax = Math.max(0, monsterHpKnownMax - dmg);
         timeFrames += heroAttackTime + heroCriticalTime;
         log.push(`Hero performs a critical hit for ${dmg} damage.`);
       } else {
         const dmg = computeDamage(hero.attack, monster.defense, Math.random, true);
         monster.hp -= dmg;
+        monsterHpKnownMax = Math.max(0, monsterHpKnownMax - dmg);
         timeFrames += heroAttackTime;
         log.push(`Hero attacks for ${dmg} damage.`);
       }
@@ -413,6 +428,11 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
           const heal = castHealSpell(monster.supportAbility.toUpperCase());
           const actual = Math.min(heal, monster.maxHp - monster.hp);
           monster.hp += actual;
+          const healMax = monster.supportAbility === 'heal' ? 25 : 100;
+          monsterHpKnownMax = Math.min(
+            monster.maxHp,
+            monsterHpKnownMax + healMax,
+          );
           timeFrames += enemySpellTime;
           log.push(
             `Monster casts ${monster.supportAbility.toUpperCase()} and heals ${actual} HP.`
