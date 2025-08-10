@@ -297,7 +297,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       if (monster.supportAbility === 'stopspell' && hero.stopspelled) useSupport = false;
       if (
         (monster.supportAbility === 'heal' || monster.supportAbility === 'healmore') &&
-        monster.hp < monster.maxHp / 4
+        monster.hp > monster.maxHp / 4
       ) {
         useSupport = false;
       }
