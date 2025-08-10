@@ -191,7 +191,7 @@
   },
   {
     "hp": 50,
-    "name": "***Goldman",
+    "name": "Goldman",
     "attack": 48,
     "defense": 20,
     "agility": 40,
@@ -221,7 +221,7 @@
   },
   {
     "hp": 37,
-    "name": "***Wyvern",
+    "name": "Wyvern",
     "attack": 56,
     "defense": 24,
     "agility": 48,
@@ -231,7 +231,7 @@
   },
   {
     "hp": 40,
-    "name": "***Rogue Scorpion",
+    "name": "Rogue Scorpion",
     "attack": 60,
     "defense": 45,
     "agility": 90,
@@ -241,7 +241,7 @@
   },
   {
     "hp": 40,
-    "name": "***Wraith Knight",
+    "name": "Wraith Knight",
     "attack": 68,
     "defense": 28,
     "agility": 56,
@@ -251,7 +251,7 @@
   },
   {
     "hp": 47,
-    "name": "***Knight",
+    "name": "Knight",
     "attack": 76,
     "defense": 39,
     "agility": 78,
@@ -261,7 +261,7 @@
   },
   {
     "hp": 48,
-    "name": "***Magiwyvern",
+    "name": "Magiwyvern",
     "attack": 78,
     "defense": 34,
     "agility": 68,
@@ -271,7 +271,7 @@
   },
   {
     "hp": 38,
-    "name": "***Demon Knight",
+    "name": "Demon Knight",
     "attack": 79,
     "defense": 32,
     "agility": 64,
@@ -281,7 +281,7 @@
   },
   {
     "hp": 65,
-    "name": "***Wizard",
+    "name": "Wizard",
     "attack": 80,
     "defense": 35,
     "agility": 70,
@@ -291,7 +291,7 @@
   },
   {
     "hp": 70,
-    "name": "***Werewolf",
+    "name": "Werewolf",
     "attack": 86,
     "defense": 35,
     "agility": 70,
@@ -301,7 +301,7 @@
   },
   {
     "hp": 74,
-    "name": "***Starwyvern",
+    "name": "Starwyvern",
     "attack": 86,
     "defense": 40,
     "agility": 80,
@@ -311,7 +311,7 @@
   },
   {
     "hp": 72,
-    "name": "***Green Dragon",
+    "name": "Green Dragon",
     "attack": 88,
     "defense": 37,
     "agility": 74,
