@@ -56,7 +56,6 @@ console.log('big breath mitigation distribution test passed');
   );
   console.log('monster hurt spell mitigation test passed');
 }
-
 // Fairy Flute forces the Golem to sleep for one turn and gives a 33% wake chance afterward
 {
   const seq = [0, 0, 0, 0.2, 0];
@@ -193,7 +192,6 @@ console.log('big breath mitigation distribution test passed');
   assert(result.log.includes('Hero is asleep.'));
   console.log('ambush support ability test passed');
 }
-
 // simulateMany returns average battle time in seconds
 {
   const hero = { hp: 10, attack: 100, defense: 0, agility: 10 };
@@ -211,7 +209,7 @@ console.log('big breath mitigation distribution test passed');
       enemyBreathTime: 1,
       enemyDodgeTime: 1,
     },
-    1
+    1,
   );
   assert(Math.abs(summary.averageTimeSeconds - 1 / 60) < 1e-9);
   console.log('average time reporting test passed');
