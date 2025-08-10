@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dragon Warrior Battle Simulator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    fieldset { margin-bottom: 15px; }
+    label { display: block; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Dragon Warrior Battle Simulator</h1>
+  <form id="sim-form">
+    <fieldset>
+      <legend>Hero Stats</legend>
+      <label>HP <input type="number" id="hero-hp" value="100" /></label>
+      <label>Attack <input type="number" id="hero-attack" value="50" /></label>
+      <label>Defense <input type="number" id="hero-defense" value="40" /></label>
+      <label>Agility <input type="number" id="hero-agility" value="30" /></label>
+      <label>MP <input type="number" id="hero-mp" value="50" /></label>
+      <label><input type="checkbox" id="hero-hurt" /> HURT</label>
+      <label><input type="checkbox" id="hero-hurtmore" /> HURTMORE</label>
+      <label><input type="checkbox" id="hero-heal" /> HEAL</label>
+      <label><input type="checkbox" id="hero-healmore" /> HEALMORE</label>
+      <label><input type="checkbox" id="hero-stopspell" /> STOPSPELL</label>
+      <label>Armor
+        <select id="hero-armor">
+          <option value="none">None</option>
+          <option value="magic">Magic Armor</option>
+          <option value="erdrick">Erdrick's Armor</option>
+        </select>
+      </label>
+      <label id="flute-option" style="display:none"><input type="checkbox" id="hero-flute" /> Fairy Flute</label>
+    </fieldset>
+    <fieldset>
+      <legend>Monster Stats</legend>
+      <label>Enemy
+        <select id="enemy-select"></select>
+      </label>
+      <label>HP <input type="number" id="mon-hp" value="80" /></label>
+      <label>Attack <input type="number" id="mon-attack" value="40" /></label>
+      <label>Defense <input type="number" id="mon-defense" value="30" /></label>
+      <label>Agility <input type="number" id="mon-agility" value="20" /></label>
+      <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
+      <label>HURT Resist (0-15) <input type="number" id="hurt-resist" value="0" /></label>
+      <label>Stopspell Resist (0-15)
+        <select id="stopspell-resist">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+        </select>
+      </label>
+      <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
+      <label>Support Ability
+        <select id="mon-support">
+          <option value="">None</option>
+          <option value="sleep">Sleep</option>
+          <option value="stopspell">Stopspell</option>
+          <option value="heal">Heal</option>
+          <option value="healmore">Healmore</option>
+        </select>
+      </label>
+      <label>Support Chance
+        <select id="mon-support-chance">
+          <option value="0.25">25%</option>
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+        </select>
+      </label>
+      <label>Attack Ability
+        <select id="mon-attack-ability">
+          <option value="">None</option>
+          <option value="hurt">HURT</option>
+          <option value="hurtmore">HURTMORE</option>
+          <option value="smallbreath">Small Breath</option>
+          <option value="bigbreath">Big Breath</option>
+        </select>
+      </label>
+      <label>Attack Chance
+        <select id="mon-attack-chance">
+          <option value="0.25">25%</option>
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+        </select>
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend>Simulation Settings</legend>
+      <label>Hero Attack Time (frames) <input type="number" id="hero-attack-time" value="120" /></label>
+      <label>Hero Spell Time (frames) <input type="number" id="hero-spell-time" value="180" /></label>
+      <label>Enemy Attack Time (frames) <input type="number" id="enemy-attack-time" value="150" /></label>
+      <label>Enemy Spell Time (frames) <input type="number" id="enemy-spell-time" value="170" /></label>
+      <label>Enemy Breath Time (frames) <input type="number" id="enemy-breath-time" value="160" /></label>
+      <label>Enemy Dodge Time (frames) <input type="number" id="enemy-dodge-time" value="60" /></label>
+      <label>Pre-Battle Time (frames) <input type="number" id="pre-battle-time" value="140" /></label>
+      <label>Post-Battle Time (frames) <input type="number" id="post-battle-time" value="200" /></label>
+      <label>Iterations <input type="number" id="iterations" value="100" /></label>
+    </fieldset>
+    <button type="submit">Simulate</button>
+  </form>
+  <pre id="results"></pre>
+
+  <script type="module">
+    import { simulateMany, simulateBattle } from './simulator.js';
+
+    const form = document.getElementById('sim-form');
+    const results = document.getElementById('results');
+    const enemySelect = document.getElementById('enemy-select');
+
+    let enemies = [];
+    fetch('./enemies.json')
+      .then((r) => r.json())
+      .then((data) => {
+        enemies = data;
+        enemySelect.appendChild(new Option('Custom', ''));
+        for (const e of enemies) {
+          enemySelect.appendChild(new Option(e.name.replace(/\*/g, ''), e.name));
+        }
+      });
+
+    enemySelect.addEventListener('change', () => {
+      const chosen = enemies.find((e) => e.name === enemySelect.value);
+      const cleanName = (enemySelect.value || '').replace(/\*/g, '');
+      document.getElementById('flute-option').style.display =
+        cleanName === 'Golem' ? 'block' : 'none';
+      if (!chosen) return;
+      document.getElementById('mon-hp').value = chosen.hp;
+      document.getElementById('mon-attack').value = chosen.attack;
+      document.getElementById('mon-defense').value = chosen.defense;
+      document.getElementById('mon-agility').value = chosen.agility;
+      document.getElementById('hurt-resist').value = chosen.hurtResist;
+      document.getElementById('mon-dodge').value = chosen.dodge ?? 2;
+      document.getElementById('stopspell-resist').value = chosen.stopspellResist ?? 0;
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const hero = {
+        hp: Number(document.getElementById('hero-hp').value),
+        attack: Number(document.getElementById('hero-attack').value),
+        defense: Number(document.getElementById('hero-defense').value),
+        agility: Number(document.getElementById('hero-agility').value),
+        mp: Number(document.getElementById('hero-mp').value),
+        armor: document.getElementById('hero-armor').value,
+        fairyFlute: document.getElementById('hero-flute').checked,
+        spells: [
+          ...(document.getElementById('hero-hurt').checked ? ['HURT'] : []),
+          ...(document.getElementById('hero-hurtmore').checked ? ['HURTMORE'] : []),
+          ...(document.getElementById('hero-heal').checked ? ['HEAL'] : []),
+          ...(document.getElementById('hero-healmore').checked ? ['HEALMORE'] : []),
+          ...(document.getElementById('hero-stopspell').checked ? ['STOPSPELL'] : []),
+        ],
+      };
+      const monster = {
+        name: (enemySelect.value || 'Custom').replace(/\*/g, ''),
+        hp: Number(document.getElementById('mon-hp').value),
+        attack: Number(document.getElementById('mon-attack').value),
+        defense: Number(document.getElementById('mon-defense').value),
+        agility: Number(document.getElementById('mon-agility').value),
+        xp: Number(document.getElementById('mon-xp').value),
+        hurtResist: Number(document.getElementById('hurt-resist').value) / 16,
+        dodge: Number(document.getElementById('mon-dodge').value),
+        stopspellResist: Number(document.getElementById('stopspell-resist').value) / 16,
+        supportAbility: document.getElementById('mon-support').value,
+        supportChance: Number(document.getElementById('mon-support-chance').value),
+        attackAbility: document.getElementById('mon-attack-ability').value,
+        attackChance: Number(document.getElementById('mon-attack-chance').value),
+      };
+      const settings = {
+        heroAttackTime: Number(document.getElementById('hero-attack-time').value),
+        heroSpellTime: Number(document.getElementById('hero-spell-time').value),
+        enemyAttackTime: Number(document.getElementById('enemy-attack-time').value),
+        enemySpellTime: Number(document.getElementById('enemy-spell-time').value),
+        enemyBreathTime: Number(document.getElementById('enemy-breath-time').value),
+        enemyDodgeTime: Number(document.getElementById('enemy-dodge-time').value),
+        preBattleTime: Number(document.getElementById('pre-battle-time').value),
+        postBattleTime: Number(document.getElementById('post-battle-time').value),
+      };
+      const iterations = Number(document.getElementById('iterations').value);
+
+      const summary = simulateMany(hero, monster, settings, iterations);
+      const hpMax = monster.hp;
+      const hpMin = Math.ceil(hpMax * 0.75);
+      const exampleMonster = {
+        ...monster,
+        hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
+      };
+      const example = simulateBattle(hero, exampleMonster, settings);
+
+      results.textContent =
+        `Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
+        `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
+        `Average MP spent per battle: ${summary.averageMPSpent.toFixed(2)}\n` +
+        `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}\n\n` +
+        `Sample Battle (MP Spent: ${example.mpSpent})\n` +
+        example.log.join('\n');
+    });
+  </script>
+</body>
+</html>
