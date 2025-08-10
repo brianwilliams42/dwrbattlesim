@@ -348,3 +348,84 @@ console.log('big breath mitigation distribution test passed');
   console.log('monster flee test passed');
 }
 
+// Hero uses an herb when no healing spells are available
+{
+  const seq = [0, 0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 10, attack: 1, strength: 50, defense: 0, agility: 0, herbs: 1 };
+  const monster = { name: 'Slime', hp: 1, attack: 40, defense: 0, agility: 0, xp: 0 };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Hero uses an herb and heals 0 HP.'));
+  assert.strictEqual(result.herbsUsed, 1);
+  console.log('herb usage test passed');
+}
+
+// Herb is not used when HEAL is available and affordable
+{
+  const seq = [0, 0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 10,
+    attack: 1,
+    strength: 50,
+    defense: 0,
+    agility: 0,
+    mp: 3,
+    spells: ['HEAL'],
+    herbs: 1,
+  };
+  const monster = { name: 'Slime', hp: 1, attack: 40, defense: 0, agility: 0, xp: 0 };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert(result.log.some((l) => l.startsWith('Hero casts HEAL')));
+  assert.strictEqual(result.herbsUsed, 0);
+  console.log('herb spell priority test passed');
+}
+
+// Hero uses Fairy Water for damage
+{
+  const seq = [0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 10, attack: 0, strength: 50, defense: 0, agility: 0, fairyWater: 1 };
+  const monster = { name: 'Slime', hp: 9, attack: 0, defense: 0, agility: 0, xp: 0 };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Hero uses Fairy Water for 9 damage.'));
+  assert.strictEqual(result.fairyWatersUsed, 1);
+  console.log('fairy water usage test passed');
+}
+

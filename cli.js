@@ -9,6 +9,8 @@ const hero = {
   spells: ['HURT', 'HEAL', 'STOPSPELL'],
   armor: 'none',
   fairyFlute: true,
+  herbs: 0,
+  fairyWater: 0,
 };
 const weaponAttack = 20; // Broad Sword
 const fightersRing = false;
@@ -40,10 +42,20 @@ const settings = {
   enemyDodgeTime: 60,
 };
 
-const { winRate, averageXPPerMinute, averageMPSpent, averageTimeSeconds } =
-  simulateMany(hero, monster, settings, 100);
+const {
+  winRate,
+  averageXPPerMinute,
+  averageMPSpent,
+  averageTimeSeconds,
+  averageHerbsUsed,
+  averageFairyWatersUsed,
+} = simulateMany(hero, monster, settings, 100);
 
 console.log(`Win Rate: ${(winRate * 100).toFixed(2)}%`);
 console.log(`Average XP per minute: ${averageXPPerMinute.toFixed(2)}`);
 console.log(`Average MP spent per battle: ${averageMPSpent.toFixed(2)}`);
 console.log(`Average battle time (s): ${averageTimeSeconds.toFixed(2)}`);
+console.log(`Average herbs used per battle: ${averageHerbsUsed.toFixed(2)}`);
+console.log(
+  `Average fairy waters used per battle: ${averageFairyWatersUsed.toFixed(2)}`,
+);

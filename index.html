@@ -116,6 +116,8 @@
       <label>Defense <input type="number" id="hero-defense" value="40" /></label>
       <label>Agility <input type="number" id="hero-agility" value="30" /></label>
       <label>MP <input type="number" id="hero-mp" value="50" /></label>
+      <label>Herbs <input type="number" id="hero-herbs" value="0" min="0" max="6" /></label>
+      <label>Fairy Water <input type="number" id="hero-fairy-water" value="0" min="0" max="8" /></label>
       <label><input type="checkbox" id="hero-hurt" /> HURT</label>
       <label><input type="checkbox" id="hero-hurtmore" /> HURTMORE</label>
       <label><input type="checkbox" id="hero-heal" /> HEAL</label>
@@ -275,6 +277,10 @@
         defense: Number(document.getElementById('hero-defense').value),
         agility: Number(document.getElementById('hero-agility').value),
         mp: Number(document.getElementById('hero-mp').value),
+        herbs: Number(document.getElementById('hero-herbs').value),
+        fairyWater: Number(
+          document.getElementById('hero-fairy-water').value,
+        ),
         armor: document.getElementById('hero-armor').value,
         fairyFlute: document.getElementById('hero-flute').checked,
         spells: [
@@ -330,9 +336,14 @@
         `Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
         `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
         `Average MP spent per battle: ${summary.averageMPSpent.toFixed(2)}\n` +
+        `Average herbs used per battle: ${summary.averageHerbsUsed.toFixed(2)}\n` +
+        `Average fairy waters used per battle: ${summary.averageFairyWatersUsed.toFixed(2)}\n` +
         `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}`;
       sampleEl.textContent =
-        `MP Spent: ${example.mpSpent}\n` + example.log.join('\n');
+        `MP Spent: ${example.mpSpent}\n` +
+        `Herbs Used: ${example.herbsUsed}\n` +
+        `Fairy Waters Used: ${example.fairyWatersUsed}\n` +
+        example.log.join('\n');
     });
   </script>
 </body>

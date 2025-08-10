@@ -84,6 +84,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   let timeFrames = preBattleTime;
   let rounds = 0;
   let mpSpent = 0;
+  let herbsUsed = 0;
+  let fairyWatersUsed = 0;
 
   const armor = heroStats.armor || 'none';
   const hero = {
@@ -95,6 +97,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     asleep: false,
     sleepTurns: 0,
     fairyFlute: heroStats.fairyFlute || false,
+    herbs: heroStats.herbs || 0,
+    fairyWater: heroStats.fairyWater || 0,
   };
   hero.hurtMitigation = armor === 'magic' || armor === 'erdrick';
   hero.breathMitigation = armor === 'erdrick';
@@ -155,36 +159,41 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   }
 
   function determineHeroAction() {
+    const currentMaxDamage =
+      monster.stopspelled &&
+      (monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore')
+        ? Math.floor(baseMaxDamage(monster.attack, hero.defense / 2))
+        : monsterMaxDamage;
+
     if (hero.fairyFlute && monster.name === 'Golem' && !monster.asleep) {
       return 'FAIRY_FLUTE';
     }
-    if (hero.stopspelled) return 'attack';
-    if (hero.spells) {
-      let currentMaxDamage = monsterMaxDamage;
-      if (
-        monster.stopspelled &&
-        (monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore')
-      ) {
-        currentMaxDamage = Math.floor(
-          baseMaxDamage(monster.attack, hero.defense / 2),
-        );
-      }
-      if (hero.hp <= currentMaxDamage) {
+
+    if (hero.hp <= currentMaxDamage) {
+      if (!hero.stopspelled && hero.spells) {
         if (hero.spells.includes('HEALMORE') && hero.mp >= HERO_SPELL_COST.HEALMORE)
           return 'HEALMORE';
         if (hero.spells.includes('HEAL') && hero.mp >= HERO_SPELL_COST.HEAL)
           return 'HEAL';
       }
-      if (
-        hero.spells.includes('STOPSPELL') &&
-        hero.mp >= HERO_SPELL_COST.STOPSPELL &&
-        !monster.stopspelled &&
-        (monster.supportAbility || monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore')
-      ) {
-        return 'STOPSPELL';
-      }
-      let best = 'attack';
-      let bestDamage = averagePhysicalDamage(hero.attack, monster.defense);
+      if (hero.herbs > 0) return 'HERB';
+    }
+
+    if (
+      !hero.stopspelled &&
+      hero.spells &&
+      hero.spells.includes('STOPSPELL') &&
+      hero.mp >= HERO_SPELL_COST.STOPSPELL &&
+      !monster.stopspelled &&
+      (monster.supportAbility || monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore')
+    ) {
+      return 'STOPSPELL';
+    }
+
+    let best = 'attack';
+    let bestDamage = averagePhysicalDamage(hero.attack, monster.defense);
+
+    if (!hero.stopspelled && hero.spells) {
       if (hero.spells.includes('HURTMORE') && hero.mp >= HERO_SPELL_COST.HURTMORE) {
         const avg = 61.5 * (1 - (monster.hurtResist || 0));
         if (avg > bestDamage) {
@@ -199,9 +208,17 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
           best = 'HURT';
         }
       }
-      return best;
     }
-    return 'attack';
+
+    if (hero.fairyWater > 0) {
+      const avg = 12.5;
+      if (avg > bestDamage) {
+        bestDamage = avg;
+        best = 'FAIRY_WATER';
+      }
+    }
+
+    return best;
   }
 
   function runHeroTurn() {
@@ -259,6 +276,25 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       mpSpent += HERO_SPELL_COST[action];
       timeFrames += heroSpellTime;
       log.push(`Hero casts ${action} and heals ${actual} HP.`);
+      return;
+    }
+    if (action === 'HERB') {
+      const heal = 23 + Math.floor(Math.random() * 8);
+      const actual = Math.min(heal, hero.maxHp - hero.hp);
+      hero.hp += actual;
+      hero.herbs--;
+      herbsUsed++;
+      timeFrames += 150;
+      log.push(`Hero uses an herb and heals ${actual} HP.`);
+      return;
+    }
+    if (action === 'FAIRY_WATER') {
+      const dmg = 9 + Math.floor(Math.random() * 8);
+      monster.hp -= dmg;
+      hero.fairyWater--;
+      fairyWatersUsed++;
+      timeFrames += 210;
+      log.push(`Hero uses Fairy Water for ${dmg} damage.`);
       return;
     }
 
@@ -407,6 +443,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     xpGained,
     xpPerMinute,
     mpSpent,
+    herbsUsed,
+    fairyWatersUsed,
     log,
   };
 }
@@ -416,6 +454,8 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
   let totalFrames = 0;
   let wins = 0;
   let totalMP = 0;
+  let totalHerbs = 0;
+  let totalFairyWater = 0;
   for (let i = 0; i < iterations; i++) {
     const hpMax = monster.hp;
     const hpMin = Math.ceil(hpMax * 0.75);
@@ -428,6 +468,8 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
     totalXP += result.xpGained;
     totalFrames += result.timeFrames;
     totalMP += result.mpSpent;
+    totalHerbs += result.herbsUsed;
+    totalFairyWater += result.fairyWatersUsed;
     if (result.winner === 'hero') wins++;
   }
   const averageXPPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
@@ -437,5 +479,7 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
     averageXPPerMinute,
     averageMPSpent: totalMP / iterations,
     averageTimeSeconds,
+    averageHerbsUsed: totalHerbs / iterations,
+    averageFairyWatersUsed: totalFairyWater / iterations,
   };
 }

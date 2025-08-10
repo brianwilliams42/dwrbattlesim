@@ -7,8 +7,9 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - After any ambush, the hero always acts before the monster each round.
 - Supports hero spells HURT, HURTMORE, HEAL, and HEALMORE with per-spell MP costs and enemy resistance to HURT-category magic.
 - Tracks MP spent by the hero across a battle.
+- Optional consumables: Herbs heal 23–30 HP (150 frames) while Fairy Water deals 9–16 damage (210 frames) and both ignore Stopspell.
 - Hero attack is derived from Strength, chosen weapon, and optional gear (Fighter's Ring +2 attack, Death Necklace +10 attack).
-- Hero picks the offensive action (attack, HURT, or HURTMORE) with the highest expected damage.
+- Hero picks the offensive action (attack, HURT, HURTMORE, or Fairy Water) with the highest expected damage.
 - Monsters may flee at the start of their turn if the hero's strength is at least twice the monster's attack (25% chance), ending the battle early with a 45-frame message and no experience.
 - Enemies have a configurable chance to dodge attacks (default 2/64).
 - Tracks total battle time in frames (60 frames = 1 second) using default action timings:
