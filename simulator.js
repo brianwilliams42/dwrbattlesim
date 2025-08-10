@@ -70,14 +70,19 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   let rounds = 0;
   let mpSpent = 0;
 
+  const armor = heroStats.armor || 'none';
   const hero = {
     ...heroStats,
+    armor,
     mp: heroStats.mp ?? 0,
     maxHp: heroStats.hp,
     stopspelled: false,
     asleep: false,
     sleepTurns: 0,
   };
+  hero.hurtMitigation = armor === 'magic' || armor === 'erdrick';
+  hero.breathMitigation = armor === 'erdrick';
+  hero.stopspellImmune = armor === 'erdrick';
   const monster = { ...monsterStats };
   monster.dodge = monster.dodge ?? 2;
   monster.maxHp = monster.maxHp ?? monster.hp;

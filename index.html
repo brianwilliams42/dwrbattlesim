@@ -23,9 +23,13 @@
       <label><input type="checkbox" id="hero-hurtmore" /> HURTMORE</label>
       <label><input type="checkbox" id="hero-heal" /> HEAL</label>
       <label><input type="checkbox" id="hero-healmore" /> HEALMORE</label>
-      <label><input type="checkbox" id="hero-stopspell-immune" /> Stopspell Immune</label>
-      <label><input type="checkbox" id="hero-hurt-mitigation" /> HURT Mitigation</label>
-      <label><input type="checkbox" id="hero-breath-mitigation" /> Breath Mitigation</label>
+      <label>Armor
+        <select id="hero-armor">
+          <option value="none">None</option>
+          <option value="magic">Magic Armor</option>
+          <option value="erdrick">Erdrick's Armor</option>
+        </select>
+      </label>
     </fieldset>
     <fieldset>
       <legend>Monster Stats</legend>
@@ -125,9 +129,7 @@
         defense: Number(document.getElementById('hero-defense').value),
         agility: Number(document.getElementById('hero-agility').value),
         mp: Number(document.getElementById('hero-mp').value),
-        stopspellImmune: document.getElementById('hero-stopspell-immune').checked,
-        hurtMitigation: document.getElementById('hero-hurt-mitigation').checked,
-        breathMitigation: document.getElementById('hero-breath-mitigation').checked,
+        armor: document.getElementById('hero-armor').value,
         spells: [
           ...(document.getElementById('hero-hurt').checked ? ['HURT'] : []),
           ...(document.getElementById('hero-hurtmore').checked ? ['HURTMORE'] : []),

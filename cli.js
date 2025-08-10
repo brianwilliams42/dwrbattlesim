@@ -7,8 +7,7 @@ const hero = {
   agility: 30,
   mp: 50,
   spells: ['HURT', 'HEAL'],
-  hurtMitigation: false,
-  breathMitigation: false,
+  armor: 'none',
 };
 const monster = {
   hp: 80,
