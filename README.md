@@ -10,11 +10,15 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - Optional consumables: Herbs heal 23–30 HP (150 frames) while Fairy Water deals 9–16 damage (210 frames, 0–1 against Metal Slimes) and both ignore Stopspell.
 - Hero attack is derived from Strength, chosen weapon, and optional gear (Fighter's Ring +2 attack, Death Necklace +10 attack).
 - Hero picks the offensive action (attack, HURT, HURTMORE, or Fairy Water) with the highest expected damage.
+- Physical attacks have a 1/32 chance to become critical hits dealing 50–100% of attack power and adding 40 frames.
 - Monsters may flee at the start of their turn if the hero's strength is at least twice the monster's attack (25% chance), ending the battle early with a 45-frame message and no experience.
 - Enemies have a configurable chance to dodge attacks (default 2/64).
 - Tracks total battle time in frames (60 frames = 1 second) using default action timings:
   - Hero attack: 120 frames
   - Hero spell: 180 frames
+  - Critical hit bonus: 40 frames
+  - Herb use: 150 frames
+  - Fairy Water use: 210 frames
   - Enemy attack: 150 frames
   - Enemy spell: 170 frames
   - Enemy breath: 160 frames
@@ -30,7 +34,7 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 
 ## Usage
 ### Browser
-Open `index.html` in any modern browser. Adjust the hero, monster, and simulation settings and click **Simulate** to see win rate, XP per minute, average battle time, and MP usage along with a sample battle log.
+Open `index.html` in any modern browser. Adjust the hero, monster, and simulation settings and click **Simulate** to see hero win rate, monster win rate, monster flee rate, XP per minute, average battle time, and MP usage along with a sample battle log.
 
 ### Command line
 Run the test suite:

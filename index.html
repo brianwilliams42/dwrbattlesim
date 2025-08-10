@@ -185,6 +185,9 @@
         <summary>Timing Settings (optional)</summary>
         <label>Hero Attack Time (frames) <input type="number" id="hero-attack-time" value="120" /></label>
         <label>Hero Spell Time (frames) <input type="number" id="hero-spell-time" value="180" /></label>
+        <label>Critical Hit Time (frames) <input type="number" id="hero-critical-time" value="40" /></label>
+        <label>Herb Use Time (frames) <input type="number" id="herb-time" value="150" /></label>
+        <label>Fairy Water Use Time (frames) <input type="number" id="fairy-water-time" value="210" /></label>
         <label>Enemy Attack Time (frames) <input type="number" id="enemy-attack-time" value="150" /></label>
         <label>Enemy Spell Time (frames) <input type="number" id="enemy-spell-time" value="170" /></label>
         <label>Enemy Breath Time (frames) <input type="number" id="enemy-breath-time" value="160" /></label>
@@ -314,6 +317,9 @@
       const settings = {
         heroAttackTime: Number(document.getElementById('hero-attack-time').value),
         heroSpellTime: Number(document.getElementById('hero-spell-time').value),
+        heroCriticalTime: Number(document.getElementById('hero-critical-time').value),
+        herbTime: Number(document.getElementById('herb-time').value),
+        fairyWaterTime: Number(document.getElementById('fairy-water-time').value),
         enemyAttackTime: Number(document.getElementById('enemy-attack-time').value),
         enemySpellTime: Number(document.getElementById('enemy-spell-time').value),
         enemyBreathTime: Number(document.getElementById('enemy-breath-time').value),
@@ -333,7 +339,9 @@
       const example = simulateBattle(hero, exampleMonster, settings);
 
       metricsEl.textContent =
-        `Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
+        `Hero Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
+        `Monster Win Rate: ${(summary.monsterWinRate * 100).toFixed(2)}%\n` +
+        `Monster Flee Rate: ${(summary.monsterFleeRate * 100).toFixed(2)}%\n` +
         `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
         `Average MP spent per battle: ${summary.averageMPSpent.toFixed(2)}\n` +
         `Average herbs used per battle: ${summary.averageHerbsUsed.toFixed(2)}\n` +

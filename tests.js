@@ -84,7 +84,7 @@ console.log('big breath mitigation distribution test passed');
 
 // Stopspell prevents enemy spells and shortens their casting time by 60 frames
 {
-  const seq = [0, 0, 0.5, 0.3, 0.99, 0.5, 0];
+  const seq = [0, 0, 0.5, 0.3, 0.99, 0.99, 0.5];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
@@ -127,7 +127,7 @@ console.log('big breath mitigation distribution test passed');
 
 // Hero always acts before the monster after any ambush check
 {
-  const seq = [0.99, 0, 0];
+  const seq = [0.99, 0, 0.5, 0.99, 0];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
@@ -161,6 +161,39 @@ console.log('big breath mitigation distribution test passed');
   assert.strictEqual(result.log[0], 'Hero attacks for 25 damage.');
   assert.strictEqual(result.winner, 'hero');
   console.log('hero first turn order test passed');
+}
+
+// Hero critical hits deal 50%-100% of attack and have configurable extra time
+{
+  const seq = [0, 0, 0.5, 0, 0.5];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 10, attack: 64, strength: 64, defense: 0, agility: 0 };
+  const monster = {
+    name: 'Dummy',
+    hp: 30,
+    attack: 0,
+    defense: 999,
+    agility: 0,
+    xp: 0,
+    dodge: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 1,
+    heroCriticalTime: 2,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert.strictEqual(result.log[0], 'Hero performs a critical hit for 48 damage.');
+  assert.strictEqual(result.timeFrames, 3);
+  console.log('hero critical hit test passed');
 }
 
 // Ambush uses full monster turn logic including support abilities
@@ -198,6 +231,10 @@ console.log('big breath mitigation distribution test passed');
 }
 // simulateMany returns average battle time in seconds
 {
+  const seq = [0.5, 0, 0, 0.5, 0.5, 0.5];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
   const hero = { hp: 10, attack: 100, strength: 100, defense: 0, agility: 10 };
   const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 0 };
   const summary = simulateMany(
@@ -215,8 +252,56 @@ console.log('big breath mitigation distribution test passed');
     },
     1,
   );
+  Math.random = orig;
   assert(Math.abs(summary.averageTimeSeconds - 1 / 60) < 1e-9);
   console.log('average time reporting test passed');
+}
+
+// simulateMany tracks hero wins, monster wins, and monster flees
+{
+  const orig = Math.random;
+  Math.random = () => 0;
+  const settings = {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 1,
+    heroSpellTime: 1,
+    enemyAttackTime: 1,
+    enemySpellTime: 1,
+    enemyBreathTime: 1,
+    enemyDodgeTime: 1,
+  };
+  const heroWinSummary = simulateMany(
+    { hp: 10, attack: 50, strength: 5, defense: 0, agility: 10 },
+    { name: 'Slime', hp: 1, attack: 10, defense: 0, agility: 0, xp: 0, dodge: 0 },
+    settings,
+    1,
+  );
+  assert.strictEqual(heroWinSummary.winRate, 1);
+  assert.strictEqual(heroWinSummary.monsterWinRate, 0);
+  assert.strictEqual(heroWinSummary.monsterFleeRate, 0);
+
+  const monsterWinSummary = simulateMany(
+    { hp: 1, attack: 0, strength: 0, defense: 0, agility: 10 },
+    { name: 'Drakee', hp: 10, attack: 20, defense: 0, agility: 0, xp: 0, dodge: 0 },
+    settings,
+    1,
+  );
+  assert.strictEqual(monsterWinSummary.winRate, 0);
+  assert.strictEqual(monsterWinSummary.monsterWinRate, 1);
+  assert.strictEqual(monsterWinSummary.monsterFleeRate, 0);
+
+  const fleeSummary = simulateMany(
+    { hp: 10, attack: 0, strength: 20, defense: 0, agility: 10 },
+    { name: 'Ghost', hp: 10, attack: 5, defense: 0, agility: 0, xp: 0, dodge: 0 },
+    settings,
+    1,
+  );
+  Math.random = orig;
+  assert.strictEqual(fleeSummary.winRate, 0);
+  assert.strictEqual(fleeSummary.monsterWinRate, 0);
+  assert.strictEqual(fleeSummary.monsterFleeRate, 1);
+  console.log('simulateMany outcome rate tests passed');
 }
 
 // Monsters only heal when below 25% HP and healing is capped
@@ -325,7 +410,7 @@ console.log('big breath mitigation distribution test passed');
 
 // Monster may flee if the hero's strength is at least twice its attack
 {
-  const seq = [0, 0, 0.5, 0, 0.1];
+  const seq = [0, 0, 0.5, 0.5, 0, 0.1];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
@@ -370,6 +455,30 @@ console.log('big breath mitigation distribution test passed');
   assert(result.log.includes('Hero uses an herb and heals 0 HP.'));
   assert.strictEqual(result.herbsUsed, 1);
   console.log('herb usage test passed');
+}
+
+// Herb usage time is configurable
+{
+  const seq = [0, 0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 10, attack: 1, strength: 50, defense: 0, agility: 0, herbs: 1 };
+  const monster = { name: 'Slime', hp: 1, attack: 40, defense: 0, agility: 0, xp: 0 };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    herbTime: 5,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert.strictEqual(result.timeFrames, 5);
+  console.log('herb timing test passed');
 }
 
 // Herb is not used when HEAL is available and affordable
@@ -427,6 +536,30 @@ console.log('big breath mitigation distribution test passed');
   assert(result.log.includes('Hero uses Fairy Water for 9 damage.'));
   assert.strictEqual(result.fairyWatersUsed, 1);
   console.log('fairy water usage test passed');
+}
+
+// Fairy Water usage time is configurable
+{
+  const seq = [0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 10, attack: 0, strength: 50, defense: 0, agility: 0, fairyWater: 1 };
+  const monster = { name: 'Slime', hp: 9, attack: 0, defense: 0, agility: 0, xp: 0 };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    fairyWaterTime: 7,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert.strictEqual(result.timeFrames, 7);
+  console.log('fairy water timing test passed');
 }
 
 // Fairy Water does 0 or 1 damage to Metal Slimes

@@ -44,6 +44,8 @@ const settings = {
 
 const {
   winRate,
+  monsterWinRate,
+  monsterFleeRate,
   averageXPPerMinute,
   averageMPSpent,
   averageTimeSeconds,
@@ -51,7 +53,9 @@ const {
   averageFairyWatersUsed,
 } = simulateMany(hero, monster, settings, 100);
 
-console.log(`Win Rate: ${(winRate * 100).toFixed(2)}%`);
+console.log(`Hero Win Rate: ${(winRate * 100).toFixed(2)}%`);
+console.log(`Monster Win Rate: ${(monsterWinRate * 100).toFixed(2)}%`);
+console.log(`Monster Flee Rate: ${(monsterFleeRate * 100).toFixed(2)}%`);
 console.log(`Average XP per minute: ${averageXPPerMinute.toFixed(2)}`);
 console.log(`Average MP spent per battle: ${averageMPSpent.toFixed(2)}`);
 console.log(`Average battle time (s): ${averageTimeSeconds.toFixed(2)}`);

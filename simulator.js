@@ -72,6 +72,9 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const {
     heroAttackTime = 120,
     heroSpellTime = 180,
+    heroCriticalTime = 40,
+    herbTime = 150,
+    fairyWaterTime = 210,
     enemyAttackTime = 150,
     enemySpellTime = 170,
     enemyBreathTime = 160,
@@ -284,7 +287,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       hero.hp += actual;
       hero.herbs--;
       herbsUsed++;
-      timeFrames += 150;
+      timeFrames += herbTime;
       log.push(`Hero uses an herb and heals ${actual} HP.`);
       return;
     }
@@ -298,7 +301,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       monster.hp -= dmg;
       hero.fairyWater--;
       fairyWatersUsed++;
-      timeFrames += 210;
+      timeFrames += fairyWaterTime;
       log.push(`Hero uses Fairy Water for ${dmg} damage.`);
       return;
     }
@@ -308,10 +311,19 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       timeFrames += enemyDodgeTime;
       log.push('Hero attacks, but the monster dodges!');
     } else {
-      const dmg = computeDamage(hero.attack, monster.defense);
-      monster.hp -= dmg;
-      timeFrames += heroAttackTime;
-      log.push(`Hero attacks for ${dmg} damage.`);
+      if (Math.random() < 1 / 32) {
+        const min = Math.floor(hero.attack / 2);
+        const max = hero.attack;
+        const dmg = min + Math.floor(Math.random() * (max - min + 1));
+        monster.hp -= dmg;
+        timeFrames += heroAttackTime + heroCriticalTime;
+        log.push(`Hero performs a critical hit for ${dmg} damage.`);
+      } else {
+        const dmg = computeDamage(hero.attack, monster.defense);
+        monster.hp -= dmg;
+        timeFrames += heroAttackTime;
+        log.push(`Hero attacks for ${dmg} damage.`);
+      }
     }
   }
 
@@ -457,7 +469,9 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
 export function simulateMany(hero, monster, settings = {}, iterations = 1) {
   let totalXP = 0;
   let totalFrames = 0;
-  let wins = 0;
+  let heroWins = 0;
+  let monsterWins = 0;
+  let monsterFlees = 0;
   let totalMP = 0;
   let totalHerbs = 0;
   let totalFairyWater = 0;
@@ -475,12 +489,16 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
     totalMP += result.mpSpent;
     totalHerbs += result.herbsUsed;
     totalFairyWater += result.fairyWatersUsed;
-    if (result.winner === 'hero') wins++;
+    if (result.winner === 'hero') heroWins++;
+    else if (result.winner === 'monster') monsterWins++;
+    else if (result.winner === 'fled') monsterFlees++;
   }
   const averageXPPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
   const averageTimeSeconds = totalFrames / iterations / 60;
   return {
-    winRate: wins / iterations,
+    winRate: heroWins / iterations,
+    monsterWinRate: monsterWins / iterations,
+    monsterFleeRate: monsterFlees / iterations,
     averageXPPerMinute,
     averageMPSpent: totalMP / iterations,
     averageTimeSeconds,
