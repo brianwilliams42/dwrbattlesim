@@ -69,6 +69,38 @@ export function mitigateDamage(dmg) {
   return Math.floor(dmg / 3) * 2;
 }
 
+export function maxMonsterDamage(heroStats, monsterStats) {
+  const armor = heroStats.armor || 'none';
+  const hurtMitigation = armor === 'magic' || armor === 'erdrick';
+  const breathMitigation = armor === 'erdrick';
+  let maxDamage = Math.floor(
+    baseMaxDamage(monsterStats.attack, heroStats.defense / 2),
+  );
+  if (monsterStats.attackAbility) {
+    let abilityMax = 0;
+    switch (monsterStats.attackAbility) {
+      case 'hurt':
+        abilityMax = 10;
+        if (hurtMitigation) abilityMax = mitigateDamage(abilityMax);
+        break;
+      case 'hurtmore':
+        abilityMax = 45;
+        if (hurtMitigation) abilityMax = mitigateDamage(abilityMax);
+        break;
+      case 'smallbreath':
+        abilityMax = 30;
+        if (breathMitigation) abilityMax = mitigateDamage(abilityMax);
+        break;
+      case 'bigbreath':
+        abilityMax = 72;
+        if (breathMitigation) abilityMax = mitigateDamage(abilityMax);
+        break;
+    }
+    maxDamage = Math.max(maxDamage, abilityMax);
+  }
+  return maxDamage;
+}
+
 const HERO_SPELL_COST = {
   HURT: 2,
   HURTMORE: 5,
@@ -123,31 +155,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   monster.stopspelled = monster.stopspelled || false;
   monster.stopspellResist = monster.stopspellResist || 0;
   monster.fled = false;
-  let monsterMaxDamage = Math.floor(
-    baseMaxDamage(monster.attack, hero.defense / 2),
-  );
-  if (monster.attackAbility) {
-    let abilityMax = 0;
-    switch (monster.attackAbility) {
-      case 'hurt':
-        abilityMax = 10;
-        if (hero.hurtMitigation) abilityMax = mitigateDamage(abilityMax);
-        break;
-      case 'hurtmore':
-        abilityMax = 45;
-        if (hero.hurtMitigation) abilityMax = mitigateDamage(abilityMax);
-        break;
-      case 'smallbreath':
-        abilityMax = 30;
-        if (hero.breathMitigation) abilityMax = mitigateDamage(abilityMax);
-        break;
-      case 'bigbreath':
-        abilityMax = 72;
-        if (hero.breathMitigation) abilityMax = mitigateDamage(abilityMax);
-        break;
-    }
-    monsterMaxDamage = Math.max(monsterMaxDamage, abilityMax);
-  }
+  let monsterMaxDamage = maxMonsterDamage(hero, monster);
 
   const heroRoll = hero.agility * Math.floor(Math.random() * 256);
   const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
@@ -472,6 +480,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     mpSpent,
     herbsUsed,
     fairyWatersUsed,
+    heroHp: hero.hp,
     log,
   };
 }
@@ -514,5 +523,112 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
     averageTimeSeconds,
     averageHerbsUsed: totalHerbs / iterations,
     averageFairyWatersUsed: totalFairyWater / iterations,
+  };
+}
+
+function healBetweenFights(hero, monster, settings) {
+  const { heroSpellTime = 180, herbTime = 150 } = settings;
+  let frames = 30;
+  let mp = 0;
+  const maxDmg = maxMonsterDamage(hero, monster);
+  while (hero.hp < hero.maxHp && hero.hp <= 2 * maxDmg) {
+    const deficit = hero.maxHp - hero.hp;
+    if (
+      hero.spells?.includes('HEAL') &&
+      hero.mp >= HERO_SPELL_COST.HEAL &&
+      deficit <= 50
+    ) {
+      const heal = castHealSpell('HEAL');
+      const actual = Math.min(heal, hero.maxHp - hero.hp);
+      hero.hp += actual;
+      hero.mp -= HERO_SPELL_COST.HEAL;
+      mp += HERO_SPELL_COST.HEAL;
+      frames += heroSpellTime;
+      continue;
+    }
+    if (
+      (!hero.spells?.includes('HEAL') || hero.mp < HERO_SPELL_COST.HEAL) &&
+      hero.herbs > 0
+    ) {
+      const heal = 23 + Math.floor(Math.random() * 8);
+      const actual = Math.min(heal, hero.maxHp - hero.hp);
+      hero.hp += actual;
+      hero.herbs--;
+      frames += herbTime;
+      continue;
+    }
+    if (
+      hero.spells?.includes('HEALMORE') &&
+      hero.mp >= HERO_SPELL_COST.HEALMORE
+    ) {
+      const heal = castHealSpell('HEALMORE');
+      const actual = Math.min(heal, hero.maxHp - hero.hp);
+      hero.hp += actual;
+      hero.mp -= HERO_SPELL_COST.HEALMORE;
+      mp += HERO_SPELL_COST.HEALMORE;
+      frames += heroSpellTime;
+      continue;
+    }
+    break;
+  }
+  return { frames, mpSpent: mp };
+}
+
+export function simulateRepeated(heroStats, monsterStats, settings = {}, iterations = 1) {
+  let totalXP = 0;
+  let totalFrames = 0;
+  let totalKills = 0;
+  let totalMP = 0;
+  let totalFights = 0;
+  for (let i = 0; i < iterations; i++) {
+    let hero = {
+      ...heroStats,
+      mp: heroStats.mp ?? 0,
+      maxHp: heroStats.hp,
+      herbs: heroStats.herbs || 0,
+      fairyWater: heroStats.fairyWater || 0,
+    };
+    let xp = 0;
+    let frames = 0;
+    let kills = 0;
+    let mpSpent = 0;
+    let fights = 0;
+    while (hero.hp > 0) {
+      const hpMax = monsterStats.hp;
+      const hpMin = Math.ceil(hpMax * 0.75);
+      const m = {
+        ...monsterStats,
+        hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
+        maxHp: hpMax,
+      };
+      const result = simulateBattle(hero, m, settings);
+      frames += result.timeFrames;
+      mpSpent += result.mpSpent;
+      fights++;
+      hero.hp = result.heroHp;
+      hero.mp -= result.mpSpent;
+      hero.herbs -= result.herbsUsed;
+      hero.fairyWater -= result.fairyWatersUsed;
+      if (result.winner === 'hero') {
+        xp += result.xpGained;
+        kills++;
+      }
+      if (hero.hp <= 0) break;
+      const heal = healBetweenFights(hero, monsterStats, settings);
+      frames += heal.frames;
+      mpSpent += heal.mpSpent;
+    }
+    totalXP += xp;
+    totalFrames += frames;
+    totalKills += kills;
+    totalMP += mpSpent;
+    totalFights += fights;
+  }
+  const averageXPPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
+  return {
+    averageXPPerLife: totalXP / iterations,
+    averageXPPerMinute,
+    averageKills: totalKills / iterations,
+    averageMPPerFight: totalFights === 0 ? 0 : totalMP / totalFights,
   };
 }

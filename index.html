@@ -195,6 +195,12 @@
         <label>Pre-Battle Time (frames) <input type="number" id="pre-battle-time" value="140" /></label>
         <label>Post-Battle Time (frames) <input type="number" id="post-battle-time" value="200" /></label>
       </details>
+      <label>Mode
+        <select id="sim-mode">
+          <option value="single">Single Battle</option>
+          <option value="repeated">Repeated Fights</option>
+        </select>
+      </label>
       <label>Iterations <input type="number" id="iterations" value="1000" /></label>
     </fieldset>
     <button type="submit">Simulate</button>
@@ -213,7 +219,7 @@
   </div>
 
   <script type="module">
-    import { simulateMany, simulateBattle } from './simulator.js';
+    import { simulateMany, simulateBattle, simulateRepeated } from './simulator.js';
 
     const form = document.getElementById('sim-form');
     const metricsEl = document.getElementById('metrics');
@@ -328,8 +334,12 @@
         postBattleTime: Number(document.getElementById('post-battle-time').value),
       };
       const iterations = Number(document.getElementById('iterations').value);
+      const mode = document.getElementById('sim-mode').value;
 
-      const summary = simulateMany(hero, monster, settings, iterations);
+      const summary =
+        mode === 'repeated'
+          ? simulateRepeated(hero, monster, settings, iterations)
+          : simulateMany(hero, monster, settings, iterations);
       const hpMax = monster.hp;
       const hpMin = Math.ceil(hpMax * 0.75);
       const exampleMonster = {
@@ -339,14 +349,19 @@
       const example = simulateBattle(hero, exampleMonster, settings);
 
       metricsEl.textContent =
-        `Hero Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
-        `Monster Win Rate: ${(summary.monsterWinRate * 100).toFixed(2)}%\n` +
-        `Monster Flee Rate: ${(summary.monsterFleeRate * 100).toFixed(2)}%\n` +
-        `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
-        `Average MP spent per battle: ${summary.averageMPSpent.toFixed(2)}\n` +
-        `Average herbs used per battle: ${summary.averageHerbsUsed.toFixed(2)}\n` +
-        `Average fairy waters used per battle: ${summary.averageFairyWatersUsed.toFixed(2)}\n` +
-        `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}`;
+        mode === 'repeated'
+          ? `Average XP per life: ${summary.averageXPPerLife.toFixed(2)}\n` +
+            `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
+            `Average enemies defeated per life: ${summary.averageKills.toFixed(2)}\n` +
+            `Average MP spent per fight: ${summary.averageMPPerFight.toFixed(2)}`
+          : `Hero Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
+            `Monster Win Rate: ${(summary.monsterWinRate * 100).toFixed(2)}%\n` +
+            `Monster Flee Rate: ${(summary.monsterFleeRate * 100).toFixed(2)}%\n` +
+            `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
+            `Average MP spent per battle: ${summary.averageMPSpent.toFixed(2)}\n` +
+            `Average herbs used per battle: ${summary.averageHerbsUsed.toFixed(2)}\n` +
+            `Average fairy waters used per battle: ${summary.averageFairyWatersUsed.toFixed(2)}\n` +
+            `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}`;
       sampleEl.textContent =
         `MP Spent: ${example.mpSpent}\n` +
         `Herbs Used: ${example.herbsUsed}\n` +
