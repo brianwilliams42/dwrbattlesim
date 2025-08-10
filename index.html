@@ -24,6 +24,8 @@
       <label><input type="checkbox" id="hero-heal" /> HEAL</label>
       <label><input type="checkbox" id="hero-healmore" /> HEALMORE</label>
       <label><input type="checkbox" id="hero-stopspell-immune" /> Stopspell Immune</label>
+      <label><input type="checkbox" id="hero-hurt-mitigation" /> HURT Mitigation</label>
+      <label><input type="checkbox" id="hero-breath-mitigation" /> Breath Mitigation</label>
     </fieldset>
     <fieldset>
       <legend>Monster Stats</legend>
@@ -37,13 +39,6 @@
       <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
       <label>HURT Resist (0-15) <input type="number" id="hurt-resist" value="0" /></label>
       <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
-      <label>Enemy Action
-        <select id="mon-action">
-          <option value="attack">Physical</option>
-          <option value="spell">Spell</option>
-          <option value="breath">Breath</option>
-        </select>
-      </label>
       <label>Support Ability
         <select id="mon-support">
           <option value="">None</option>
@@ -55,6 +50,22 @@
       </label>
       <label>Support Chance
         <select id="mon-support-chance">
+          <option value="0.25">25%</option>
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+        </select>
+      </label>
+      <label>Attack Ability
+        <select id="mon-attack-ability">
+          <option value="">None</option>
+          <option value="hurt">HURT</option>
+          <option value="hurtmore">HURTMORE</option>
+          <option value="smallbreath">Small Breath</option>
+          <option value="bigbreath">Big Breath</option>
+        </select>
+      </label>
+      <label>Attack Chance
+        <select id="mon-attack-chance">
           <option value="0.25">25%</option>
           <option value="0.5">50%</option>
           <option value="0.75">75%</option>
@@ -115,6 +126,8 @@
         agility: Number(document.getElementById('hero-agility').value),
         mp: Number(document.getElementById('hero-mp').value),
         stopspellImmune: document.getElementById('hero-stopspell-immune').checked,
+        hurtMitigation: document.getElementById('hero-hurt-mitigation').checked,
+        breathMitigation: document.getElementById('hero-breath-mitigation').checked,
         spells: [
           ...(document.getElementById('hero-hurt').checked ? ['HURT'] : []),
           ...(document.getElementById('hero-hurtmore').checked ? ['HURTMORE'] : []),
@@ -130,9 +143,10 @@
         xp: Number(document.getElementById('mon-xp').value),
         hurtResist: Number(document.getElementById('hurt-resist').value) / 16,
         dodge: Number(document.getElementById('mon-dodge').value),
-        action: document.getElementById('mon-action').value,
         supportAbility: document.getElementById('mon-support').value,
         supportChance: Number(document.getElementById('mon-support-chance').value),
+        attackAbility: document.getElementById('mon-attack-ability').value,
+        attackChance: Number(document.getElementById('mon-attack-chance').value),
       };
       const settings = {
         heroAttackTime: Number(document.getElementById('hero-attack-time').value),

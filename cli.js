@@ -7,6 +7,8 @@ const hero = {
   agility: 30,
   mp: 50,
   spells: ['HURT', 'HEAL'],
+  hurtMitigation: false,
+  breathMitigation: false,
 };
 const monster = {
   hp: 80,
@@ -16,9 +18,10 @@ const monster = {
   xp: 120,
   hurtResist: 0.25,
   dodge: 2,
-  action: 'attack',
   supportAbility: 'sleep',
   supportChance: 0.25,
+  attackAbility: 'hurt',
+  attackChance: 0.25,
 };
 const settings = {
   preBattleTime: 140,

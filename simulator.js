@@ -35,6 +35,17 @@ function castHealSpell(name) {
   return 18 + Math.floor(Math.random() * 8); // HEAL: 18-25
 }
 
+export function castBreathAttack(kind, rng = Math.random) {
+  if (kind === 'big') {
+    return 65 + Math.floor(rng() * 8); // 65-72
+  }
+  return 22 + Math.floor(rng() * 9); // 22-30
+}
+
+export function mitigateDamage(dmg) {
+  return Math.floor(dmg / 3) * 2;
+}
+
 const HERO_SPELL_COST = {
   HURT: 2,
   HURTMORE: 5,
@@ -70,7 +81,29 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const monster = { ...monsterStats };
   monster.dodge = monster.dodge ?? 2;
   monster.maxHp = monster.maxHp ?? monster.hp;
-  const monsterMaxDamage = Math.floor(Math.max(0, (monster.attack - hero.defense) / 2));
+  let monsterMaxDamage = Math.floor(Math.max(0, (monster.attack - hero.defense) / 2));
+  if (monster.attackAbility) {
+    let abilityMax = 0;
+    switch (monster.attackAbility) {
+      case 'hurt':
+        abilityMax = 16;
+        if (hero.hurtMitigation) abilityMax = mitigateDamage(abilityMax);
+        break;
+      case 'hurtmore':
+        abilityMax = 65;
+        if (hero.hurtMitigation) abilityMax = mitigateDamage(abilityMax);
+        break;
+      case 'smallbreath':
+        abilityMax = 30;
+        if (hero.breathMitigation) abilityMax = mitigateDamage(abilityMax);
+        break;
+      case 'bigbreath':
+        abilityMax = 72;
+        if (hero.breathMitigation) abilityMax = mitigateDamage(abilityMax);
+        break;
+    }
+    monsterMaxDamage = Math.max(monsterMaxDamage, abilityMax);
+  }
 
   const heroRoll = hero.agility * Math.floor(Math.random() * 256);
   const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
@@ -215,19 +248,33 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       }
     }
 
-    const action = monster.action || 'attack';
+    if (monster.attackAbility && Math.random() < (monster.attackChance || 0)) {
+      let dmg = 0;
+      if (monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore') {
+        const spell = monster.attackAbility.toUpperCase();
+        dmg = castHurtSpell(spell);
+        if (hero.hurtMitigation) dmg = mitigateDamage(dmg);
+        hero.hp -= dmg;
+        timeFrames += enemySpellTime;
+        log.push(`Monster casts ${spell} for ${dmg} damage.`);
+        return;
+      }
+      if (monster.attackAbility === 'smallbreath' || monster.attackAbility === 'bigbreath') {
+        const kind = monster.attackAbility === 'smallbreath' ? 'small' : 'big';
+        dmg = castBreathAttack(kind);
+        if (hero.breathMitigation) dmg = mitigateDamage(dmg);
+        hero.hp -= dmg;
+        timeFrames += enemyBreathTime;
+        log.push(
+          `Monster uses ${monster.attackAbility === 'smallbreath' ? 'SMALL BREATH' : 'BIG BREATH'} for ${dmg} damage.`
+        );
+        return;
+      }
+    }
     const dmg = computeDamage(monster, hero);
     hero.hp -= dmg;
-    if (action === 'spell') {
-      timeFrames += enemySpellTime;
-      log.push(`Monster casts a spell for ${dmg} damage.`);
-    } else if (action === 'breath') {
-      timeFrames += enemyBreathTime;
-      log.push(`Monster breathes for ${dmg} damage.`);
-    } else {
-      timeFrames += enemyAttackTime;
-      log.push(`Monster attacks for ${dmg} damage.`);
-    }
+    timeFrames += enemyAttackTime;
+    log.push(`Monster attacks for ${dmg} damage.`);
   }
 
   function turnOrder() {

@@ -18,6 +18,7 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
   - Enemy dodge: 60 frames when a dodge occurs
 - Fixed overhead for battles: 140-frame pre-battle animation and 200-frame post-battle message
 - Monster support abilities (Sleep, Stopspell, Heal, Healmore) with configurable likelihood each turn. Sleep causes the hero to skip turns with a 50% chance to wake starting the second turn; Stopspell can silence hero spellcasting.
+- Monsters can also have an attack ability (HURT, HURTMORE, Small Breath, Big Breath) used with a configurable frequency. The hero can mitigate HURT and breath damage, reducing it by two-thirds.
 - Computes experience gained and XP per minute.
 - Browser interface for quick experimentation and a CLI example.
 - Web UI includes preset enemy selector with stats; enemy HP is randomized each fight between 75% and 100% of its listed maximum.
