@@ -129,8 +129,10 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const heroRoll = hero.agility * Math.floor(Math.random() * 256);
   const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
   if (heroRoll < enemyRoll) {
-    log.push('Monster ambushes!');
-    runMonsterTurn();
+    const dmg = computeDamage(monster, hero);
+    hero.hp -= dmg;
+    timeFrames += enemyAttackTime;
+    log.push(`Monster ambushes for ${dmg} damage!`);
     if (hero.hp <= 0) {
       timeFrames += postBattleTime;
       const timeSeconds = timeFrames / 60;
