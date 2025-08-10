@@ -201,17 +201,22 @@
         enemies = data;
         enemySelect.appendChild(new Option('Custom', ''));
         for (const e of enemies) {
-          enemySelect.appendChild(new Option(e.name.replace(/\*/g, ''), e.name));
+          enemySelect.appendChild(new Option(e.name, e.name));
         }
         enemySelect.value = enemies[0]?.name || '';
+        if (usePreset.checked && enemies[0]) {
+          setMonsterStats(enemies[0]);
+        }
+        const selectedName = enemySelect.value || '';
+        document.getElementById('flute-option').style.display =
+          selectedName === 'Golem' ? 'block' : 'none';
         toggleMonsterStats();
-        enemySelect.dispatchEvent(new Event('change'));
       });
 
     enemySelect.addEventListener('change', () => {
-      const cleanName = (enemySelect.value || '').replace(/\*/g, '');
+      const selectedName = enemySelect.value || '';
       document.getElementById('flute-option').style.display =
-        cleanName === 'Golem' ? 'block' : 'none';
+        selectedName === 'Golem' ? 'block' : 'none';
       if (usePreset.checked) {
         const chosen = enemies.find((e) => e.name === enemySelect.value);
         if (chosen) setMonsterStats(chosen);
@@ -242,7 +247,7 @@
         (document.getElementById('hero-death-necklace').checked ? 10 : 0);
       hero.attack = hero.strength + weaponAttack + bonusAttack;
       const monster = {
-        name: (enemySelect.value || 'Custom').replace(/\*/g, ''),
+        name: enemySelect.value || 'Custom',
         hp: Number(document.getElementById('mon-hp').value),
         attack: Number(document.getElementById('mon-attack').value),
         defense: Number(document.getElementById('mon-defense').value),
