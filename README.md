@@ -19,6 +19,7 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - Fixed overhead for battles: 140-frame pre-battle animation and 200-frame post-battle message
 - Monster support abilities (Sleep, Stopspell, Heal, Healmore) with configurable likelihood each turn. Sleep causes the hero to skip turns with a 50% chance to wake starting the second turn; Stopspell can silence hero spellcasting.
 - Monsters can also have an attack ability (HURT, HURTMORE, Small Breath, Big Breath) used with a configurable frequency. Hero armor (None, Magic Armor, Erdrick's Armor) determines mitigation: Magic Armor reduces HURT spells while Erdrick's Armor also mitigates breath attacks and grants Stopspell immunity.
+- When fighting the Golem, the hero can optionally carry the Fairy Flute. Playing it (480 frames) puts the Golem to sleep for one guaranteed turn and gives it a 33% wake chance on later turns.
 - Computes experience gained and XP per minute.
 - Browser interface for quick experimentation and a CLI example.
 - Web UI includes preset enemy selector with stats; enemy HP is randomized each fight between 75% and 100% of its listed maximum.

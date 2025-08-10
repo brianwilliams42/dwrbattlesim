@@ -8,8 +8,10 @@ const hero = {
   mp: 50,
   spells: ['HURT', 'HEAL'],
   armor: 'none',
+  fairyFlute: true,
 };
 const monster = {
+  name: 'Golem',
   hp: 80,
   attack: 40,
   defense: 30,

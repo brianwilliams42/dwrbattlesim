@@ -79,6 +79,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     stopspelled: false,
     asleep: false,
     sleepTurns: 0,
+    fairyFlute: heroStats.fairyFlute || false,
   };
   hero.hurtMitigation = armor === 'magic' || armor === 'erdrick';
   hero.breathMitigation = armor === 'erdrick';
@@ -86,6 +87,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const monster = { ...monsterStats };
   monster.dodge = monster.dodge ?? 2;
   monster.maxHp = monster.maxHp ?? monster.hp;
+  monster.asleep = false;
+  monster.sleepTurns = 0;
   let monsterMaxDamage = Math.floor(Math.max(0, (monster.attack - hero.defense) / 2));
   if (monster.attackAbility) {
     let abilityMax = 0;
@@ -133,6 +136,9 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   }
 
   function determineHeroAction() {
+    if (hero.fairyFlute && monster.name === 'Golem' && !monster.asleep) {
+      return 'FAIRY_FLUTE';
+    }
     if (hero.stopspelled) return 'attack';
     if (hero.spells) {
       if (hero.hp <= monsterMaxDamage) {
@@ -176,6 +182,13 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     }
 
     const action = determineHeroAction();
+    if (action === 'FAIRY_FLUTE') {
+      monster.asleep = true;
+      monster.sleepTurns = 0;
+      timeFrames += 480;
+      log.push('Hero plays the Fairy Flute!');
+      return;
+    }
     if (action === 'HURTMORE' || action === 'HURT') {
       const dmg = castHurtSpell(action, monster.hurtResist || 0);
       monster.hp -= dmg;
@@ -212,6 +225,24 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   }
 
   function runMonsterTurn() {
+    if (monster.asleep) {
+      if (monster.sleepTurns === 0) {
+        timeFrames += 60;
+        monster.sleepTurns++;
+        log.push('Golem is asleep.');
+        return;
+      }
+      if (Math.random() < 1 / 3) {
+        monster.asleep = false;
+        monster.sleepTurns = 0;
+        log.push('Golem wakes up.');
+      } else {
+        timeFrames += 60;
+        monster.sleepTurns++;
+        log.push('Golem is asleep.');
+        return;
+      }
+    }
     if (monster.supportAbility) {
       let useSupport = Math.random() < (monster.supportChance || 0);
       if (monster.supportAbility === 'sleep' && hero.asleep) useSupport = false;
