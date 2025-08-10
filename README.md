@@ -21,13 +21,13 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - Monsters can also have an attack ability (HURT, HURTMORE, Small Breath, Big Breath) used with a configurable frequency. Hero armor (None, Magic Armor, Erdrick's Armor) determines mitigation: Magic Armor reduces HURT spells while Erdrick's Armor also mitigates breath attacks and grants Stopspell immunity.
 - Heroes can cast STOPSPELL to silence enemy spellcasting based on the monster's Stopspell resistance (0–15 out of 16). Stopspelled monsters still attempt to cast but their spells fail and cost 60 fewer frames than normal.
 - When fighting the Golem, the hero can optionally carry the Fairy Flute. Playing it (480 frames) puts the Golem to sleep for one guaranteed turn and gives it a 33% wake chance on later turns.
-- Computes experience gained and XP per minute.
+- Computes experience gained, average battle duration, and XP per minute.
 - Browser interface for quick experimentation and a CLI example.
 - Web UI includes preset enemy selector with stats; enemy HP is randomized each fight between 75% and 100% of its listed maximum.
 
 ## Usage
 ### Browser
-Open `index.html` in any modern browser. Adjust the hero, monster, and simulation settings and click **Simulate** to see win rate and XP per minute along with a sample battle log.
+Open `index.html` in any modern browser. Adjust the hero, monster, and simulation settings and click **Simulate** to see win rate, XP per minute, average battle time, and MP usage along with a sample battle log.
 
 ### Command line
 Run the test suite:

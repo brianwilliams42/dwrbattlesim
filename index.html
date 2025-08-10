@@ -128,14 +128,15 @@
         enemies = data;
         enemySelect.appendChild(new Option('Custom', ''));
         for (const e of enemies) {
-          enemySelect.appendChild(new Option(e.name, e.name));
+          enemySelect.appendChild(new Option(e.name.replace(/\*/g, ''), e.name));
         }
       });
 
     enemySelect.addEventListener('change', () => {
       const chosen = enemies.find((e) => e.name === enemySelect.value);
+      const cleanName = (enemySelect.value || '').replace(/\*/g, '');
       document.getElementById('flute-option').style.display =
-        enemySelect.value === 'Golem' ? 'block' : 'none';
+        cleanName === 'Golem' ? 'block' : 'none';
       if (!chosen) return;
       document.getElementById('mon-hp').value = chosen.hp;
       document.getElementById('mon-attack').value = chosen.attack;
@@ -165,7 +166,7 @@
         ],
       };
       const monster = {
-        name: enemySelect.value || 'Custom',
+        name: (enemySelect.value || 'Custom').replace(/\*/g, ''),
         hp: Number(document.getElementById('mon-hp').value),
         attack: Number(document.getElementById('mon-attack').value),
         defense: Number(document.getElementById('mon-defense').value),
@@ -203,7 +204,8 @@
       results.textContent =
         `Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
         `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
-        `Average MP spent per battle: ${summary.averageMPSpent.toFixed(2)}\n\n` +
+        `Average MP spent per battle: ${summary.averageMPSpent.toFixed(2)}\n` +
+        `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}\n\n` +
         `Sample Battle (MP Spent: ${example.mpSpent})\n` +
         example.log.join('\n');
     });

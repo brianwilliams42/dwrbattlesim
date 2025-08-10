@@ -4,6 +4,7 @@ import {
   castBreathAttack,
   mitigateDamage,
   simulateBattle,
+  simulateMany,
 } from './simulator.js';
 
 function averageDamage(attacker, defender) {
@@ -97,5 +98,28 @@ console.log('big breath mitigation distribution test passed');
   assert(result.log.includes('Monster tries to cast SLEEP, but is stopspelled.'));
   assert.strictEqual(result.timeFrames, 12);
   console.log('stopspell logic test passed');
+}
+
+// simulateMany returns average battle time in seconds
+{
+  const hero = { hp: 10, attack: 100, defense: 0, agility: 10 };
+  const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 0 };
+  const summary = simulateMany(
+    hero,
+    monster,
+    {
+      preBattleTime: 0,
+      postBattleTime: 0,
+      heroAttackTime: 1,
+      heroSpellTime: 1,
+      enemyAttackTime: 1,
+      enemySpellTime: 1,
+      enemyBreathTime: 1,
+      enemyDodgeTime: 1,
+    },
+    1
+  );
+  assert(Math.abs(summary.averageTimeSeconds - 1 / 60) < 1e-9);
+  console.log('average time reporting test passed');
 }
 

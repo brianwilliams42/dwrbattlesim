@@ -410,9 +410,11 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
     if (result.winner === 'hero') wins++;
   }
   const averageXPPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
+  const averageTimeSeconds = totalFrames / iterations / 60;
   return {
     winRate: wins / iterations,
     averageXPPerMinute,
     averageMPSpent: totalMP / iterations,
+    averageTimeSeconds,
   };
 }
