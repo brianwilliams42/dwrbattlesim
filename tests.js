@@ -240,6 +240,39 @@ console.log('big breath mitigation distribution test passed');
   assert(result.log.includes('Hero is asleep.'));
   console.log('ambush support ability test passed');
 }
+
+// Monster fleeing during an ambush ends the battle before hero acts
+{
+  const seq = [0, 0.99, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = { hp: 10, attack: 0, strength: 20, defense: 0, agility: 10 };
+  const monster = {
+    name: 'Runner',
+    hp: 10,
+    attack: 10,
+    defense: 0,
+    agility: 10,
+    xp: 5,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert.deepStrictEqual(result.log, ['Monster ambushes!', 'Monster runs away!']);
+  assert.strictEqual(result.winner, 'fled');
+  assert.strictEqual(result.rounds, 0);
+  assert.strictEqual(result.timeFrames, 45);
+  console.log('ambush flee logic test passed');
+}
 // simulateMany returns average battle time in seconds
 {
   const seq = [0.5, 0, 0, 0.5, 0.5, 0.5];
