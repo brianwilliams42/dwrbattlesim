@@ -3,19 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <title>Dragon Warrior Battle Simulator</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    fieldset { margin-bottom: 15px; }
-    label { display: block; margin-top: 5px; }
+    body {
+      font-family: 'Press Start 2P', sans-serif;
+      margin: 20px;
+      background-color: #000;
+      color: #fff;
+    }
+    fieldset {
+      margin-bottom: 15px;
+      border: 2px solid #555;
+      background-color: #111;
+    }
+    label {
+      display: block;
+      margin-top: 5px;
+    }
+    input[type='number'] {
+      width: 4em;
+    }
+    button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      background-color: #333;
+      color: #fff;
+      border: 2px solid #555;
+    }
+    .sprite {
+      width: 64px;
+      height: 64px;
+      image-rendering: pixelated;
+    }
+    .sprites {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>Dragon Warrior Battle Simulator</h1>
+  <div class="sprites">
+    <svg class="sprite" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+      <rect width="16" height="16" fill="#000" />
+      <rect x="7" y="2" width="2" height="2" fill="#f2d7b0" />
+      <rect x="7" y="4" width="2" height="4" fill="#00f" />
+      <rect x="9" y="5" width="3" height="1" fill="#ccc" />
+      <rect x="7" y="8" width="1" height="3" fill="#f2d7b0" />
+      <rect x="8" y="8" width="1" height="3" fill="#f2d7b0" />
+      <rect x="6" y="5" width="1" height="2" fill="#f2d7b0" />
+    </svg>
+    <svg class="sprite" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+      <rect width="16" height="16" fill="#000" />
+      <path d="M8 3 L4 8 L4 12 L12 12 L12 8 Z" fill="#00f" />
+      <rect x="6" y="8" width="1" height="1" fill="#fff" />
+      <rect x="9" y="8" width="1" height="1" fill="#fff" />
+      <rect x="7" y="10" width="2" height="1" fill="#f00" />
+    </svg>
+  </div>
   <form id="sim-form">
     <fieldset>
       <legend>Hero Stats</legend>
       <label>HP <input type="number" id="hero-hp" value="100" /></label>
-      <label>Attack <input type="number" id="hero-attack" value="50" /></label>
+      <label>Strength <input type="number" id="hero-strength" value="50" /></label>
+      <label>Weapon
+        <select id="hero-weapon">
+          <option value="0">None</option>
+          <option value="2">Bamboo Pole</option>
+          <option value="4">Club</option>
+          <option value="10">Copper Sword</option>
+          <option value="15">Hand Axe</option>
+          <option value="20">Broad Sword</option>
+          <option value="28">Flame Sword</option>
+          <option value="40">Erdrick's Sword</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="hero-fighters-ring" /> Fighter's Ring</label>
+      <label><input type="checkbox" id="hero-death-necklace" /> Death Necklace</label>
       <label>Defense <input type="number" id="hero-defense" value="40" /></label>
       <label>Agility <input type="number" id="hero-agility" value="30" /></label>
       <label>MP <input type="number" id="hero-mp" value="50" /></label>
@@ -38,76 +103,63 @@
       <label>Enemy
         <select id="enemy-select"></select>
       </label>
-      <label>HP <input type="number" id="mon-hp" value="80" /></label>
-      <label>Attack <input type="number" id="mon-attack" value="40" /></label>
-      <label>Defense <input type="number" id="mon-defense" value="30" /></label>
-      <label>Agility <input type="number" id="mon-agility" value="20" /></label>
+      <label><input type="checkbox" id="use-preset" checked /> Use preset monster stats</label>
+      <div id="monster-stats" style="display:none">
+        <label>HP <input type="number" id="mon-hp" value="80" /></label>
+        <label>Attack <input type="number" id="mon-attack" value="40" /></label>
+        <label>Defense <input type="number" id="mon-defense" value="30" /></label>
+        <label>Agility <input type="number" id="mon-agility" value="20" /></label>
+        <label>HURT Resist (0-15) <input type="number" id="hurt-resist" value="0" /></label>
+        <label>Stopspell Resist (0-15) <input type="number" id="stopspell-resist" value="0" /></label>
+        <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
+        <label>Support Ability
+          <select id="mon-support">
+            <option value="">None</option>
+            <option value="sleep">Sleep</option>
+            <option value="stopspell">Stopspell</option>
+            <option value="heal">Heal</option>
+            <option value="healmore">Healmore</option>
+          </select>
+        </label>
+        <label>Support Chance
+          <select id="mon-support-chance">
+            <option value="0.25">25%</option>
+            <option value="0.5">50%</option>
+            <option value="0.75">75%</option>
+          </select>
+        </label>
+        <label>Attack Ability
+          <select id="mon-attack-ability">
+            <option value="">None</option>
+            <option value="hurt">HURT</option>
+            <option value="hurtmore">HURTMORE</option>
+            <option value="smallbreath">Small Breath</option>
+            <option value="bigbreath">Big Breath</option>
+          </select>
+        </label>
+        <label>Attack Chance
+          <select id="mon-attack-chance">
+            <option value="0.25">25%</option>
+            <option value="0.5">50%</option>
+            <option value="0.75">75%</option>
+          </select>
+        </label>
+      </div>
       <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
-      <label>HURT Resist (0-15) <input type="number" id="hurt-resist" value="0" /></label>
-      <label>Stopspell Resist (0-15)
-        <select id="stopspell-resist">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
-          <option value="13">13</option>
-          <option value="14">14</option>
-          <option value="15">15</option>
-        </select>
-      </label>
-      <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
-      <label>Support Ability
-        <select id="mon-support">
-          <option value="">None</option>
-          <option value="sleep">Sleep</option>
-          <option value="stopspell">Stopspell</option>
-          <option value="heal">Heal</option>
-          <option value="healmore">Healmore</option>
-        </select>
-      </label>
-      <label>Support Chance
-        <select id="mon-support-chance">
-          <option value="0.25">25%</option>
-          <option value="0.5">50%</option>
-          <option value="0.75">75%</option>
-        </select>
-      </label>
-      <label>Attack Ability
-        <select id="mon-attack-ability">
-          <option value="">None</option>
-          <option value="hurt">HURT</option>
-          <option value="hurtmore">HURTMORE</option>
-          <option value="smallbreath">Small Breath</option>
-          <option value="bigbreath">Big Breath</option>
-        </select>
-      </label>
-      <label>Attack Chance
-        <select id="mon-attack-chance">
-          <option value="0.25">25%</option>
-          <option value="0.5">50%</option>
-          <option value="0.75">75%</option>
-        </select>
-      </label>
     </fieldset>
     <fieldset>
       <legend>Simulation Settings</legend>
-      <label>Hero Attack Time (frames) <input type="number" id="hero-attack-time" value="120" /></label>
-      <label>Hero Spell Time (frames) <input type="number" id="hero-spell-time" value="180" /></label>
-      <label>Enemy Attack Time (frames) <input type="number" id="enemy-attack-time" value="150" /></label>
-      <label>Enemy Spell Time (frames) <input type="number" id="enemy-spell-time" value="170" /></label>
-      <label>Enemy Breath Time (frames) <input type="number" id="enemy-breath-time" value="160" /></label>
-      <label>Enemy Dodge Time (frames) <input type="number" id="enemy-dodge-time" value="60" /></label>
-      <label>Pre-Battle Time (frames) <input type="number" id="pre-battle-time" value="140" /></label>
-      <label>Post-Battle Time (frames) <input type="number" id="post-battle-time" value="200" /></label>
+      <details>
+        <summary>Timing Settings (optional)</summary>
+        <label>Hero Attack Time (frames) <input type="number" id="hero-attack-time" value="120" /></label>
+        <label>Hero Spell Time (frames) <input type="number" id="hero-spell-time" value="180" /></label>
+        <label>Enemy Attack Time (frames) <input type="number" id="enemy-attack-time" value="150" /></label>
+        <label>Enemy Spell Time (frames) <input type="number" id="enemy-spell-time" value="170" /></label>
+        <label>Enemy Breath Time (frames) <input type="number" id="enemy-breath-time" value="160" /></label>
+        <label>Enemy Dodge Time (frames) <input type="number" id="enemy-dodge-time" value="60" /></label>
+        <label>Pre-Battle Time (frames) <input type="number" id="pre-battle-time" value="140" /></label>
+        <label>Post-Battle Time (frames) <input type="number" id="post-battle-time" value="200" /></label>
+      </details>
       <label>Iterations <input type="number" id="iterations" value="100" /></label>
     </fieldset>
     <button type="submit">Simulate</button>
@@ -120,8 +172,31 @@
     const form = document.getElementById('sim-form');
     const results = document.getElementById('results');
     const enemySelect = document.getElementById('enemy-select');
+    const usePreset = document.getElementById('use-preset');
+    const monsterStats = document.getElementById('monster-stats');
 
     let enemies = [];
+
+    function setMonsterStats(chosen) {
+      document.getElementById('mon-hp').value = chosen.hp;
+      document.getElementById('mon-attack').value = chosen.attack;
+      document.getElementById('mon-defense').value = chosen.defense;
+      document.getElementById('mon-agility').value = chosen.agility;
+      document.getElementById('hurt-resist').value = chosen.hurtResist;
+      document.getElementById('mon-dodge').value = chosen.dodge ?? 2;
+      document.getElementById('stopspell-resist').value = chosen.stopspellResist ?? 0;
+    }
+
+    function toggleMonsterStats() {
+      monsterStats.style.display = usePreset.checked ? 'none' : 'block';
+      if (usePreset.checked) {
+        const chosen = enemies.find((e) => e.name === enemySelect.value);
+        if (chosen) setMonsterStats(chosen);
+      }
+    }
+
+    usePreset.addEventListener('change', toggleMonsterStats);
+
     fetch('./enemies.json')
       .then((r) => r.json())
       .then((data) => {
@@ -130,28 +205,26 @@
         for (const e of enemies) {
           enemySelect.appendChild(new Option(e.name.replace(/\*/g, ''), e.name));
         }
+        enemySelect.value = enemies[0]?.name || '';
+        toggleMonsterStats();
+        enemySelect.dispatchEvent(new Event('change'));
       });
 
     enemySelect.addEventListener('change', () => {
-      const chosen = enemies.find((e) => e.name === enemySelect.value);
       const cleanName = (enemySelect.value || '').replace(/\*/g, '');
       document.getElementById('flute-option').style.display =
         cleanName === 'Golem' ? 'block' : 'none';
-      if (!chosen) return;
-      document.getElementById('mon-hp').value = chosen.hp;
-      document.getElementById('mon-attack').value = chosen.attack;
-      document.getElementById('mon-defense').value = chosen.defense;
-      document.getElementById('mon-agility').value = chosen.agility;
-      document.getElementById('hurt-resist').value = chosen.hurtResist;
-      document.getElementById('mon-dodge').value = chosen.dodge ?? 2;
-      document.getElementById('stopspell-resist').value = chosen.stopspellResist ?? 0;
+      if (usePreset.checked) {
+        const chosen = enemies.find((e) => e.name === enemySelect.value);
+        if (chosen) setMonsterStats(chosen);
+      }
     });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const hero = {
         hp: Number(document.getElementById('hero-hp').value),
-        attack: Number(document.getElementById('hero-attack').value),
+        strength: Number(document.getElementById('hero-strength').value),
         defense: Number(document.getElementById('hero-defense').value),
         agility: Number(document.getElementById('hero-agility').value),
         mp: Number(document.getElementById('hero-mp').value),
@@ -165,6 +238,11 @@
           ...(document.getElementById('hero-stopspell').checked ? ['STOPSPELL'] : []),
         ],
       };
+      const weaponAttack = Number(document.getElementById('hero-weapon').value);
+      const bonusAttack =
+        (document.getElementById('hero-fighters-ring').checked ? 2 : 0) +
+        (document.getElementById('hero-death-necklace').checked ? 10 : 0);
+      hero.attack = hero.strength + weaponAttack + bonusAttack;
       const monster = {
         name: (enemySelect.value || 'Custom').replace(/\*/g, ''),
         hp: Number(document.getElementById('mon-hp').value),

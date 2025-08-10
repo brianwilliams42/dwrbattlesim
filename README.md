@@ -7,7 +7,9 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - After any ambush, the hero always acts before the monster each round.
 - Supports hero spells HURT, HURTMORE, HEAL, and HEALMORE with per-spell MP costs and enemy resistance to HURT-category magic.
 - Tracks MP spent by the hero across a battle.
+- Hero attack is derived from Strength, chosen weapon, and optional gear (Fighter's Ring +2 attack, Death Necklace +10 attack).
 - Hero picks the offensive action (attack, HURT, or HURTMORE) with the highest expected damage.
+- Monsters may flee at the start of their turn if the hero's strength is at least twice the monster's attack (25% chance), ending the battle early with a 45-frame message and no experience.
 - Enemies have a configurable chance to dodge attacks (default 2/64).
 - Tracks total battle time in frames (60 frames = 1 second) using default action timings:
   - Hero attack: 120 frames
@@ -23,7 +25,7 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - When fighting the Golem, the hero can optionally carry the Fairy Flute. Playing it (480 frames) puts the Golem to sleep for one guaranteed turn and gives it a 33% wake chance on later turns.
 - Computes experience gained, average battle duration, and XP per minute.
 - Browser interface for quick experimentation and a CLI example.
-- Web UI includes preset enemy selector with stats; enemy HP is randomized each fight between 75% and 100% of its listed maximum.
+- Web UI includes preset enemy selector with stats and an option to override them; enemy HP is randomized each fight between 75% and 100% of its listed maximum. Timing values default to the NES speeds but can be tweaked in a hidden advanced section.
 
 ## Usage
 ### Browser
