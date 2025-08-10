@@ -178,6 +178,51 @@ console.log('big breath mitigation distribution test passed');
   console.log('hero first turn order test passed');
 }
 
+// Hero uses a physical attack instead of a second HURTMORE when it can finish the fight
+{
+  const seq = [0, 0, 0, 0.25, 0, 0.5, 0.5, 0.99];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 100,
+    maxHp: 100,
+    attack: 20,
+    strength: 0,
+    defense: 0,
+    agility: 10,
+    mp: 10,
+    spells: ['HURTMORE'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Tanky',
+    hp: 70,
+    maxHp: 70,
+    attack: 1,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+    dodge: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Hero attacks for 10 damage.'));
+  assert.strictEqual(result.mpSpent, 5);
+  console.log(
+    'physical attack prioritized over hurtmore after damage dealt test passed',
+  );
+}
+
 // Hero critical hits deal 50%-100% of attack and have configurable extra time
 {
   const seq = [0, 0, 0.5, 0, 0.5];
