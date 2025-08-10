@@ -1,4 +1,4 @@
-import { simulateMany } from './simulator.js';
+import { simulateMany, simulateRepeated } from './simulator.js';
 
 const hero = {
   hp: 100,
@@ -36,10 +36,12 @@ const settings = {
   postBattleTime: 200,
   heroAttackTime: 120,
   heroSpellTime: 180,
+  herbTime: 150,
   enemyAttackTime: 150,
   enemySpellTime: 170,
   enemyBreathTime: 160,
   enemyDodgeTime: 60,
+  framesBetweenFights: 30,
 };
 
 const {
@@ -63,3 +65,9 @@ console.log(`Average herbs used per battle: ${averageHerbsUsed.toFixed(2)}`);
 console.log(
   `Average fairy waters used per battle: ${averageFairyWatersUsed.toFixed(2)}`,
 );
+
+const repeated = simulateRepeated(hero, monster, settings, 100);
+console.log(`Average XP per life: ${repeated.averageXPPerLife.toFixed(2)}`);
+console.log(`Average XP per minute: ${repeated.averageXPPerMinute.toFixed(2)}`);
+console.log(`Average enemies killed per life: ${repeated.averageKills.toFixed(2)}`);
+console.log(`Average MP spent per fight: ${repeated.averageMPPerFight.toFixed(2)}`);

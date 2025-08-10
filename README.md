@@ -30,12 +30,13 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - Heroes can cast STOPSPELL to silence enemy spellcasting based on the monster's Stopspell resistance (0–15 out of 16). Stopspelled monsters still attempt to cast but their spells fail and cost 60 fewer frames than normal.
 - When fighting the Golem, the hero can optionally carry the Fairy Flute. Playing it (480 frames) puts the Golem to sleep for one guaranteed turn and gives it a 33% wake chance on later turns.
 - Computes experience gained, average battle duration, and XP per minute.
+- Repeated fight mode chains battles until the hero dies, allowing healing between fights and reporting total XP per life, XP per minute, enemies defeated, and MP used per fight, with a configurable 30-frame pause between battles.
 - Browser interface for quick experimentation and a CLI example.
 - Web UI includes preset enemy selector with stats and an option to override them; enemy HP is randomized each fight between 75% and 100% of its listed maximum. Timing values default to the NES speeds but can be tweaked in a hidden advanced section.
 
 ## Usage
 ### Browser
-Open `index.html` in any modern browser. Adjust the hero, monster, and simulation settings and click **Simulate** to see hero win rate, monster win rate, monster flee rate, XP per minute, average battle time, and MP usage along with a sample battle log.
+Open `index.html` in any modern browser. Adjust the hero, monster, and simulation settings and click **Simulate**. Choose between single battles or repeated fights to see either win rates and XP per minute or total XP per life, kill counts, and MP usage, along with a sample battle log.
 
 ### Command line
 Run the test suite:
