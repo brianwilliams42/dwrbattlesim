@@ -252,11 +252,12 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     }
     if (action === 'HEAL' || action === 'HEALMORE') {
       const heal = castHealSpell(action);
-      hero.hp = Math.min(hero.hp + heal, hero.maxHp);
+      const actual = Math.min(heal, hero.maxHp - hero.hp);
+      hero.hp += actual;
       hero.mp -= HERO_SPELL_COST[action];
       mpSpent += HERO_SPELL_COST[action];
       timeFrames += heroSpellTime;
-      log.push(`Hero casts ${action} and heals ${heal} HP.`);
+      log.push(`Hero casts ${action} and heals ${actual} HP.`);
       return;
     }
 
@@ -297,7 +298,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       if (monster.supportAbility === 'stopspell' && hero.stopspelled) useSupport = false;
       if (
         (monster.supportAbility === 'heal' || monster.supportAbility === 'healmore') &&
-        monster.hp > monster.maxHp / 4
+        monster.hp >= monster.maxHp / 4
       ) {
         useSupport = false;
       }
@@ -329,10 +330,11 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         }
         if (monster.supportAbility === 'heal' || monster.supportAbility === 'healmore') {
           const heal = castHealSpell(monster.supportAbility.toUpperCase());
-          monster.hp = Math.min(monster.hp + heal, monster.maxHp);
+          const actual = Math.min(heal, monster.maxHp - monster.hp);
+          monster.hp += actual;
           timeFrames += enemySpellTime;
           log.push(
-            `Monster casts ${monster.supportAbility.toUpperCase()} and heals ${heal} HP.`
+            `Monster casts ${monster.supportAbility.toUpperCase()} and heals ${actual} HP.`
           );
           return;
         }
