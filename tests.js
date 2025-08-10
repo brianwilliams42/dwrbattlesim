@@ -77,6 +77,7 @@ console.log('big breath mitigation distribution test passed');
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 1,
+    maxHp: 1,
     attack: 0,
     strength: 50,
     defense: 0,
@@ -102,6 +103,7 @@ console.log('big breath mitigation distribution test passed');
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 10,
+    maxHp: 10,
     attack: 100,
     strength: 100,
     defense: 0,
@@ -145,6 +147,7 @@ console.log('big breath mitigation distribution test passed');
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 10,
+    maxHp: 10,
     attack: 100,
     strength: 100,
     defense: 0,
@@ -181,7 +184,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 64, strength: 64, defense: 0, agility: 0 };
+  const hero = { hp: 10, maxHp: 10, attack: 64, strength: 64, defense: 0, agility: 0 };
   const monster = {
     name: 'Dummy',
     hp: 30,
@@ -214,7 +217,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 0, strength: 50, defense: 0, agility: 10 };
+  const hero = { hp: 10, maxHp: 10, attack: 0, strength: 50, defense: 0, agility: 10 };
   const monster = {
     name: 'Mage',
     hp: 10,
@@ -248,7 +251,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 0, strength: 20, defense: 0, agility: 10 };
+  const hero = { hp: 10, maxHp: 10, attack: 0, strength: 20, defense: 0, agility: 10 };
   const monster = {
     name: 'Runner',
     hp: 10,
@@ -283,6 +286,7 @@ console.log('big breath mitigation distribution test passed');
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 100,
+    maxHp: 100,
     attack: 50,
     strength: 50,
     defense: 40,
@@ -321,7 +325,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 100, strength: 100, defense: 0, agility: 10 };
+  const hero = { hp: 10, maxHp: 10, attack: 100, strength: 100, defense: 0, agility: 10 };
   const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 0 };
   const summary = simulateMany(
     hero,
@@ -396,7 +400,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 0, strength: 50, defense: 0, agility: 10 };
+  const hero = { hp: 10, maxHp: 10, attack: 0, strength: 50, defense: 0, agility: 10 };
   const monster = {
     name: 'Healer',
     hp: 25,
@@ -428,7 +432,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 1, attack: 0, strength: 50, defense: 0, agility: 10 };
+  const hero = { hp: 1, maxHp: 1, attack: 0, strength: 50, defense: 0, agility: 10 };
   const monster = {
     name: 'Healer',
     hp: 20,
@@ -463,6 +467,7 @@ console.log('big breath mitigation distribution test passed');
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 100,
+    maxHp: 100,
     attack: 0,
     strength: 200,
     defense: 0,
@@ -500,7 +505,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 0, strength: 20, defense: 0, agility: 10 };
+  const hero = { hp: 10, maxHp: 10, attack: 0, strength: 20, defense: 0, agility: 10 };
   const monster = { name: 'Runner', hp: 10, attack: 10, defense: 0, agility: 10, xp: 5 };
   const result = simulateBattle(hero, monster, {
     preBattleTime: 0,
@@ -525,7 +530,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 1, strength: 50, defense: 0, agility: 0, herbs: 1 };
+  const hero = { hp: 10, maxHp: 10, attack: 1, strength: 50, defense: 0, agility: 0, herbs: 1 };
   const monster = { name: 'Slime', hp: 1, attack: 40, defense: 0, agility: 0, xp: 0 };
   const result = simulateBattle(hero, monster, {
     preBattleTime: 0,
@@ -549,7 +554,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 1, strength: 50, defense: 0, agility: 0, herbs: 1 };
+  const hero = { hp: 10, maxHp: 10, attack: 1, strength: 50, defense: 0, agility: 0, herbs: 1 };
   const monster = { name: 'Slime', hp: 1, attack: 40, defense: 0, agility: 0, xp: 0 };
   const result = simulateBattle(hero, monster, {
     preBattleTime: 0,
@@ -575,6 +580,7 @@ console.log('big breath mitigation distribution test passed');
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 10,
+    maxHp: 10,
     attack: 1,
     strength: 50,
     defense: 0,
@@ -606,7 +612,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 0, strength: 50, defense: 0, agility: 0, fairyWater: 1 };
+  const hero = { hp: 10, maxHp: 10, attack: 0, strength: 50, defense: 0, agility: 0, fairyWater: 1 };
   const monster = { name: 'Slime', hp: 9, attack: 0, defense: 0, agility: 0, xp: 0 };
   const result = simulateBattle(hero, monster, {
     preBattleTime: 0,
@@ -630,7 +636,7 @@ console.log('big breath mitigation distribution test passed');
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
-  const hero = { hp: 10, attack: 0, strength: 50, defense: 0, agility: 0, fairyWater: 1 };
+  const hero = { hp: 10, maxHp: 10, attack: 0, strength: 50, defense: 0, agility: 0, fairyWater: 1 };
   const monster = { name: 'Slime', hp: 9, attack: 0, defense: 0, agility: 0, xp: 0 };
   const result = simulateBattle(hero, monster, {
     preBattleTime: 0,
@@ -656,6 +662,7 @@ console.log('big breath mitigation distribution test passed');
   Math.random = () => seq[i++] ?? 0;
   const hero = {
     hp: 10,
+    maxHp: 10,
     attack: 2,
     strength: 50,
     defense: 0,
@@ -691,6 +698,7 @@ console.log('big breath mitigation distribution test passed');
 {
   const hero = {
     hp: 10,
+    maxHp: 10,
     attack: 0,
     strength: 0,
     defense: 0,
@@ -712,5 +720,92 @@ console.log('big breath mitigation distribution test passed');
   );
   assert.strictEqual(result.log[0], 'Starting fight against Slime (10 HP).');
   console.log('starting fight log hero HP test passed');
+}
+
+// simulateRepeated reports average time per life in seconds
+{
+  const seq = [0, 0.5, 0.5, 0.5];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 1,
+    maxHp: 1,
+    attack: 0,
+    strength: 0,
+    defense: 0,
+    agility: 0,
+  };
+  const monster = {
+    name: 'Slime',
+    hp: 1,
+    attack: 100,
+    defense: 0,
+    agility: 1,
+    xp: 0,
+  };
+  const result = simulateRepeated(
+    hero,
+    monster,
+    {
+      preBattleTime: 60,
+      postBattleTime: 0,
+      enemyAttackTime: 0,
+      enemySpellTime: 0,
+      enemyBreathTime: 0,
+      enemyDodgeTime: 0,
+      heroAttackTime: 0,
+      heroSpellTime: 0,
+      herbTime: 0,
+      fairyWaterTime: 0,
+      framesBetweenFights: 0,
+    },
+    1,
+  );
+  Math.random = orig;
+  assert(Math.abs(result.averageTimeSeconds - 1) < 1e-9);
+  assert.strictEqual(result.timeFrames, 60);
+  console.log('repeated battle average time test passed');
+}
+
+// simulateBattle preserves hero's max HP between fights
+{
+  const seq = [0, 0, 0, 0, 0, 0.5, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 50,
+    maxHp: 100,
+    attack: 200,
+    strength: 200,
+    defense: 0,
+    agility: 100,
+    mp: 8,
+    spells: ['HEALMORE'],
+  };
+  const monster = {
+    name: 'Slime',
+    hp: 1,
+    attack: 200,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+    dodge: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Hero casts HEALMORE and heals 50 HP.'));
+  assert.strictEqual(result.winner, 'hero');
+  console.log('max HP healing test passed');
 }
 

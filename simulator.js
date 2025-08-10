@@ -136,7 +136,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     ...heroStats,
     armor,
     mp: heroStats.mp ?? 0,
-    maxHp: heroStats.hp,
+    maxHp: heroStats.maxHp,
     stopspelled: false,
     asleep: false,
     sleepTurns: 0,
@@ -599,11 +599,12 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
   let sampleMpSpent = 0;
   let sampleHerbsUsed = 0;
   let sampleFairyWatersUsed = 0;
+  let sampleFrames = 0;
   for (let i = 0; i < iterations; i++) {
     let hero = {
       ...heroStats,
       mp: heroStats.mp ?? 0,
-      maxHp: heroStats.hp,
+      maxHp: heroStats.maxHp,
       herbs: heroStats.herbs || 0,
       fairyWater: heroStats.fairyWater || 0,
     };
@@ -666,17 +667,21 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
       sampleMpSpent = mpSpent;
       sampleHerbsUsed = herbsUsed;
       sampleFairyWatersUsed = fairyWatersUsed;
+      sampleFrames = frames;
     }
   }
   const averageXPPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
+  const averageTimeSeconds = totalFrames / iterations / 60;
   return {
     averageXPPerLife: totalXP / iterations,
     averageXPPerMinute,
+    averageTimeSeconds,
     averageKills: totalKills / iterations,
     averageMPPerFight: totalFights === 0 ? 0 : totalMP / totalFights,
     mpSpent: sampleMpSpent,
     herbsUsed: sampleHerbsUsed,
     fairyWatersUsed: sampleFairyWatersUsed,
+    timeFrames: sampleFrames,
     log: sampleLog,
   };
 }
