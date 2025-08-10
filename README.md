@@ -3,8 +3,8 @@
 This project provides a lightweight JavaScript simulator inspired by the NES game **Dragon Warrior**. Hero and monster statistics are fully configurable, allowing experimentation with arbitrary encounters.
 
 ## Features
-- Monster ambushes determined by comparing `hero agility * rand(0-255)` with `enemy agility * 0.25 * rand(0-255)`.
-- Turn order determined by agility each round.
+- Monster ambushes determined by comparing `hero agility * rand(0-255)` with `enemy agility * 0.25 * rand(0-255)`. If the monster ambushes, it takes a full turn before the hero acts.
+- After any ambush, the hero always acts before the monster each round.
 - Supports hero spells HURT, HURTMORE, HEAL, and HEALMORE with per-spell MP costs and enemy resistance to HURT-category magic.
 - Tracks MP spent by the hero across a battle.
 - Hero picks the offensive action (attack, HURT, or HURTMORE) with the highest expected damage.
@@ -18,7 +18,7 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
   - Enemy dodge: 60 frames when a dodge occurs
 - Fixed overhead for battles: 140-frame pre-battle animation and 200-frame post-battle message
 - Monster support abilities (Sleep, Stopspell, Heal, Healmore) with configurable likelihood each turn. Sleep causes the hero to skip turns with a 50% chance to wake starting the second turn; Stopspell can silence hero spellcasting.
-- Monsters can also have an attack ability (HURT, HURTMORE, Small Breath, Big Breath) used with a configurable frequency. Hero armor (None, Magic Armor, Erdrick's Armor) determines mitigation: Magic Armor reduces HURT spells while Erdrick's Armor also mitigates breath attacks and grants Stopspell immunity.
+- Monsters can also have an attack ability (HURT: 3–10 dmg, HURTMORE: 30–45 dmg, Small Breath, Big Breath) used with a configurable frequency. Hero armor (None, Magic Armor, Erdrick's Armor) determines mitigation: Magic Armor reduces HURT spells while Erdrick's Armor also mitigates breath attacks and grants Stopspell immunity.
 - Heroes can cast STOPSPELL to silence enemy spellcasting based on the monster's Stopspell resistance (0–15 out of 16). Stopspelled monsters still attempt to cast but their spells fail and cost 60 fewer frames than normal.
 - When fighting the Golem, the hero can optionally carry the Fairy Flute. Playing it (480 frames) puts the Golem to sleep for one guaranteed turn and gives it a 33% wake chance on later turns.
 - Computes experience gained, average battle duration, and XP per minute.

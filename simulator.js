@@ -19,13 +19,23 @@ function averagePhysicalDamage(attacker, defender) {
   return count > 0 ? total / count : 0;
 }
 
-function castHurtSpell(name, resist) {
-  const resisted = Math.random() < resist;
-  if (resisted) return 0;
-  if (name === 'HURTMORE') {
-    return 58 + Math.floor(Math.random() * 8); // 58-65
+export function castHurtSpell(
+  name,
+  resist = 0,
+  caster = 'hero',
+  rng = Math.random,
+) {
+  if (caster === 'hero' && rng() < resist) return 0;
+  if (caster === 'monster') {
+    if (name === 'HURTMORE') {
+      return 30 + Math.floor(rng() * 16); // 30-45
+    }
+    return 3 + Math.floor(rng() * 8); // HURT: 3-10
   }
-  return 9 + Math.floor(Math.random() * 8); // HURT: 9-16
+  if (name === 'HURTMORE') {
+    return 58 + Math.floor(rng() * 8); // 58-65
+  }
+  return 9 + Math.floor(rng() * 8); // HURT: 9-16
 }
 
 function castHealSpell(name) {
@@ -97,11 +107,11 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     let abilityMax = 0;
     switch (monster.attackAbility) {
       case 'hurt':
-        abilityMax = 16;
+        abilityMax = 10;
         if (hero.hurtMitigation) abilityMax = mitigateDamage(abilityMax);
         break;
       case 'hurtmore':
-        abilityMax = 65;
+        abilityMax = 45;
         if (hero.hurtMitigation) abilityMax = mitigateDamage(abilityMax);
         break;
       case 'smallbreath':
@@ -133,6 +143,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         timeSeconds,
         xpGained: 0,
         xpPerMinute: 0,
+        mpSpent,
         log,
       };
     }
@@ -330,7 +341,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
           timeFrames += enemySpellTime - 60;
           log.push(`Monster tries to cast ${spell}, but is stopspelled.`);
         } else {
-          dmg = castHurtSpell(spell);
+          dmg = castHurtSpell(spell, 0, 'monster');
           if (hero.hurtMitigation) dmg = mitigateDamage(dmg);
           hero.hp -= dmg;
           timeFrames += enemySpellTime;
@@ -356,20 +367,11 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     log.push(`Monster attacks for ${dmg} damage.`);
   }
 
-  function turnOrder() {
-    return hero.agility >= monster.agility ? ['hero', 'monster'] : ['monster', 'hero'];
-  }
-
   while (hero.hp > 0 && monster.hp > 0) {
     rounds++;
-    for (const actor of turnOrder()) {
-      if (actor === 'hero') {
-        runHeroTurn();
-      } else {
-        runMonsterTurn();
-      }
-      if (hero.hp <= 0 || monster.hp <= 0) break;
-    }
+    runHeroTurn();
+    if (hero.hp <= 0 || monster.hp <= 0) break;
+    runMonsterTurn();
   }
 
   timeFrames += postBattleTime;
