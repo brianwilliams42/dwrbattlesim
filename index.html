@@ -205,6 +205,7 @@
       <label>Iterations <input type="number" id="iterations" value="1000" /></label>
     </fieldset>
     <button type="submit">Simulate</button>
+    <button type="button" id="share-url">Copy Share URL</button>
   </form>
   <div id="results">
     <section>
@@ -219,6 +220,7 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
   <script type="module">
     import { simulateMany, simulateBattle, simulateRepeated } from './simulator.js';
 
@@ -228,6 +230,39 @@
     const enemySelect = document.getElementById('enemy-select');
     const usePreset = document.getElementById('use-preset');
     const monsterStats = document.getElementById('monster-stats');
+    const shareBtn = document.getElementById('share-url');
+    const params = new URLSearchParams(location.search);
+    const encodedData = params.get('d');
+
+    function getFormData() {
+      const data = {};
+      Array.from(form.elements).forEach((el) => {
+        if (!el.id) return;
+        if (el.type === 'checkbox') data[el.id] = el.checked ? 1 : 0;
+        else data[el.id] = el.value;
+      });
+      return data;
+    }
+
+    function setFormData(data) {
+      Object.entries(data).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === 'checkbox') el.checked = Boolean(Number(val));
+        else el.value = val;
+      });
+      toggleMonsterStats();
+      enemySelect.dispatchEvent(new Event('change'));
+    }
+
+    shareBtn.addEventListener('click', () => {
+      const data = getFormData();
+      const compressed = LZString.compressToEncodedURIComponent(
+        JSON.stringify(data),
+      );
+      const url = `${location.origin}${location.pathname}?d=${compressed}`;
+      navigator.clipboard.writeText(url).then(() => alert('URL copied'));
+    });
 
     let enemies = [];
 
@@ -273,6 +308,10 @@
         document.getElementById('flute-option').style.display =
           selectedName === 'Golem' ? 'block' : 'none';
         toggleMonsterStats();
+        if (encodedData) {
+          const json = LZString.decompressFromEncodedURIComponent(encodedData);
+          if (json) setFormData(JSON.parse(json));
+        }
       });
 
     enemySelect.addEventListener('change', () => {
