@@ -231,6 +231,12 @@
 
     let enemies = [];
 
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = (seconds % 60).toFixed(2);
+      return `${minutes}m ${secs}s`;
+    }
+
     function setMonsterStats(chosen) {
       document.getElementById('mon-hp').value = chosen.hp;
       document.getElementById('mon-attack').value = chosen.attack;
@@ -283,6 +289,7 @@
       e.preventDefault();
       const hero = {
         hp: Number(document.getElementById('hero-hp').value),
+        maxHp: Number(document.getElementById('hero-hp').value),
         strength: Number(document.getElementById('hero-strength').value),
         defense: Number(document.getElementById('hero-defense').value),
         agility: Number(document.getElementById('hero-agility').value),
@@ -361,6 +368,7 @@
         mode === 'repeated'
           ? `Average XP per life: ${summary.averageXPPerLife.toFixed(2)}\n` +
             `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
+            `Average time per life: ${formatTime(summary.averageTimeSeconds)}\n` +
             `Average enemies defeated per life: ${summary.averageKills.toFixed(2)}\n` +
             `Average MP spent per fight: ${summary.averageMPPerFight.toFixed(2)}`
           : `Hero Win Rate: ${(summary.winRate * 100).toFixed(2)}%\n` +
@@ -372,6 +380,7 @@
             `Average fairy waters used per battle: ${summary.averageFairyWatersUsed.toFixed(2)}\n` +
             `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}`;
       sampleEl.textContent =
+        `Total Time: ${formatTime(example.timeFrames / 60)}\n` +
         `MP Spent: ${example.mpSpent}\n` +
         `Herbs Used: ${example.herbsUsed}\n` +
         `Fairy Waters Used: ${example.fairyWatersUsed}\n` +

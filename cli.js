@@ -1,7 +1,14 @@
 import { simulateMany, simulateRepeated } from './simulator.js';
 
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const secs = (seconds % 60).toFixed(2);
+  return `${minutes}m ${secs}s`;
+}
+
 const hero = {
   hp: 100,
+  maxHp: 100,
   strength: 50,
   defense: 40,
   agility: 30,
@@ -71,3 +78,4 @@ console.log(`Average XP per life: ${repeated.averageXPPerLife.toFixed(2)}`);
 console.log(`Average XP per minute: ${repeated.averageXPPerMinute.toFixed(2)}`);
 console.log(`Average enemies killed per life: ${repeated.averageKills.toFixed(2)}`);
 console.log(`Average MP spent per fight: ${repeated.averageMPPerFight.toFixed(2)}`);
+console.log(`Average time per life: ${formatTime(repeated.averageTimeSeconds)}`);
