@@ -154,6 +154,7 @@ console.log('big breath mitigation distribution test passed');
     postBattleTime: 0,
     heroAttackTime: 1,
     heroSpellTime: 1,
+    heroSleepStopspellTime: 1,
     enemyAttackTime: 1,
     enemySpellTime: 1,
     enemyBreathTime: 1,
@@ -164,8 +165,8 @@ console.log('big breath mitigation distribution test passed');
   console.log('sleep resist test passed');
 }
 
-// Stopspell prevents enemy spells and shortens their casting time by the
-// configured penalty (60 frames by default)
+// Stopspell prevents enemy spells and uses a fixed casting time when blocked
+// (165 frames by default)
 {
   const seq = [0, 0, 0.5, 0.3, 0.99, 0.99, 0.5, 0.5, 0.5];
   let i = 0;
@@ -198,9 +199,11 @@ console.log('big breath mitigation distribution test passed');
     postBattleTime: 0,
     heroAttackTime: 1,
     heroSpellTime: 1,
+    heroSleepStopspellTime: 1,
     enemySpellTime: 70,
     enemyAttackTime: 1,
     enemyBreathTime: 1,
+    enemyStopspelledSpellTime: 165,
   });
   Math.random = orig;
   assert(result.log.includes('Hero casts STOPSPELL. Mage is affected.'));
@@ -570,7 +573,7 @@ console.log('big breath mitigation distribution test passed');
   assert.deepStrictEqual(result.log, ['Runner ambushes!', 'Runner runs away!']);
   assert.strictEqual(result.winner, 'fled');
   assert.strictEqual(result.rounds, 0);
-  assert.strictEqual(result.timeFrames, 95);
+  assert.strictEqual(result.timeFrames, 150);
   console.log('ambush flee logic test passed');
 }
 
@@ -816,7 +819,7 @@ console.log('big breath mitigation distribution test passed');
   });
   Math.random = orig;
   assert.strictEqual(result.winner, 'fled');
-  assert.strictEqual(result.timeFrames, 45);
+  assert.strictEqual(result.timeFrames, 100);
   assert(result.log.includes('Runner runs away!'));
   console.log('monster flee test passed');
 }
@@ -1155,6 +1158,7 @@ const fieldOrder = [
   'mon-attack-chance',
   'hero-attack-time',
   'hero-spell-time',
+  'hero-sleep-stopspell-time',
   'hero-critical-time',
   'herb-time',
   'fairy-water-time',
@@ -1172,7 +1176,7 @@ const fieldOrder = [
   'monster-flee-time',
   'sleep-time',
   'fairy-flute-time',
-  'stopspell-penalty',
+  'enemy-stopspelled-spell-time',
   'sim-mode',
   'iterations',
 ];
@@ -1209,12 +1213,13 @@ const sampleParams = {
   'mon-support-chance': '0.25',
   'mon-attack-ability': '',
   'mon-attack-chance': '0.25',
-  'hero-attack-time': '120',
+  'hero-attack-time': '90',
   'hero-spell-time': '180',
+  'hero-sleep-stopspell-time': '240',
   'hero-critical-time': '30',
-  'herb-time': '150',
-  'fairy-water-time': '220',
-  'heal-spell-time': '230',
+  'herb-time': '130',
+  'fairy-water-time': '245',
+  'heal-spell-time': '190',
   'enemy-attack-time': '130',
   'enemy-hurt-spell-time': '190',
   'enemy-heal-spell-time': '165',
@@ -1225,10 +1230,10 @@ const sampleParams = {
   'post-battle-time': '200',
   'frames-between-fights': '30',
   'ambush-time': '50',
-  'monster-flee-time': '45',
+  'monster-flee-time': '100',
   'sleep-time': '60',
-  'fairy-flute-time': '480',
-  'stopspell-penalty': '60',
+  'fairy-flute-time': '470',
+  'enemy-stopspelled-spell-time': '165',
   'sim-mode': 'single',
   'iterations': '1000',
 };
