@@ -7,7 +7,8 @@
     "agility": 3,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 1
+    "xp": 1,
+    "sleepResist": 0
   },
   {
     "hp": 3,
@@ -17,7 +18,8 @@
     "agility": 3,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 2
+    "xp": 2,
+    "sleepResist": 0
   },
   {
     "hp": 5,
@@ -27,7 +29,8 @@
     "agility": 6,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 3
+    "xp": 3,
+    "sleepResist": 0
   },
   {
     "hp": 3,
@@ -37,7 +40,8 @@
     "agility": 255,
     "hurtResist": 15,
     "dodge": 1,
-    "xp": 255
+    "xp": 255,
+    "sleepResist": 15
   },
   {
     "hp": 7,
@@ -47,7 +51,8 @@
     "agility": 8,
     "hurtResist": 0,
     "dodge": 4,
-    "xp": 4
+    "xp": 4,
+    "sleepResist": 0
   },
   {
     "hp": 12,
@@ -57,7 +62,8 @@
     "agility": 12,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 8
+    "xp": 8,
+    "sleepResist": 0
   },
   {
     "hp": 13,
@@ -67,7 +73,8 @@
     "agility": 14,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 12
+    "xp": 12,
+    "sleepResist": 0
   },
   {
     "hp": 13,
@@ -77,7 +84,8 @@
     "agility": 16,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 16
+    "xp": 16,
+    "sleepResist": 0
   },
   {
     "hp": 23,
@@ -87,7 +95,8 @@
     "agility": 20,
     "hurtResist": 0,
     "dodge": 6,
-    "xp": 15
+    "xp": 15,
+    "sleepResist": 0
   },
   {
     "hp": 22,
@@ -97,7 +106,8 @@
     "agility": 18,
     "hurtResist": 0,
     "dodge": 2,
-    "xp": 14
+    "xp": 14,
+    "sleepResist": 0
   },
   {
     "hp": 16,
@@ -107,7 +117,8 @@
     "agility": 26,
     "hurtResist": 0,
     "dodge": 6,
-    "xp": 20
+    "xp": 20,
+    "sleepResist": 2
   },
   {
     "hp": 20,
@@ -117,7 +128,8 @@
     "agility": 24,
     "hurtResist": 0,
     "dodge": 2,
-    "xp": 18
+    "xp": 18,
+    "sleepResist": 0
   },
   {
     "hp": 24,
@@ -127,7 +139,8 @@
     "agility": 22,
     "hurtResist": 0,
     "dodge": 4,
-    "xp": 25
+    "xp": 25,
+    "sleepResist": 0
   },
   {
     "hp": 28,
@@ -137,7 +150,8 @@
     "agility": 22,
     "hurtResist": 0,
     "dodge": 2,
-    "xp": 28
+    "xp": 28,
+    "sleepResist": 3
   },
   {
     "hp": 18,
@@ -147,7 +161,8 @@
     "agility": 42,
     "hurtResist": 0,
     "dodge": 2,
-    "xp": 31
+    "xp": 31,
+    "sleepResist": 0
   },
   {
     "hp": 33,
@@ -157,7 +172,8 @@
     "agility": 30,
     "hurtResist": 0,
     "dodge": 2,
-    "xp": 40
+    "xp": 40,
+    "sleepResist": 1
   },
   {
     "hp": 33,
@@ -167,7 +183,8 @@
     "agility": 38,
     "hurtResist": 0,
     "dodge": 4,
-    "xp": 47
+    "xp": 47,
+    "sleepResist": 3
   },
   {
     "hp": 39,
@@ -177,7 +194,8 @@
     "agility": 34,
     "hurtResist": 0,
     "dodge": 4,
-    "xp": 42
+    "xp": 42,
+    "sleepResist": 7
   },
   {
     "hp": 35,
@@ -187,7 +205,8 @@
     "agility": 40,
     "hurtResist": 0,
     "dodge": 4,
-    "xp": 58
+    "xp": 58,
+    "sleepResist": 15
   },
   {
     "hp": 50,
@@ -197,7 +216,8 @@
     "agility": 40,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 6
+    "xp": 6,
+    "sleepResist": 13
   },
   {
     "hp": 37,
@@ -207,7 +227,8 @@
     "agility": 36,
     "hurtResist": 0,
     "dodge": 2,
-    "xp": 52
+    "xp": 52,
+    "sleepResist": 4
   },
   {
     "hp": 44,
@@ -217,7 +238,8 @@
     "agility": 50,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 58
+    "xp": 58,
+    "sleepResist": 2
   },
   {
     "hp": 37,
@@ -227,7 +249,8 @@
     "agility": 48,
     "hurtResist": 0,
     "dodge": 2,
-    "xp": 64
+    "xp": 64,
+    "sleepResist": 4
   },
   {
     "hp": 40,
@@ -237,7 +260,8 @@
     "agility": 90,
     "hurtResist": 0,
     "dodge": 2,
-    "xp": 70
+    "xp": 70,
+    "sleepResist": 7
   },
   {
     "hp": 40,
@@ -247,7 +271,8 @@
     "agility": 56,
     "hurtResist": 3,
     "dodge": 4,
-    "xp": 72
+    "xp": 72,
+    "sleepResist": 5
   },
   {
     "hp": 47,
@@ -257,7 +282,8 @@
     "agility": 78,
     "hurtResist": 0,
     "dodge": 1,
-    "xp": 78
+    "xp": 78,
+    "sleepResist": 6
   },
   {
     "hp": 48,
@@ -267,7 +293,8 @@
     "agility": 68,
     "hurtResist": 0,
     "dodge": 6,
-    "xp": 83
+    "xp": 83,
+    "sleepResist": 2
   },
   {
     "hp": 38,
@@ -277,7 +304,8 @@
     "agility": 64,
     "hurtResist": 15,
     "dodge": 15,
-    "xp": 90
+    "xp": 90,
+    "sleepResist": 15
   },
   {
     "hp": 65,
@@ -287,7 +315,8 @@
     "agility": 70,
     "hurtResist": 15,
     "dodge": 2,
-    "xp": 120
+    "xp": 120,
+    "sleepResist": 15
   },
   {
     "hp": 70,
@@ -297,7 +326,8 @@
     "agility": 70,
     "hurtResist": 0,
     "dodge": 7,
-    "xp": 95
+    "xp": 95,
+    "sleepResist": 7
   },
   {
     "hp": 74,
@@ -307,7 +337,8 @@
     "agility": 80,
     "hurtResist": 1,
     "dodge": 2,
-    "xp": 105
+    "xp": 105,
+    "sleepResist": 8
   },
   {
     "hp": 72,
@@ -317,7 +348,8 @@
     "agility": 74,
     "hurtResist": 2,
     "dodge": 2,
-    "xp": 135
+    "xp": 135,
+    "sleepResist": 7
   },
   {
     "hp": 67,
@@ -327,7 +359,8 @@
     "agility": 82,
     "hurtResist": 1,
     "dodge": 2,
-    "xp": 130
+    "xp": 130,
+    "sleepResist": 15
   },
   {
     "hp": 98,
@@ -337,7 +370,8 @@
     "agility": 84,
     "hurtResist": 7,
     "dodge": 2,
-    "xp": 180
+    "xp": 180,
+    "sleepResist": 15
   },
   {
     "hp": 135,
@@ -347,7 +381,8 @@
     "agility": 40,
     "hurtResist": 7,
     "dodge": 1,
-    "xp": 155
+    "xp": 155,
+    "sleepResist": 2
   },
   {
     "hp": 99,
@@ -357,7 +392,8 @@
     "agility": 86,
     "hurtResist": 1,
     "dodge": 2,
-    "xp": 172
+    "xp": 172,
+    "sleepResist": 15
   },
   {
     "hp": 153,
@@ -367,7 +403,8 @@
     "agility": 60,
     "hurtResist": 15,
     "dodge": 0,
-    "xp": 350
+    "xp": 350,
+    "sleepResist": 15
   },
   {
     "hp": 106,
@@ -377,6 +414,7 @@
     "agility": 90,
     "hurtResist": 15,
     "dodge": 2,
-    "xp": 350
+    "xp": 350,
+    "sleepResist": 15
   }
 ]

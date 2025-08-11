@@ -107,6 +107,7 @@ const HERO_SPELL_COST = {
   HEAL: 3,
   HEALMORE: 8,
   STOPSPELL: 2,
+  SLEEP: 2,
 };
 
 export function simulateBattle(heroStats, monsterStats, settings = {}) {
@@ -155,6 +156,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   monster.sleepTurns = 0;
   monster.stopspelled = monster.stopspelled || false;
   monster.stopspellResist = monster.stopspellResist || 0;
+  monster.sleepResist = monster.sleepResist || 0;
   monster.fled = false;
   let monsterMaxDamage = maxMonsterDamage(hero, monster);
   let monsterHpKnownMax = monster.maxHp;
@@ -162,7 +164,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const heroRoll = hero.agility * Math.floor(Math.random() * 256);
   const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
   if (heroRoll < enemyRoll) {
-    log.push('Monster ambushes!');
+    log.push(`${monster.name} ambushes!`);
     runMonsterTurn();
   }
   if (hero.hp <= 0 || monster.fled) {
@@ -258,6 +260,16 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     if (
       !hero.stopspelled &&
       hero.spells &&
+      hero.spells.includes('SLEEP') &&
+      hero.mp >= HERO_SPELL_COST.SLEEP &&
+      !monster.asleep
+    ) {
+      return 'SLEEP';
+    }
+
+    if (
+      !hero.stopspelled &&
+      hero.spells &&
       hero.spells.includes('STOPSPELL') &&
       hero.mp >= HERO_SPELL_COST.STOPSPELL &&
       !monster.stopspelled &&
@@ -334,6 +346,20 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       log.push('Hero plays the Fairy Flute!');
       return;
     }
+    if (action === 'SLEEP') {
+      const success = Math.random() >= (monster.sleepResist || 0);
+      hero.mp -= HERO_SPELL_COST.SLEEP;
+      mpSpent += HERO_SPELL_COST.SLEEP;
+      timeFrames += heroSpellTime;
+      if (success) {
+        monster.asleep = true;
+        monster.sleepTurns = 0;
+        log.push(`Hero casts SLEEP. ${monster.name} falls asleep.`);
+      } else {
+        log.push('Hero casts SLEEP, but it fails.');
+      }
+      return;
+    }
     if (action === 'STOPSPELL') {
       const success = Math.random() >= (monster.stopspellResist || 0);
       hero.mp -= HERO_SPELL_COST.STOPSPELL;
@@ -341,7 +367,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       timeFrames += heroSpellTime;
       if (success) {
         monster.stopspelled = true;
-        log.push('Hero casts STOPSPELL. Monster is affected.');
+        log.push(`Hero casts STOPSPELL. ${monster.name} is affected.`);
       } else {
         log.push('Hero casts STOPSPELL, but it fails.');
       }
@@ -357,7 +383,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       log.push(
         dmg > 0
           ? `Hero casts ${action} for ${dmg} damage.`
-          : `Monster resists ${action}.`
+          : `${monster.name} resists ${action}.`
       );
       return;
     }
@@ -425,17 +451,17 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       if (monster.sleepTurns === 0) {
         timeFrames += 60;
         monster.sleepTurns++;
-        log.push('Golem is asleep.');
+        log.push(`${monster.name} is asleep.`);
         return;
       }
       if (Math.random() < 1 / 3) {
         monster.asleep = false;
         monster.sleepTurns = 0;
-        log.push('Golem wakes up.');
+        log.push(`${monster.name} wakes up.`);
       } else {
         timeFrames += 60;
         monster.sleepTurns++;
-        log.push('Golem is asleep.');
+        log.push(`${monster.name} is asleep.`);
         return;
       }
     }
@@ -445,7 +471,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       Math.random() < 0.25
     ) {
       monster.fled = true;
-      log.push('Monster runs away!');
+        log.push(`${monster.name} runs away!`);
       return;
     }
     if (monster.supportAbility) {
@@ -462,7 +488,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         if (monster.stopspelled) {
           timeFrames += enemySpellTime - 60;
           log.push(
-            `Monster tries to cast ${monster.supportAbility.toUpperCase()}, but is stopspelled.`
+            `${monster.name} tries to cast ${monster.supportAbility.toUpperCase()}, but is stopspelled.`
           );
           return;
         }
@@ -470,12 +496,12 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
           hero.asleep = true;
           hero.sleepTurns = 0;
           timeFrames += enemySpellTime;
-          log.push('Monster casts SLEEP.');
+          log.push(`${monster.name} casts SLEEP.`);
           return;
         }
         if (monster.supportAbility === 'stopspell') {
           timeFrames += enemySpellTime;
-          log.push('Monster casts STOPSPELL.');
+          log.push(`${monster.name} casts STOPSPELL.`);
           if (!hero.stopspellImmune && Math.random() < 0.5) {
             hero.stopspelled = true;
             log.push('Hero is affected by STOPSPELL.');
@@ -495,7 +521,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
           );
           timeFrames += enemySpellTime;
           log.push(
-            `Monster casts ${monster.supportAbility.toUpperCase()} and heals ${actual} HP.`
+            `${monster.name} casts ${monster.supportAbility.toUpperCase()} and heals ${actual} HP.`
           );
           return;
         }
@@ -508,13 +534,13 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         const spell = monster.attackAbility.toUpperCase();
         if (monster.stopspelled) {
           timeFrames += enemySpellTime - 60;
-          log.push(`Monster tries to cast ${spell}, but is stopspelled.`);
+          log.push(`${monster.name} tries to cast ${spell}, but is stopspelled.`);
         } else {
           dmg = castHurtSpell(spell, 0, 'monster');
           if (hero.hurtMitigation) dmg = mitigateDamage(dmg);
           hero.hp -= dmg;
           timeFrames += enemySpellTime;
-          log.push(`Monster casts ${spell} for ${dmg} damage.`);
+          log.push(`${monster.name} casts ${spell} for ${dmg} damage.`);
         }
         return;
       }
@@ -525,7 +551,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         hero.hp -= dmg;
         timeFrames += enemyBreathTime;
         log.push(
-          `Monster uses ${monster.attackAbility === 'smallbreath' ? 'SMALL BREATH' : 'BIG BREATH'} for ${dmg} damage.`
+          `${monster.name} uses ${monster.attackAbility === 'smallbreath' ? 'SMALL BREATH' : 'BIG BREATH'} for ${dmg} damage.`
         );
         return;
       }
@@ -533,14 +559,14 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     const dmg = computeDamage(monster.attack, hero.defense / 2);
     hero.hp -= dmg;
     timeFrames += enemyAttackTime;
-    log.push(`Monster attacks for ${dmg} damage.`);
+    log.push(`${monster.name} attacks for ${dmg} damage.`);
   }
 
   while (hero.hp > 0 && monster.hp > 0 && !monster.fled) {
     rounds++;
     runHeroTurn();
     if (monster.hp <= 0) {
-      log.push('Monster is defeated.');
+      log.push(`${monster.name} is defeated.`);
       break;
     }
     if (hero.hp <= 0 || monster.fled) break;
