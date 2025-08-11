@@ -238,7 +238,9 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       }
 
       const kill = killOptions.find(
-        (o) => o.max >= monsterHpKnownMax && o.fail <= dodgeRateRiskFactor,
+        (o) =>
+          o.max >= monsterHpKnownMax &&
+          (dodgeRateRiskFactor === 0 || o.fail <= dodgeRateRiskFactor),
       );
       if (kill) return kill.action;
 
