@@ -164,7 +164,8 @@ console.log('big breath mitigation distribution test passed');
   console.log('sleep resist test passed');
 }
 
-// Stopspell prevents enemy spells and shortens their casting time by 60 frames
+// Stopspell prevents enemy spells and shortens their casting time by the
+// configured penalty (60 frames by default)
 {
   const seq = [0, 0, 0.5, 0.3, 0.99, 0.99, 0.5, 0.5, 0.5];
   let i = 0;
@@ -1167,6 +1168,11 @@ const fieldOrder = [
   'pre-battle-time',
   'post-battle-time',
   'frames-between-fights',
+  'ambush-time',
+  'monster-flee-time',
+  'sleep-time',
+  'fairy-flute-time',
+  'stopspell-penalty',
   'sim-mode',
   'iterations',
 ];
@@ -1218,6 +1224,11 @@ const sampleParams = {
   'pre-battle-time': '140',
   'post-battle-time': '200',
   'frames-between-fights': '30',
+  'ambush-time': '50',
+  'monster-flee-time': '45',
+  'sleep-time': '60',
+  'fairy-flute-time': '480',
+  'stopspell-penalty': '60',
   'sim-mode': 'single',
   'iterations': '1000',
 };

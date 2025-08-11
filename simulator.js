@@ -124,6 +124,11 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     enemySpellTime = 150,
     enemyBreathTime = 135,
     enemyDodgeTime = 60,
+    ambushTime = 50,
+    monsterFleeTime = 45,
+    sleepTime = 60,
+    fairyFluteTime = 480,
+    stopspellPenaltyTime = 60,
     preBattleTime = 140,
     postBattleTime = 200,
     dodgeRateRiskFactor = 0,
@@ -168,11 +173,11 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
   if (heroRoll < enemyRoll) {
     log.push(`${monster.name} ambushes!`);
-    timeFrames += 50;
+    timeFrames += ambushTime;
     runMonsterTurn();
   }
   if (hero.hp <= 0 || monster.fled) {
-    timeFrames += monster.fled ? 45 : postBattleTime;
+    timeFrames += monster.fled ? monsterFleeTime : postBattleTime;
     const winner = monster.fled ? 'fled' : 'monster';
     const timeSeconds = timeFrames / 60;
     return {
@@ -335,7 +340,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         hero.asleep = false;
         hero.sleepTurns = 0;
       } else {
-        timeFrames += 60;
+        timeFrames += sleepTime;
         hero.sleepTurns++;
         log.push('Hero is asleep.');
         return;
@@ -346,7 +351,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     if (action === 'FAIRY_FLUTE') {
       monster.asleep = true;
       monster.sleepTurns = 0;
-      timeFrames += 480;
+      timeFrames += fairyFluteTime;
       log.push('Hero plays the Fairy Flute!');
       return;
     }
@@ -466,7 +471,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   function runMonsterTurn() {
     if (monster.asleep) {
       if (monster.sleepTurns === 0) {
-        timeFrames += 60;
+        timeFrames += sleepTime;
         monster.sleepTurns++;
         log.push(`${monster.name} is asleep.`);
         return;
@@ -476,7 +481,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         monster.sleepTurns = 0;
         log.push(`${monster.name} wakes up.`);
       } else {
-        timeFrames += 60;
+        timeFrames += sleepTime;
         monster.sleepTurns++;
         log.push(`${monster.name} is asleep.`);
         return;
@@ -502,7 +507,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       if (useSupport) {
         const frames = getEnemySpellTime(ability);
         if (monster.stopspelled) {
-          timeFrames += frames - 60;
+          timeFrames += frames - stopspellPenaltyTime;
           log.push(
             `${monster.name} tries to cast ${ability.toUpperCase()}, but is stopspelled.`
           );
@@ -551,7 +556,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         const spell = ability.toUpperCase();
         const frames = getEnemySpellTime(ability);
         if (monster.stopspelled) {
-          timeFrames += frames - 60;
+          timeFrames += frames - stopspellPenaltyTime;
           log.push(`${monster.name} tries to cast ${spell}, but is stopspelled.`);
         } else {
           dmg = castHurtSpell(spell, 0, 'monster');
@@ -596,7 +601,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     if (monster.fled) break;
   }
 
-  timeFrames += monster.fled ? 45 : postBattleTime;
+  timeFrames += monster.fled ? monsterFleeTime : postBattleTime;
   const winner = monster.fled ? 'fled' : hero.hp > 0 ? 'hero' : 'monster';
   const xpGained = winner === 'hero' ? monsterStats.xp : 0;
   const timeSeconds = timeFrames / 60;
