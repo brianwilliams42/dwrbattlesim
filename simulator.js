@@ -241,11 +241,17 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     }
 
     if (best === 'HURTMORE' || best === 'HURT') {
-      const maxPhysicalDamage =
-        hero.attack < monster.defense + 2
-          ? 1
-          : Math.floor(baseMaxDamage(hero.attack, monster.defense));
-      if (maxPhysicalDamage >= monsterHpKnownMax) {
+      let minPhysicalDamage;
+      if (hero.attack < monster.defense + 2) {
+        minPhysicalDamage = 0;
+      } else {
+        // Minimum physical damage when attack succeeds is half of the maximum
+        // damage, rounded down.
+        minPhysicalDamage = Math.floor(
+          baseMaxDamage(hero.attack, monster.defense) / 2,
+        );
+      }
+      if (minPhysicalDamage >= monsterHpKnownMax) {
         best = 'attack';
       }
     }
