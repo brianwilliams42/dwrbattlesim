@@ -33,7 +33,7 @@ This project provides a lightweight JavaScript simulator inspired by the NES gam
 - Computes experience gained, average battle duration, and XP per minute.
 - Repeated fight mode chains battles until the hero dies, allowing healing between fights and reporting total XP per life, XP per minute, enemies defeated, and MP used per fight, with a configurable 30-frame pause between battles.
 - Browser interface for quick experimentation and a CLI example.
-- Web UI includes preset enemy selector with stats and an option to override them; enemy HP is randomized each fight between 75% and 100% of its listed maximum. Timing values default to the NES speeds but can be tweaked in a hidden advanced section.
+- Web UI includes preset enemy selector with stats and an option to override them; enemy HP is randomized each fight between 75% and 100% of its listed maximum. Timing values default to the NES and Standard Flag speeds but can be tweaked in a hidden advanced section.
 
 ## Usage
 ### Browser
