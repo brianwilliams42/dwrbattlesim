@@ -97,6 +97,73 @@ console.log('big breath mitigation distribution test passed');
   console.log('fairy flute wake logic test passed');
 }
 
+// Sleep spell works like Fairy Flute and respects wake chance
+{
+  const seq = [0, 0, 0, 0, 0.2, 0, 0.5];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 1,
+    maxHp: 1,
+    attack: 0,
+    strength: 50,
+    defense: 0,
+    agility: 50,
+    mp: 10,
+    spells: ['SLEEP'],
+    armor: 'none',
+  };
+  const monster = { name: 'Golem', hp: 5, attack: 10, defense: 0, agility: 10, xp: 0 };
+  const result = simulateBattle(hero, monster);
+  Math.random = orig;
+  assert.strictEqual(result.log[0], 'Hero casts SLEEP. Golem falls asleep.');
+  assert(result.log.includes('Golem is asleep.'));
+  assert(result.log.includes('Golem wakes up.'));
+  console.log('sleep spell wake logic test passed');
+}
+
+// Sleep spell respects monster sleep resistance
+{
+  const seq = [0, 0, 0.4];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0.6;
+  const hero = {
+    hp: 1,
+    maxHp: 1,
+    attack: 0,
+    strength: 0,
+    defense: 0,
+    agility: 0,
+    mp: 10,
+    spells: ['SLEEP'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Slime',
+    hp: 5,
+    attack: 10,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+    sleepResist: 0.5,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 1,
+    heroSpellTime: 1,
+    enemyAttackTime: 1,
+    enemySpellTime: 1,
+    enemyBreathTime: 1,
+    enemyDodgeTime: 1,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Hero casts SLEEP, but it fails.'));
+  console.log('sleep resist test passed');
+}
+
 // Stopspell prevents enemy spells and shortens their casting time by 60 frames
 {
   const seq = [0, 0, 0.5, 0.3, 0.99, 0.99, 0.5, 0.5, 0.5];
@@ -135,8 +202,8 @@ console.log('big breath mitigation distribution test passed');
     enemyBreathTime: 1,
   });
   Math.random = orig;
-  assert(result.log.includes('Hero casts STOPSPELL. Monster is affected.'));
-  assert(result.log.includes('Monster tries to cast SLEEP, but is stopspelled.'));
+  assert(result.log.includes('Hero casts STOPSPELL. Mage is affected.'));
+  assert(result.log.includes('Mage tries to cast SLEEP, but is stopspelled.'));
   console.log('stopspell logic test passed');
 }
 
@@ -467,8 +534,8 @@ console.log('big breath mitigation distribution test passed');
     enemyDodgeTime: 1,
   });
   Math.random = orig;
-  assert.strictEqual(result.log[0], 'Monster ambushes!');
-  assert.strictEqual(result.log[1], 'Monster casts SLEEP.');
+  assert.strictEqual(result.log[0], 'Mage ambushes!');
+  assert.strictEqual(result.log[1], 'Mage casts SLEEP.');
   assert(result.log.includes('Hero is asleep.'));
   console.log('ambush support ability test passed');
 }
@@ -499,7 +566,7 @@ console.log('big breath mitigation distribution test passed');
     enemyDodgeTime: 0,
   });
   Math.random = orig;
-  assert.deepStrictEqual(result.log, ['Monster ambushes!', 'Monster runs away!']);
+  assert.deepStrictEqual(result.log, ['Runner ambushes!', 'Runner runs away!']);
   assert.strictEqual(result.winner, 'fled');
   assert.strictEqual(result.rounds, 0);
   assert.strictEqual(result.timeFrames, 45);
@@ -542,7 +609,7 @@ console.log('big breath mitigation distribution test passed');
     enemyDodgeTime: 0,
   });
   Math.random = orig;
-  assert.deepStrictEqual(result.log, ['Monster ambushes!', 'Monster runs away!']);
+  assert.deepStrictEqual(result.log, ['Metal Slime ambushes!', 'Metal Slime runs away!']);
   assert.strictEqual(result.winner, 'fled');
   assert.strictEqual(result.rounds, 0);
   console.log('metal slime ambush flee test passed');
@@ -651,7 +718,7 @@ console.log('big breath mitigation distribution test passed');
     enemyDodgeTime: 1,
   });
   Math.random = orig;
-  assert(!result.log.includes('Monster casts HEAL'));
+  assert(!result.log.includes('Healer casts HEAL'));
   console.log('monster heal threshold (no heal) test passed');
 }
 
@@ -683,7 +750,7 @@ console.log('big breath mitigation distribution test passed');
     enemyDodgeTime: 1,
   });
   Math.random = orig;
-  assert(result.log.includes('Monster casts HEALMORE and heals 80 HP.'));
+  assert(result.log.includes('Healer casts HEALMORE and heals 80 HP.'));
   console.log('monster heal threshold (heal and cap) test passed');
 }
 
@@ -749,7 +816,7 @@ console.log('big breath mitigation distribution test passed');
   Math.random = orig;
   assert.strictEqual(result.winner, 'fled');
   assert.strictEqual(result.timeFrames, 45);
-  assert(result.log.includes('Monster runs away!'));
+  assert(result.log.includes('Runner runs away!'));
   console.log('monster flee test passed');
 }
 

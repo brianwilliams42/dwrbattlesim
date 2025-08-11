@@ -131,6 +131,7 @@
       <label><input type="checkbox" id="hero-heal" /> HEAL</label>
       <label><input type="checkbox" id="hero-healmore" /> HEALMORE</label>
       <label><input type="checkbox" id="hero-stopspell" /> STOPSPELL</label>
+      <label><input type="checkbox" id="hero-sleep" /> SLEEP</label>
       <label><input type="checkbox" id="hero-flute" /> Fairy Flute</label>
     </fieldset>
     <fieldset>
@@ -147,6 +148,7 @@
         <label>HURT Resist (0-15) <input type="number" id="hurt-resist" value="0" /></label>
         <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
         <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
+        <label>Sleep Resist (0-15) <input type="number" id="sleep-resist" value="0" /></label>
       </div>
       <label style="margin-top:10px">Stopspell Resist (0-15) <input type="number" id="stopspell-resist" value="0" /></label>
       <label style="margin-top:10px">Support Ability
@@ -292,6 +294,8 @@
       document.getElementById('hurt-resist').value = chosen.hurtResist;
       document.getElementById('mon-dodge').value = chosen.dodge ?? 2;
       document.getElementById('mon-xp').value = chosen.xp ?? 0;
+      document.getElementById('stopspell-resist').value = chosen.stopspellResist ?? 0;
+      document.getElementById('sleep-resist').value = chosen.sleepResist ?? 0;
     }
 
     function toggleMonsterStats() {
@@ -353,6 +357,7 @@
           ...(document.getElementById('hero-heal').checked ? ['HEAL'] : []),
           ...(document.getElementById('hero-healmore').checked ? ['HEALMORE'] : []),
           ...(document.getElementById('hero-stopspell').checked ? ['STOPSPELL'] : []),
+          ...(document.getElementById('hero-sleep').checked ? ['SLEEP'] : []),
         ],
       };
       const weaponAttack = Number(document.getElementById('hero-weapon').value);
@@ -370,6 +375,7 @@
         hurtResist: Number(document.getElementById('hurt-resist').value) / 16,
         dodge: Number(document.getElementById('mon-dodge').value),
         stopspellResist: Number(document.getElementById('stopspell-resist').value) / 16,
+        sleepResist: Number(document.getElementById('sleep-resist').value) / 16,
         supportAbility: document.getElementById('mon-support').value,
         supportChance: Number(document.getElementById('mon-support-chance').value),
         attackAbility: document.getElementById('mon-attack-ability').value,
