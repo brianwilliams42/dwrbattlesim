@@ -30,7 +30,7 @@ Visit the simulator at: https://brianwilliams42.github.io/dwrbattlesim/
   - Enemy Heal/Healmore spell: 165 frames
   - Enemy other spell: 170 frames
   - Enemy breath: 135 frames
-  - Enemy dodge: 60 frames when a dodge occurs
+  - Enemy dodge: 80 frames when a dodge occurs (replaces normal attack time)
 - Fixed overhead for battles: 140-frame pre-battle animation and 200-frame post-battle message
 - Monster support abilities (Sleep, Stopspell, Heal, Healmore) with configurable likelihood each turn. Sleep causes the hero to skip turns with a 50% chance to wake starting the second turn; Stopspell can silence hero spellcasting.
 - Monsters can also have an attack ability (HURT: 3–10 dmg, HURTMORE: 30–45 dmg, Small Breath, Big Breath) used with a configurable frequency. Hero armor (None, Magic Armor, Erdrick's Armor) determines mitigation: Magic Armor reduces HURT spells while Erdrick's Armor also mitigates breath attacks and grants Stopspell immunity.

@@ -1220,7 +1220,7 @@ const sampleParams = {
   'enemy-heal-spell-time': '165',
   'enemy-spell-time': '170',
   'enemy-breath-time': '135',
-  'enemy-dodge-time': '60',
+  'enemy-dodge-time': '80',
   'pre-battle-time': '140',
   'post-battle-time': '200',
   'frames-between-fights': '30',

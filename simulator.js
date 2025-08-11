@@ -123,7 +123,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     enemyHealSpellTime = 165,
     enemySpellTime = 150,
     enemyBreathTime = 135,
-    enemyDodgeTime = 60,
+    enemyDodgeTime = 80,
     ambushTime = 50,
     monsterFleeTime = 45,
     sleepTime = 60,
@@ -434,7 +434,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
 
     const dodgeChance = (monster.dodge || 0) / 64;
     if (Math.random() < dodgeChance) {
-      timeFrames += enemyDodgeTime;
+      timeFrames += enemyDodgeTime; // replaces normal attack time
       log.push('Hero attacks, but the monster dodges!');
     } else {
       if (Math.random() < 1 / 32) {
