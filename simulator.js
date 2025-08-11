@@ -112,12 +112,13 @@ const HERO_SPELL_COST = {
 
 export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const {
-    heroAttackTime = 120,
+    heroAttackTime = 90,
     heroSpellTime = 180,
+    heroSleepStopspellTime = 240,
     heroCriticalTime = 30,
-    herbTime = 150,
-    fairyWaterTime = 220,
-    healSpellTime = 230,
+    herbTime = 130,
+    fairyWaterTime = 245,
+    healSpellTime = 190,
     enemyAttackTime = 130,
     enemyHurtSpellTime = 190,
     enemyHealSpellTime = 165,
@@ -125,10 +126,10 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     enemyBreathTime = 135,
     enemyDodgeTime = 80,
     ambushTime = 50,
-    monsterFleeTime = 45,
+    monsterFleeTime = 100,
     sleepTime = 60,
-    fairyFluteTime = 480,
-    stopspellPenaltyTime = 60,
+    fairyFluteTime = 470,
+    enemyStopspelledSpellTime = 165,
     preBattleTime = 140,
     postBattleTime = 200,
     dodgeRateRiskFactor = 0,
@@ -359,7 +360,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       const success = Math.random() >= (monster.sleepResist || 0);
       hero.mp -= HERO_SPELL_COST.SLEEP;
       mpSpent += HERO_SPELL_COST.SLEEP;
-      timeFrames += heroSpellTime;
+      timeFrames += heroSleepStopspellTime;
       if (success) {
         monster.asleep = true;
         monster.sleepTurns = 0;
@@ -373,7 +374,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       const success = Math.random() >= (monster.stopspellResist || 0);
       hero.mp -= HERO_SPELL_COST.STOPSPELL;
       mpSpent += HERO_SPELL_COST.STOPSPELL;
-      timeFrames += heroSpellTime;
+      timeFrames += heroSleepStopspellTime;
       if (success) {
         monster.stopspelled = true;
         log.push(`Hero casts STOPSPELL. ${monster.name} is affected.`);
@@ -507,7 +508,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       if (useSupport) {
         const frames = getEnemySpellTime(ability);
         if (monster.stopspelled) {
-          timeFrames += frames - stopspellPenaltyTime;
+          timeFrames += enemyStopspelledSpellTime;
           log.push(
             `${monster.name} tries to cast ${ability.toUpperCase()}, but is stopspelled.`
           );
@@ -556,7 +557,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         const spell = ability.toUpperCase();
         const frames = getEnemySpellTime(ability);
         if (monster.stopspelled) {
-          timeFrames += frames - stopspellPenaltyTime;
+          timeFrames += enemyStopspelledSpellTime;
           log.push(`${monster.name} tries to cast ${spell}, but is stopspelled.`);
         } else {
           dmg = castHurtSpell(spell, 0, 'monster');
