@@ -180,7 +180,7 @@ console.log('big breath mitigation distribution test passed');
   console.log('hero first turn order test passed');
 }
 
-// Hero uses a physical attack instead of a second HURTMORE when it can finish the fight
+// Hero casts HURTMORE again when a physical attack cannot guarantee a kill
 {
   const seq = [0, 0, 0, 0.25, 0, 0.5, 0.5, 0.99];
   let i = 0;
@@ -218,10 +218,13 @@ console.log('big breath mitigation distribution test passed');
     enemyDodgeTime: 0,
   });
   Math.random = orig;
-  assert(result.log.includes('Hero attacks for 10 damage.'));
-  assert.strictEqual(result.mpSpent, 5);
+  const hurtmoreCasts = result.log.filter((l) =>
+    l.startsWith('Hero casts HURTMORE'),
+  ).length;
+  assert.strictEqual(hurtmoreCasts, 2);
+  assert.strictEqual(result.mpSpent, 10);
   console.log(
-    'physical attack prioritized over hurtmore after damage dealt test passed',
+    'second hurtmore used when physical attack is not a guaranteed kill test passed',
   );
 }
 
