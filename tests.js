@@ -228,6 +228,92 @@ console.log('big breath mitigation distribution test passed');
   );
 }
 
+// When low on HP, hero attacks to finish if a killing blow is likely
+{
+  const seq = [0, 0, 0, 0.5, 0.99];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 10,
+    maxHp: 20,
+    attack: 100,
+    strength: 100,
+    defense: 0,
+    agility: 10,
+    mp: 3,
+    spells: ['HEAL'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Finisher',
+    hp: 40,
+    maxHp: 40,
+    attack: 120,
+    defense: 0,
+    agility: 10,
+    xp: 0,
+    dodge: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert(result.log[0].startsWith('Hero attacks'));
+  assert.strictEqual(result.winner, 'hero');
+  console.log('hero attacks instead of healing when kill is possible test passed');
+}
+
+// Hero heals instead of risking a high dodge or resist rate
+{
+  const seq = [0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 10,
+    maxHp: 20,
+    attack: 100,
+    strength: 100,
+    defense: 0,
+    agility: 10,
+    mp: 10,
+    spells: ['HEAL'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Dodgy',
+    hp: 40,
+    maxHp: 40,
+    attack: 120,
+    defense: 0,
+    agility: 10,
+    xp: 0,
+    dodge: 15,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    dodgeRateRiskFactor: 0.1,
+  });
+  Math.random = orig;
+  assert(result.log[0].startsWith('Hero casts HEAL'));
+  console.log('hero heals when attack dodge rate exceeds threshold test passed');
+}
+
 // Hero critical hits deal 50%-100% of attack and have configurable extra time
 {
   const seq = [0, 0, 0.5, 0, 0.5];
@@ -820,7 +906,7 @@ console.log('big breath mitigation distribution test passed');
 
 // simulateBattle preserves hero's max HP between fights
 {
-  const seq = [0, 0, 0, 0, 0, 0.5, 0];
+  const seq = [0, 0, 0, 0, 0.5, 0.5, 0];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
@@ -841,7 +927,7 @@ console.log('big breath mitigation distribution test passed');
     defense: 0,
     agility: 0,
     xp: 0,
-    dodge: 0,
+    dodge: 1,
   };
   const result = simulateBattle(hero, monster, {
     preBattleTime: 0,

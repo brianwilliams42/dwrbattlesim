@@ -49,6 +49,7 @@ const settings = {
   enemyBreathTime: 160,
   enemyDodgeTime: 60,
   framesBetweenFights: 30,
+  dodgeRateRiskFactor: 0,
 };
 
 const {
