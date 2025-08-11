@@ -53,7 +53,7 @@ const settings = {
   enemyHealSpellTime: 165,
   enemySpellTime: 170,
   enemyBreathTime: 135,
-  enemyDodgeTime: 60,
+  enemyDodgeTime: 80,
   framesBetweenFights: 30,
   ambushTime: 50,
   monsterFleeTime: 45,
