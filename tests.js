@@ -9,6 +9,8 @@ import {
   simulateRepeated,
   baseMaxDamage,
 } from './simulator.js';
+import LZString from 'lz-string';
+const { compressToBase64, decompressFromBase64 } = LZString;
 
 function averageDamage(attack, defense) {
   const maxDamage = baseMaxDamage(attack, defense);
@@ -853,4 +855,128 @@ console.log('big breath mitigation distribution test passed');
   assert.strictEqual(result.winner, 'hero');
   console.log('max HP healing test passed');
 }
+
+// URL encoding length and readability tests
+function toBase64Url(str) {
+  return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function fromBase64Url(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  return str;
+}
+
+const fieldOrder = [
+  'hero-hp',
+  'hero-strength',
+  'hero-weapon',
+  'hero-fighters-ring',
+  'hero-death-necklace',
+  'hero-defense',
+  'hero-agility',
+  'hero-mp',
+  'hero-herbs',
+  'hero-fairy-water',
+  'hero-hurt',
+  'hero-hurtmore',
+  'hero-heal',
+  'hero-healmore',
+  'hero-stopspell',
+  'hero-armor',
+  'hero-flute',
+  'enemy-select',
+  'use-preset',
+  'mon-hp',
+  'mon-attack',
+  'mon-defense',
+  'mon-agility',
+  'hurt-resist',
+  'mon-dodge',
+  'mon-xp',
+  'stopspell-resist',
+  'mon-support',
+  'mon-support-chance',
+  'mon-attack-ability',
+  'mon-attack-chance',
+  'hero-attack-time',
+  'hero-spell-time',
+  'hero-critical-time',
+  'herb-time',
+  'fairy-water-time',
+  'enemy-attack-time',
+  'enemy-spell-time',
+  'enemy-breath-time',
+  'enemy-dodge-time',
+  'pre-battle-time',
+  'post-battle-time',
+  'frames-between-fights',
+  'sim-mode',
+  'iterations',
+];
+
+const sampleParams = {
+  'hero-hp': '100',
+  'hero-strength': '50',
+  'hero-weapon': '0',
+  'hero-fighters-ring': 0,
+  'hero-death-necklace': 0,
+  'hero-defense': '40',
+  'hero-agility': '30',
+  'hero-mp': '50',
+  'hero-herbs': '0',
+  'hero-fairy-water': '0',
+  'hero-hurt': 0,
+  'hero-hurtmore': 0,
+  'hero-heal': 0,
+  'hero-healmore': 0,
+  'hero-stopspell': 0,
+  'hero-armor': 'none',
+  'hero-flute': 0,
+  'enemy-select': 'Slime',
+  'use-preset': 1,
+  'mon-hp': '2',
+  'mon-attack': '5',
+  'mon-defense': '1',
+  'mon-agility': '3',
+  'hurt-resist': '0',
+  'mon-dodge': '1',
+  'mon-xp': '1',
+  'stopspell-resist': '0',
+  'mon-support': '',
+  'mon-support-chance': '0.25',
+  'mon-attack-ability': '',
+  'mon-attack-chance': '0.25',
+  'hero-attack-time': '120',
+  'hero-spell-time': '180',
+  'hero-critical-time': '40',
+  'herb-time': '150',
+  'fairy-water-time': '210',
+  'enemy-attack-time': '150',
+  'enemy-spell-time': '170',
+  'enemy-breath-time': '160',
+  'enemy-dodge-time': '60',
+  'pre-battle-time': '140',
+  'post-battle-time': '200',
+  'frames-between-fights': '30',
+  'sim-mode': 'single',
+  'iterations': '1000',
+};
+
+const dataArray = fieldOrder.map((id) => sampleParams[id]);
+const encoded = toBase64Url(compressToBase64(JSON.stringify(dataArray)));
+const decoded = JSON.parse(decompressFromBase64(fromBase64Url(encoded)));
+assert.deepStrictEqual(decoded, dataArray);
+console.log('URL encode/decode round trip test passed');
+
+const humanParams = new URLSearchParams(sampleParams).toString();
+console.log(`Encoded params length: ${encoded.length}`);
+console.log(`Human-readable params length: ${humanParams.length}`);
+assert(encoded.length < humanParams.length);
+console.log('encoded vs human-readable length test passed');
+
+const fullEncodedUrl = `https://example.com/#${encoded}`;
+const fullHumanUrl = `https://example.com/?${humanParams}`;
+console.log(`Full encoded URL length: ${fullEncodedUrl.length}`);
+console.log(`Full human-readable URL length: ${fullHumanUrl.length}`);
 
