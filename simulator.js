@@ -114,12 +114,15 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const {
     heroAttackTime = 120,
     heroSpellTime = 180,
-    heroCriticalTime = 40,
+    heroCriticalTime = 30,
     herbTime = 150,
-    fairyWaterTime = 210,
-    enemyAttackTime = 150,
+    fairyWaterTime = 220,
+    healSpellTime = 230,
+    enemyAttackTime = 130,
+    enemyHurtSpellTime = 190,
+    enemyHealSpellTime = 165,
     enemySpellTime = 170,
-    enemyBreathTime = 160,
+    enemyBreathTime = 135,
     enemyDodgeTime = 60,
     preBattleTime = 140,
     postBattleTime = 200,
@@ -165,6 +168,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const enemyRoll = monster.agility * 0.25 * Math.floor(Math.random() * 256);
   if (heroRoll < enemyRoll) {
     log.push(`${monster.name} ambushes!`);
+    timeFrames += 50;
     runMonsterTurn();
   }
   if (hero.hp <= 0 || monster.fled) {
@@ -446,6 +450,19 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     }
   }
 
+  function getEnemySpellTime(spell) {
+    switch (spell) {
+      case 'hurt':
+      case 'hurtmore':
+        return enemyHurtSpellTime;
+      case 'heal':
+      case 'healmore':
+        return enemyHealSpellTime;
+      default:
+        return enemySpellTime;
+    }
+  }
+
   function runMonsterTurn() {
     if (monster.asleep) {
       if (monster.sleepTurns === 0) {
@@ -476,31 +493,30 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     }
     if (monster.supportAbility) {
       let useSupport = Math.random() < (monster.supportChance || 0);
-      if (monster.supportAbility === 'sleep' && hero.asleep) useSupport = false;
-      if (monster.supportAbility === 'stopspell' && hero.stopspelled) useSupport = false;
-      if (
-        (monster.supportAbility === 'heal' || monster.supportAbility === 'healmore') &&
-        monster.hp >= monster.maxHp / 4
-      ) {
+      const ability = monster.supportAbility;
+      if (ability === 'sleep' && hero.asleep) useSupport = false;
+      if (ability === 'stopspell' && hero.stopspelled) useSupport = false;
+      if ((ability === 'heal' || ability === 'healmore') && monster.hp >= monster.maxHp / 4) {
         useSupport = false;
       }
       if (useSupport) {
+        const frames = getEnemySpellTime(ability);
         if (monster.stopspelled) {
-          timeFrames += enemySpellTime - 60;
+          timeFrames += frames - 60;
           log.push(
-            `${monster.name} tries to cast ${monster.supportAbility.toUpperCase()}, but is stopspelled.`
+            `${monster.name} tries to cast ${ability.toUpperCase()}, but is stopspelled.`
           );
           return;
         }
-        if (monster.supportAbility === 'sleep') {
+        if (ability === 'sleep') {
           hero.asleep = true;
           hero.sleepTurns = 0;
-          timeFrames += enemySpellTime;
+          timeFrames += frames;
           log.push(`${monster.name} casts SLEEP.`);
           return;
         }
-        if (monster.supportAbility === 'stopspell') {
-          timeFrames += enemySpellTime;
+        if (ability === 'stopspell') {
+          timeFrames += frames;
           log.push(`${monster.name} casts STOPSPELL.`);
           if (!hero.stopspellImmune && Math.random() < 0.5) {
             hero.stopspelled = true;
@@ -510,18 +526,18 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
           }
           return;
         }
-        if (monster.supportAbility === 'heal' || monster.supportAbility === 'healmore') {
-          const heal = castHealSpell(monster.supportAbility.toUpperCase());
+        if (ability === 'heal' || ability === 'healmore') {
+          const heal = castHealSpell(ability.toUpperCase());
           const actual = Math.min(heal, monster.maxHp - monster.hp);
           monster.hp += actual;
-          const healMax = monster.supportAbility === 'heal' ? 25 : 100;
+          const healMax = ability === 'heal' ? 25 : 100;
           monsterHpKnownMax = Math.min(
             monster.maxHp,
             monsterHpKnownMax + healMax,
           );
-          timeFrames += enemySpellTime;
+          timeFrames += frames;
           log.push(
-            `${monster.name} casts ${monster.supportAbility.toUpperCase()} and heals ${actual} HP.`
+            `${monster.name} casts ${ability.toUpperCase()} and heals ${actual} HP.`
           );
           return;
         }
@@ -531,15 +547,17 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     if (monster.attackAbility && Math.random() < (monster.attackChance || 0)) {
       let dmg = 0;
       if (monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore') {
-        const spell = monster.attackAbility.toUpperCase();
+        const ability = monster.attackAbility;
+        const spell = ability.toUpperCase();
+        const frames = getEnemySpellTime(ability);
         if (monster.stopspelled) {
-          timeFrames += enemySpellTime - 60;
+          timeFrames += frames - 60;
           log.push(`${monster.name} tries to cast ${spell}, but is stopspelled.`);
         } else {
           dmg = castHurtSpell(spell, 0, 'monster');
           if (hero.hurtMitigation) dmg = mitigateDamage(dmg);
           hero.hp -= dmg;
-          timeFrames += enemySpellTime;
+          timeFrames += frames;
           log.push(`${monster.name} casts ${spell} for ${dmg} damage.`);
         }
         return;
@@ -641,7 +659,7 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
 }
 
 function healBetweenFights(hero, monster, settings) {
-  const heroSpellTime = settings.heroSpellTime;
+  const healSpellTime = settings.healSpellTime;
   const herbTime = settings.herbTime;
   let framesBetweenFights = settings.framesBetweenFights;
   let mp = 0;
@@ -660,7 +678,7 @@ function healBetweenFights(hero, monster, settings) {
       hero.hp += actual;
       hero.mp -= HERO_SPELL_COST.HEAL;
       mp += HERO_SPELL_COST.HEAL;
-      framesBetweenFights += heroSpellTime;
+      framesBetweenFights += healSpellTime;
       log.push(`Hero casts HEAL and heals ${actual} HP.`);
       continue;
     }
@@ -686,7 +704,7 @@ function healBetweenFights(hero, monster, settings) {
       hero.hp += actual;
       hero.mp -= HERO_SPELL_COST.HEALMORE;
       mp += HERO_SPELL_COST.HEALMORE;
-      framesBetweenFights += heroSpellTime;
+      framesBetweenFights += healSpellTime;
       log.push(`Hero casts HEALMORE and heals ${actual} HP.`);
       continue;
     }

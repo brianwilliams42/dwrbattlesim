@@ -9,23 +9,27 @@ Visit the simulator at: https://brianwilliams42.github.io/dwrbattlesim/
 - After any ambush, the hero always acts before the monster each round.
 - Supports hero spells HURT, HURTMORE, HEAL, HEALMORE, STOPSPELL, and SLEEP with per-spell MP costs and enemy resistances.
 - Tracks MP spent by the hero across a battle.
-- Optional consumables: Herbs heal 23–30 HP (150 frames) while Fairy Water deals 9–16 damage (210 frames, 0–1 against Metal Slimes) and both ignore Stopspell.
+- Optional consumables: Herbs heal 23–30 HP (150 frames) while Fairy Water or Torches deal 9–16 damage (220 frames, 0–1 against Metal Slimes) and both ignore Stopspell.
 - Hero attack is derived from Strength, chosen weapon, and optional gear (Fighter's Ring +2 attack, Death Necklace +10 attack).
 - Hero picks the offensive action (attack, HURT, HURTMORE, or Fairy Water) with the highest expected damage.
 - When the monster's known remaining HP is lower than the potential damage from an attack, the hero will attempt the finishing blow instead of healing. A `dodgeRateRiskFactor` setting (0–1, default 0) lets the hero heal instead when the chance of a dodge or resist exceeds the chosen threshold; the default 0 ignores the risk entirely.
-- Physical attacks have a 1/32 chance to become critical hits dealing 50–100% of attack power and adding 40 frames.
+- Physical attacks have a 1/32 chance to become critical hits dealing 50–100% of attack power and adding 30 frames.
 - When the hero's attack is less than the monster's defense + 2, normal attack damage is replaced with a 50% chance of dealing 0 or 1 damage.
 - Monsters may flee at the start of their turn if the hero's strength is at least twice the monster's attack (25% chance), ending the battle early with a 45-frame message and no experience.
+- Enemies that act first add a 50-frame delay before their opening move.
 - Enemies have a configurable chance to dodge attacks.
 - Tracks total battle time in frames (60 frames = 1 second) using default action timings:
   - Hero attack: 120 frames
   - Hero spell: 180 frames
-  - Critical hit bonus: 40 frames
+  - Critical hit bonus: 30 frames
   - Herb use: 150 frames
-  - Fairy Water use: 210 frames
-  - Enemy attack: 150 frames
-  - Enemy spell: 170 frames
-  - Enemy breath: 160 frames
+  - Fairy Water or Torch use: 220 frames
+  - Heal spell between fights: 230 frames
+  - Enemy attack: 130 frames
+  - Enemy Hurt/Hurtmore spell: 190 frames
+  - Enemy Heal/Healmore spell: 165 frames
+  - Enemy other spell: 170 frames
+  - Enemy breath: 135 frames
   - Enemy dodge: 60 frames when a dodge occurs
 - Fixed overhead for battles: 140-frame pre-battle animation and 200-frame post-battle message
 - Monster support abilities (Sleep, Stopspell, Heal, Healmore) with configurable likelihood each turn. Sleep causes the hero to skip turns with a 50% chance to wake starting the second turn; Stopspell can silence hero spellcasting.

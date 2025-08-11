@@ -569,7 +569,7 @@ console.log('big breath mitigation distribution test passed');
   assert.deepStrictEqual(result.log, ['Runner ambushes!', 'Runner runs away!']);
   assert.strictEqual(result.winner, 'fled');
   assert.strictEqual(result.rounds, 0);
-  assert.strictEqual(result.timeFrames, 45);
+  assert.strictEqual(result.timeFrames, 95);
   console.log('ambush flee logic test passed');
 }
 
@@ -1062,8 +1062,8 @@ console.log('big breath mitigation distribution test passed');
     1,
   );
   Math.random = orig;
-  assert(Math.abs(result.averageTimeSeconds - 1) < 1e-9);
-  assert.strictEqual(result.timeFrames, 60);
+  assert(Math.abs(result.averageTimeSeconds - 110 / 60) < 1e-9);
+  assert.strictEqual(result.timeFrames, 110);
   console.log('repeated battle average time test passed');
 }
 
@@ -1157,7 +1157,10 @@ const fieldOrder = [
   'hero-critical-time',
   'herb-time',
   'fairy-water-time',
+  'heal-spell-time',
   'enemy-attack-time',
+  'enemy-hurt-spell-time',
+  'enemy-heal-spell-time',
   'enemy-spell-time',
   'enemy-breath-time',
   'enemy-dodge-time',
@@ -1202,12 +1205,15 @@ const sampleParams = {
   'mon-attack-chance': '0.25',
   'hero-attack-time': '120',
   'hero-spell-time': '180',
-  'hero-critical-time': '40',
+  'hero-critical-time': '30',
   'herb-time': '150',
-  'fairy-water-time': '210',
-  'enemy-attack-time': '150',
+  'fairy-water-time': '220',
+  'heal-spell-time': '230',
+  'enemy-attack-time': '130',
+  'enemy-hurt-spell-time': '190',
+  'enemy-heal-spell-time': '165',
   'enemy-spell-time': '170',
-  'enemy-breath-time': '160',
+  'enemy-breath-time': '135',
   'enemy-dodge-time': '60',
   'pre-battle-time': '140',
   'post-battle-time': '200',
