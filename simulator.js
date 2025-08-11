@@ -115,22 +115,23 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     heroAttackTime = 90,
     heroSpellTime = 180,
     heroSleepStopspellTime = 240,
+    heroSleepTime = 35,
     heroCriticalTime = 30,
     herbTime = 130,
     herbBetweenTime = 135,
     fairyWaterTime = 245,
     healSpellTime = 190,
+    fairyFluteTime = 470,
     enemyAttackTime = 130,
     enemyHurtSpellTime = 190,
     enemyHealSpellTime = 165,
     enemySpellTime = 150,
     enemyBreathTime = 135,
     enemyDodgeTime = 80,
+    enemySleepTime = 50,
+    enemyStopspelledSpellTime = 165,
     ambushTime = 50,
     monsterFleeTime = 100,
-    sleepTime = 60,
-    fairyFluteTime = 470,
-    enemyStopspelledSpellTime = 165,
     preBattleTime = 140,
     postBattleTime = 200,
     dodgeRateRiskFactor = 0,
@@ -342,7 +343,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         hero.asleep = false;
         hero.sleepTurns = 0;
       } else {
-        timeFrames += sleepTime;
+        timeFrames += heroSleepTime;
         hero.sleepTurns++;
         log.push('Hero is asleep.');
         return;
@@ -473,7 +474,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
   function runMonsterTurn() {
     if (monster.asleep) {
       if (monster.sleepTurns === 0) {
-        timeFrames += sleepTime;
+        timeFrames += enemySleepTime;
         monster.sleepTurns++;
         log.push(`${monster.name} is asleep.`);
         return;
@@ -483,7 +484,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         monster.sleepTurns = 0;
         log.push(`${monster.name} wakes up.`);
       } else {
-        timeFrames += sleepTime;
+        timeFrames += enemySleepTime;
         monster.sleepTurns++;
         log.push(`${monster.name} is asleep.`);
         return;

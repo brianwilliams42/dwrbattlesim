@@ -546,9 +546,9 @@ console.log('big breath mitigation distribution test passed');
 }
 
 // Monster fleeing during an ambush ends the battle before hero acts
-{
-  const seq = [0, 0.99, 0];
-  let i = 0;
+  {
+    const seq = [0, 0.99, 0];
+    let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
   const hero = { hp: 10, maxHp: 10, attack: 0, strength: 20, defense: 0, agility: 10 };
@@ -576,7 +576,60 @@ console.log('big breath mitigation distribution test passed');
   assert.strictEqual(result.rounds, 0);
   assert.strictEqual(result.timeFrames, 150);
   console.log('ambush flee logic test passed');
-}
+  }
+
+  // Hero sleep time is configurable
+  {
+    const seq = [0, 0.5, 0, 0];
+    let i = 0;
+    const orig = Math.random;
+    Math.random = () => seq[i++] ?? 0;
+    const hero = {
+      hp: 1,
+      maxHp: 1,
+      attack: 0,
+      strength: 0,
+      defense: 0,
+      agility: 0,
+    };
+    const monster = {
+      name: 'Mage',
+      hp: 1,
+      attack: 100,
+      defense: 0,
+      agility: 10,
+      xp: 0,
+      supportAbility: 'sleep',
+      supportChance: 1,
+    };
+    const result = simulateBattle(hero, monster, {
+      preBattleTime: 0,
+      postBattleTime: 0,
+      heroAttackTime: 0,
+      heroSpellTime: 0,
+      heroSleepStopspellTime: 0,
+      heroSleepTime: 7,
+      herbTime: 0,
+      herbBetweenTime: 0,
+      fairyWaterTime: 0,
+      fairyFluteTime: 0,
+      healSpellTime: 0,
+      enemyAttackTime: 0,
+      enemyHurtSpellTime: 0,
+      enemyHealSpellTime: 0,
+      enemySpellTime: 0,
+      enemyBreathTime: 0,
+      enemyDodgeTime: 0,
+      enemySleepTime: 0,
+      framesBetweenFights: 0,
+      ambushTime: 0,
+      monsterFleeTime: 0,
+    });
+    Math.random = orig;
+    assert.strictEqual(result.timeFrames, 7);
+    assert(result.log.includes('Hero is asleep.'));
+    console.log('hero sleep time test passed');
+  }
 
 // Metal Slime ambush flee ends battle without hero action
 {
@@ -1183,25 +1236,26 @@ const fieldOrder = [
   'hero-attack-time',
   'hero-spell-time',
   'hero-sleep-stopspell-time',
+  'hero-sleep-time',
   'hero-critical-time',
   'herb-time',
-  'herb-between-time',
   'fairy-water-time',
+  'fairy-flute-time',
+  'herb-between-time',
   'heal-spell-time',
   'enemy-attack-time',
   'enemy-hurt-spell-time',
   'enemy-heal-spell-time',
+  'enemy-stopspelled-spell-time',
   'enemy-spell-time',
   'enemy-breath-time',
   'enemy-dodge-time',
+  'enemy-sleep-time',
   'pre-battle-time',
-  'post-battle-time',
-  'frames-between-fights',
   'ambush-time',
   'monster-flee-time',
-  'sleep-time',
-  'fairy-flute-time',
-  'enemy-stopspelled-spell-time',
+  'post-battle-time',
+  'frames-between-fights',
   'sim-mode',
   'iterations',
 ];
@@ -1241,25 +1295,26 @@ const sampleParams = {
   'hero-attack-time': '90',
   'hero-spell-time': '180',
   'hero-sleep-stopspell-time': '240',
+  'hero-sleep-time': '35',
   'hero-critical-time': '30',
   'herb-time': '130',
-  'herb-between-time': '135',
   'fairy-water-time': '245',
+  'fairy-flute-time': '470',
+  'herb-between-time': '135',
   'heal-spell-time': '190',
   'enemy-attack-time': '130',
   'enemy-hurt-spell-time': '190',
   'enemy-heal-spell-time': '165',
+  'enemy-stopspelled-spell-time': '165',
   'enemy-spell-time': '170',
   'enemy-breath-time': '135',
   'enemy-dodge-time': '80',
+  'enemy-sleep-time': '50',
   'pre-battle-time': '140',
-  'post-battle-time': '200',
-  'frames-between-fights': '30',
   'ambush-time': '50',
   'monster-flee-time': '100',
-  'sleep-time': '60',
-  'fairy-flute-time': '470',
-  'enemy-stopspelled-spell-time': '165',
+  'post-battle-time': '200',
+  'frames-between-fights': '30',
   'sim-mode': 'single',
   'iterations': '1000',
 };
