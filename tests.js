@@ -228,6 +228,58 @@ console.log('big breath mitigation distribution test passed');
   );
 }
 
+// Hero casts HURTMORE again despite resist chance when using default dodge rate risk factor
+{
+  const seq = [0, 0, 0.6, 0, 0.99, 0.6, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 50,
+    maxHp: 100,
+    attack: 10,
+    strength: 0,
+    defense: 0,
+    agility: 10,
+    mp: 16,
+    spells: ['HURTMORE', 'HEALMORE'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Resister',
+    hp: 70,
+    maxHp: 70,
+    attack: 80,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+    dodge: 0,
+    hurtResist: 0.5,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  const hurtmoreCasts = result.log.filter((l) =>
+    l.startsWith('Hero casts HURTMORE'),
+  ).length;
+  const healmoreCasts = result.log.filter((l) =>
+    l.startsWith('Hero casts HEALMORE'),
+  ).length;
+  assert.strictEqual(hurtmoreCasts, 2);
+  assert.strictEqual(healmoreCasts, 0);
+  console.log(
+    'second hurtmore used despite hurt resist when risk factor is default test passed',
+  );
+}
+
 // When low on HP, hero attacks to finish if a killing blow is likely
 {
   const seq = [0, 0, 0, 0.5, 0.99];
@@ -614,7 +666,8 @@ console.log('big breath mitigation distribution test passed');
   };
   const monster = {
     name: 'BadGuy',
-    hp: 1,
+    hp: 2,
+    maxHp: 2,
     attack: 300,
     defense: 0,
     agility: 1,
@@ -677,6 +730,7 @@ console.log('big breath mitigation distribution test passed');
     enemySpellTime: 0,
     enemyBreathTime: 0,
     enemyDodgeTime: 0,
+    dodgeRateRiskFactor: 0.01,
   });
   Math.random = orig;
   assert(result.log.includes('Hero uses an herb and heals 0 HP.'));
@@ -702,6 +756,7 @@ console.log('big breath mitigation distribution test passed');
     enemySpellTime: 0,
     enemyBreathTime: 0,
     enemyDodgeTime: 0,
+    dodgeRateRiskFactor: 0.01,
   });
   Math.random = orig;
   assert.strictEqual(result.timeFrames, 5);
@@ -735,6 +790,7 @@ console.log('big breath mitigation distribution test passed');
     enemySpellTime: 0,
     enemyBreathTime: 0,
     enemyDodgeTime: 0,
+    dodgeRateRiskFactor: 0.01,
   });
   Math.random = orig;
   assert(result.log.some((l) => l.startsWith('Hero casts HEAL')));
@@ -938,6 +994,7 @@ console.log('big breath mitigation distribution test passed');
     enemySpellTime: 0,
     enemyBreathTime: 0,
     enemyDodgeTime: 0,
+    dodgeRateRiskFactor: 0.01,
   });
   Math.random = orig;
   assert(result.log.includes('Hero casts HEALMORE and heals 50 HP.'));
