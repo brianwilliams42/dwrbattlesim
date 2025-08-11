@@ -117,6 +117,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     heroSleepStopspellTime = 240,
     heroCriticalTime = 30,
     herbTime = 130,
+    herbBetweenTime = 135,
     fairyWaterTime = 245,
     healSpellTime = 190,
     enemyAttackTime = 130,
@@ -664,9 +665,9 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
   };
 }
 
-function healBetweenFights(hero, monster, settings) {
+export function healBetweenFights(hero, monster, settings) {
   const healSpellTime = settings.healSpellTime;
-  const herbTime = settings.herbTime;
+  const herbBetweenTime = settings.herbBetweenTime ?? 135;
   let framesBetweenFights = settings.framesBetweenFights;
   let mp = 0;
   let herbsUsed = 0;
@@ -697,7 +698,7 @@ function healBetweenFights(hero, monster, settings) {
       hero.hp += actual;
       hero.herbs--;
       herbsUsed++;
-      framesBetweenFights += herbTime;
+      framesBetweenFights += herbBetweenTime;
       log.push(`Hero uses an herb and heals ${actual} HP.`);
       continue;
     }

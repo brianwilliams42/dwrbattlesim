@@ -185,28 +185,32 @@
     <fieldset>
       <legend>Simulation Settings</legend>
       <details>
-        <summary>Timing Settings (optional)</summary>
-        <label>Hero Attack (frames) <input type="number" id="hero-attack-time" value="90" /></label>
-        <label>Hero Spell (frames) <input type="number" id="hero-spell-time" value="180" /></label>
-        <label>Hero Sleep/Stopspell (frames) <input type="number" id="hero-sleep-stopspell-time" value="240" /></label>
-        <label>Critical Hit (frames) <input type="number" id="hero-critical-time" value="30" /></label>
-        <label>Herb Use (frames) <input type="number" id="herb-time" value="130" /></label>
-        <label>Fairy Water Use (frames) <input type="number" id="fairy-water-time" value="245" /></label>
-        <label>Heal Spell Between Fights (frames) <input type="number" id="heal-spell-time" value="190" /></label>
-        <label>Enemy Attack (frames) <input type="number" id="enemy-attack-time" value="130" /></label>
-        <label>Enemy Hurt Spell (frames) <input type="number" id="enemy-hurt-spell-time" value="190" /></label>
-        <label>Enemy Heal Spell (frames) <input type="number" id="enemy-heal-spell-time" value="165" /></label>
-        <label>Enemy Other Spell (frames) <input type="number" id="enemy-spell-time" value="150" /></label>
-        <label>Enemy Breath (frames) <input type="number" id="enemy-breath-time" value="135" /></label>
-        <label>Enemy Dodge (frames) <input type="number" id="enemy-dodge-time" value="80" /></label>
-        <label>Pre-Battle (frames) <input type="number" id="pre-battle-time" value="140" /></label>
-        <label>Post-Battle (frames) <input type="number" id="post-battle-time" value="200" /></label>
-        <label>Between Fights (frames) <input type="number" id="frames-between-fights" value="30" /></label>
-        <label>Ambush (frames) <input type="number" id="ambush-time" value="50" /></label>
-        <label>Monster Flee (frames) <input type="number" id="monster-flee-time" value="100" /></label>
-        <label>Sleep (frames) <input type="number" id="sleep-time" value="60" /></label>
-        <label>Fairy Flute (frames) <input type="number" id="fairy-flute-time" value="470" /></label>
-        <label>Enemy Stopspelled Spell (frames) <input type="number" id="enemy-stopspelled-spell-time" value="165" /></label>
+        <summary>Timing Settings (frames, optional)</summary>
+        <p><strong>Hero actions</strong></p>
+        <label>Hero Attack <input type="number" id="hero-attack-time" value="90" /></label>
+        <label>Hero Spell <input type="number" id="hero-spell-time" value="180" /></label>
+        <label>Hero Sleep/Stopspell <input type="number" id="hero-sleep-stopspell-time" value="240" /></label>
+        <label>Critical Hit <input type="number" id="hero-critical-time" value="30" /></label>
+        <label>Herb Use <input type="number" id="herb-time" value="130" /></label>
+        <label>Herb Use Between Fights <input type="number" id="herb-between-time" value="135" /></label>
+        <label>Fairy Water Use <input type="number" id="fairy-water-time" value="245" /></label>
+        <label>Heal Spell Between Fights <input type="number" id="heal-spell-time" value="190" /></label>
+        <label>Fairy Flute <input type="number" id="fairy-flute-time" value="470" /></label>
+        <p><strong>Enemy actions</strong></p>
+        <label>Enemy Attack <input type="number" id="enemy-attack-time" value="130" /></label>
+        <label>Enemy Hurt Spell <input type="number" id="enemy-hurt-spell-time" value="190" /></label>
+        <label>Enemy Heal Spell <input type="number" id="enemy-heal-spell-time" value="165" /></label>
+        <label>Enemy Stopspelled Spell <input type="number" id="enemy-stopspelled-spell-time" value="165" /></label>
+        <label>Enemy Other Spell <input type="number" id="enemy-spell-time" value="150" /></label>
+        <label>Enemy Breath <input type="number" id="enemy-breath-time" value="135" /></label>
+        <label>Enemy Dodge <input type="number" id="enemy-dodge-time" value="80" /></label>
+        <p><strong>Battle flow</strong></p>
+        <label>Pre-Battle <input type="number" id="pre-battle-time" value="140" /></label>
+        <label>Ambush <input type="number" id="ambush-time" value="50" /></label>
+        <label>Monster Flee <input type="number" id="monster-flee-time" value="100" /></label>
+        <label>Sleep <input type="number" id="sleep-time" value="60" /></label>
+        <label>Post-Battle <input type="number" id="post-battle-time" value="200" /></label>
+        <label>Between Fights <input type="number" id="frames-between-fights" value="30" /></label>
       </details>
       <label>Mode
         <select id="sim-mode">
@@ -398,6 +402,9 @@
         ),
         heroCriticalTime: Number(document.getElementById('hero-critical-time').value),
         herbTime: Number(document.getElementById('herb-time').value),
+        herbBetweenTime: Number(
+          document.getElementById('herb-between-time').value,
+        ),
         fairyWaterTime: Number(document.getElementById('fairy-water-time').value),
         healSpellTime: Number(document.getElementById('heal-spell-time').value),
         enemyAttackTime: Number(document.getElementById('enemy-attack-time').value),

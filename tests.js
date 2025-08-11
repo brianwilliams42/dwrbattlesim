@@ -7,6 +7,7 @@ import {
   simulateBattle,
   simulateMany,
   simulateRepeated,
+  healBetweenFights,
   baseMaxDamage,
 } from './simulator.js';
 import LZString from 'lz-string';
@@ -874,6 +875,23 @@ console.log('big breath mitigation distribution test passed');
   console.log('herb timing test passed');
 }
 
+// Herb usage between fights time is configurable
+{
+  const hero = { hp: 5, maxHp: 10, herbs: 1, defense: 0, armor: 'none' };
+  const monster = { attack: 200, defense: 0 };
+  const orig = Math.random;
+  Math.random = () => 0;
+  const result = healBetweenFights(hero, monster, {
+    healSpellTime: 0,
+    herbBetweenTime: 5,
+    framesBetweenFights: 0,
+  });
+  Math.random = orig;
+  assert.strictEqual(result.frames, 5);
+  assert.strictEqual(result.herbsUsed, 1);
+  console.log('herb between fights timing test passed');
+}
+
 // Herb is not used when HEAL is available and affordable
 {
   const seq = [0, 0, 0, 0];
@@ -1018,7 +1036,12 @@ console.log('big breath mitigation distribution test passed');
   const result = simulateRepeated(
     hero,
     monster,
-    { preBattleTime: 0, postBattleTime: 0, framesBetweenFights: 0 },
+    {
+      preBattleTime: 0,
+      postBattleTime: 0,
+      framesBetweenFights: 0,
+      herbBetweenTime: 0,
+    },
     1,
   );
   assert.strictEqual(result.log[0], 'Starting fight against Slime (10 HP).');
@@ -1062,6 +1085,7 @@ console.log('big breath mitigation distribution test passed');
       herbTime: 0,
       fairyWaterTime: 0,
       framesBetweenFights: 0,
+      herbBetweenTime: 0,
     },
     1,
   );
@@ -1161,6 +1185,7 @@ const fieldOrder = [
   'hero-sleep-stopspell-time',
   'hero-critical-time',
   'herb-time',
+  'herb-between-time',
   'fairy-water-time',
   'heal-spell-time',
   'enemy-attack-time',
@@ -1218,6 +1243,7 @@ const sampleParams = {
   'hero-sleep-stopspell-time': '240',
   'hero-critical-time': '30',
   'herb-time': '130',
+  'herb-between-time': '135',
   'fairy-water-time': '245',
   'heal-spell-time': '190',
   'enemy-attack-time': '130',

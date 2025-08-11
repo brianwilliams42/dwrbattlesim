@@ -47,6 +47,7 @@ const settings = {
   heroSleepStopspellTime: 240,
   heroCriticalTime: 30,
   herbTime: 130,
+  herbBetweenTime: 135,
   fairyWaterTime: 245,
   healSpellTime: 190,
   enemyAttackTime: 130,
