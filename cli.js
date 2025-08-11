@@ -55,6 +55,11 @@ const settings = {
   enemyBreathTime: 135,
   enemyDodgeTime: 60,
   framesBetweenFights: 30,
+  ambushTime: 50,
+  monsterFleeTime: 45,
+  sleepTime: 60,
+  fairyFluteTime: 480,
+  stopspellPenaltyTime: 60,
   dodgeRateRiskFactor: 0,
 };
 
