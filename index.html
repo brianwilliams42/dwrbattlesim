@@ -188,12 +188,15 @@
         <summary>Timing Settings (optional)</summary>
         <label>Hero Attack Time (frames) <input type="number" id="hero-attack-time" value="120" /></label>
         <label>Hero Spell Time (frames) <input type="number" id="hero-spell-time" value="180" /></label>
-        <label>Critical Hit Time (frames) <input type="number" id="hero-critical-time" value="40" /></label>
+        <label>Critical Hit Time (frames) <input type="number" id="hero-critical-time" value="30" /></label>
         <label>Herb Use Time (frames) <input type="number" id="herb-time" value="150" /></label>
-        <label>Fairy Water Use Time (frames) <input type="number" id="fairy-water-time" value="210" /></label>
-        <label>Enemy Attack Time (frames) <input type="number" id="enemy-attack-time" value="150" /></label>
-        <label>Enemy Spell Time (frames) <input type="number" id="enemy-spell-time" value="170" /></label>
-        <label>Enemy Breath Time (frames) <input type="number" id="enemy-breath-time" value="160" /></label>
+        <label>Fairy Water Use Time (frames) <input type="number" id="fairy-water-time" value="220" /></label>
+        <label>Heal Spell Time Between Fights (frames) <input type="number" id="heal-spell-time" value="230" /></label>
+        <label>Enemy Attack Time (frames) <input type="number" id="enemy-attack-time" value="130" /></label>
+        <label>Enemy Hurt Spell Time (frames) <input type="number" id="enemy-hurt-spell-time" value="190" /></label>
+        <label>Enemy Heal Spell Time (frames) <input type="number" id="enemy-heal-spell-time" value="165" /></label>
+        <label>Enemy Other Spell Time (frames) <input type="number" id="enemy-spell-time" value="170" /></label>
+        <label>Enemy Breath Time (frames) <input type="number" id="enemy-breath-time" value="135" /></label>
         <label>Enemy Dodge Time (frames) <input type="number" id="enemy-dodge-time" value="60" /></label>
         <label>Pre-Battle Time (frames) <input type="number" id="pre-battle-time" value="140" /></label>
         <label>Post-Battle Time (frames) <input type="number" id="post-battle-time" value="200" /></label>
@@ -387,7 +390,10 @@
         heroCriticalTime: Number(document.getElementById('hero-critical-time').value),
         herbTime: Number(document.getElementById('herb-time').value),
         fairyWaterTime: Number(document.getElementById('fairy-water-time').value),
+        healSpellTime: Number(document.getElementById('heal-spell-time').value),
         enemyAttackTime: Number(document.getElementById('enemy-attack-time').value),
+        enemyHurtSpellTime: Number(document.getElementById('enemy-hurt-spell-time').value),
+        enemyHealSpellTime: Number(document.getElementById('enemy-heal-spell-time').value),
         enemySpellTime: Number(document.getElementById('enemy-spell-time').value),
         enemyBreathTime: Number(document.getElementById('enemy-breath-time').value),
         enemyDodgeTime: Number(document.getElementById('enemy-dodge-time').value),
