@@ -2,6 +2,8 @@
 
 This project provides a lightweight JavaScript simulator inspired by the NES game **Dragon Warrior**. Hero and monster statistics are fully configurable, allowing experimentation with arbitrary encounters.
 
+Visit the simulator at: https://brianwilliams42.github.io/dwrbattlesim/
+
 ## Features
 - Monster ambushes determined by comparing `hero agility * rand(0-255)` with `enemy agility * 0.25 * rand(0-255)`. If the monster ambushes, it takes a full turn before the hero acts.
 - After any ambush, the hero always acts before the monster each round.
