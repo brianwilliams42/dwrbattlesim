@@ -211,8 +211,8 @@
           <label>Ambush <input type="number" id="ambush-time" value="50" /></label>
           <label>Monster Flee <input type="number" id="monster-flee-time" value="100" /></label>
           <label>Post-Battle <input type="number" id="post-battle-time" value="200" /></label>
-          <label>Between Fights <input type="number" id="frames-between-fights" value="30" /></label>
       </details>
+      <label id="frames-between-fights-label" style="display: none;">Between Fights <input type="number" id="frames-between-fights" value="30" /></label>
       <label>Mode
         <select id="sim-mode">
           <option value="single">Single Battle</option>
@@ -248,6 +248,8 @@
     const usePreset = document.getElementById('use-preset');
     const monsterStats = document.getElementById('monster-stats');
     const shareBtn = document.getElementById('share-url');
+    const betweenFightsLabel = document.getElementById('frames-between-fights-label');
+    const simModeSelect = document.getElementById('sim-mode');
     const fieldIds = Array.from(form.elements)
       .filter((el) => el.id && el !== shareBtn)
       .map((el) => el.id);
@@ -281,6 +283,7 @@
       });
       toggleMonsterStats();
       enemySelect.dispatchEvent(new Event('change'));
+      toggleBetweenFights();
     }
 
     shareBtn.addEventListener('click', () => {
@@ -320,7 +323,14 @@
       }
     }
 
+    function toggleBetweenFights() {
+      betweenFightsLabel.style.display =
+        simModeSelect.value === 'repeated' ? 'block' : 'none';
+    }
+
     usePreset.addEventListener('change', toggleMonsterStats);
+    simModeSelect.addEventListener('change', toggleBetweenFights);
+    toggleBetweenFights();
 
     fetch('./enemies.json')
       .then((r) => r.json())
