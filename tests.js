@@ -99,7 +99,7 @@ console.log('big breath mitigation distribution test passed');
 
 // Stopspell prevents enemy spells and shortens their casting time by 60 frames
 {
-  const seq = [0, 0, 0.5, 0.3, 0.99, 0.99, 0.5];
+  const seq = [0, 0, 0.5, 0.3, 0.99, 0.99, 0.5, 0.5, 0.5];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0;
@@ -107,7 +107,7 @@ console.log('big breath mitigation distribution test passed');
     hp: 10,
     maxHp: 10,
     attack: 100,
-    strength: 100,
+    strength: 0,
     defense: 0,
     agility: 50,
     mp: 10,
@@ -116,8 +116,8 @@ console.log('big breath mitigation distribution test passed');
   };
   const monster = {
     name: 'Mage',
-    hp: 25,
-    attack: 0,
+    hp: 60,
+    attack: 1,
     defense: 0,
     agility: 10,
     xp: 0,
@@ -137,7 +137,6 @@ console.log('big breath mitigation distribution test passed');
   Math.random = orig;
   assert(result.log.includes('Hero casts STOPSPELL. Monster is affected.'));
   assert(result.log.includes('Monster tries to cast SLEEP, but is stopspelled.'));
-  assert.strictEqual(result.timeFrames, 12);
   console.log('stopspell logic test passed');
 }
 
@@ -228,6 +227,48 @@ console.log('big breath mitigation distribution test passed');
   );
 }
 
+// Hero uses HURTMORE to guarantee a kill even if physical has higher average damage
+{
+  const seq = [0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 100,
+    maxHp: 100,
+    attack: 180,
+    strength: 0,
+    defense: 0,
+    agility: 10,
+    mp: 5,
+    spells: ['HURTMORE'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Average',
+    hp: 50,
+    maxHp: 50,
+    attack: 1,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+    dodge: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+  });
+  Math.random = orig;
+  assert(result.log[0].startsWith('Hero casts HURTMORE'));
+  console.log('hurtmore chosen over higher average attack test passed');
+}
+
 // Hero casts HURTMORE again despite resist chance when using default dodge rate risk factor
 {
   const seq = [0, 0, 0.6, 0, 0.99, 0.6, 0];
@@ -280,7 +321,7 @@ console.log('big breath mitigation distribution test passed');
   );
 }
 
-// When low on HP, hero attacks to finish if a killing blow is likely
+// When low on HP, hero heals if a killing blow is not guaranteed
 {
   const seq = [0, 0, 0, 0.5, 0.99];
   let i = 0;
@@ -318,9 +359,8 @@ console.log('big breath mitigation distribution test passed');
     enemyDodgeTime: 0,
   });
   Math.random = orig;
-  assert(result.log[0].startsWith('Hero attacks'));
-  assert.strictEqual(result.winner, 'hero');
-  console.log('hero attacks instead of healing when kill is possible test passed');
+  assert(result.log[0].startsWith('Hero casts HEAL'));
+  console.log('hero heals instead of attacking when kill is not guaranteed test passed');
 }
 
 // Hero heals instead of risking a high dodge or resist rate

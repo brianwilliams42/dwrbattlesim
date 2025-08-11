@@ -192,58 +192,60 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       return 'FAIRY_FLUTE';
     }
 
-    if (hero.hp <= currentMaxDamage) {
-      const killOptions = [];
+    const killOptions = [];
 
-      let maxPhysical;
-      if (hero.attack < monster.defense + 2) {
-        maxPhysical = 1;
-      } else {
-        maxPhysical = Math.floor(baseMaxDamage(hero.attack, monster.defense));
-      }
-      killOptions.push({
-        action: 'attack',
-        max: maxPhysical,
-        fail: (monster.dodge || 0) / 64,
-      });
+    let minPhysical;
+    if (hero.attack < monster.defense + 2) {
+      minPhysical = 0;
+    } else {
+      minPhysical = Math.floor(
+        baseMaxDamage(hero.attack, monster.defense) / 2,
+      );
+    }
+    killOptions.push({
+      action: 'attack',
+      min: minPhysical,
+      fail: (monster.dodge || 0) / 64,
+    });
 
-      if (!hero.stopspelled && hero.spells) {
-        if (
-          hero.spells.includes('HURTMORE') &&
-          hero.mp >= HERO_SPELL_COST.HURTMORE
-        ) {
-          killOptions.push({
-            action: 'HURTMORE',
-            max: 65,
-            fail: monster.hurtResist || 0,
-          });
-        }
-        if (hero.spells.includes('HURT') && hero.mp >= HERO_SPELL_COST.HURT) {
-          killOptions.push({
-            action: 'HURT',
-            max: 16,
-            fail: monster.hurtResist || 0,
-          });
-        }
-      }
-
-      if (hero.fairyWater > 0) {
-        const maxFW = monster.name === 'Metal Slime' ? 1 : 16;
-        const failFW = monster.name === 'Metal Slime' ? 0.5 : 0;
+    if (!hero.stopspelled && hero.spells) {
+      if (
+        hero.spells.includes('HURTMORE') &&
+        hero.mp >= HERO_SPELL_COST.HURTMORE
+      ) {
         killOptions.push({
-          action: 'FAIRY_WATER',
-          max: maxFW,
-          fail: failFW,
+          action: 'HURTMORE',
+          min: 58,
+          fail: monster.hurtResist || 0,
         });
       }
+      if (hero.spells.includes('HURT') && hero.mp >= HERO_SPELL_COST.HURT) {
+        killOptions.push({
+          action: 'HURT',
+          min: 9,
+          fail: monster.hurtResist || 0,
+        });
+      }
+    }
 
-      const kill = killOptions.find(
-        (o) =>
-          o.max >= monsterHpKnownMax &&
-          (dodgeRateRiskFactor === 0 || o.fail <= dodgeRateRiskFactor),
-      );
-      if (kill) return kill.action;
+    if (hero.fairyWater > 0) {
+      const minFW = monster.name === 'Metal Slime' ? 0 : 9;
+      const failFW = monster.name === 'Metal Slime' ? 0.5 : 0;
+      killOptions.push({
+        action: 'FAIRY_WATER',
+        min: minFW,
+        fail: failFW,
+      });
+    }
 
+    const kill = killOptions.find(
+      (o) =>
+        o.min >= monsterHpKnownMax &&
+        (dodgeRateRiskFactor === 0 || o.fail <= dodgeRateRiskFactor),
+    );
+    if (kill) return kill.action;
+
+    if (hero.hp <= currentMaxDamage) {
       if (!hero.stopspelled && hero.spells) {
         if (hero.spells.includes('HEALMORE') && hero.mp >= HERO_SPELL_COST.HEALMORE)
           return 'HEALMORE';
