@@ -75,6 +75,7 @@
 <body>
   <div class="container">
     <h1>Dragon Warrior Battle Simulator</h1>
+    <p><small><a href="https://github.com/brianwilliams42/dwrbattlesim">Instructions and source code</a></small></p>
     <div class="sprites">
       <svg class="sprite" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
         <rect width="16" height="16" fill="#000" />
@@ -114,6 +115,13 @@
       <label><input type="checkbox" id="hero-fighters-ring" /> Fighter's Ring</label>
       <label><input type="checkbox" id="hero-death-necklace" /> Death Necklace</label>
       <label>Defense <input type="number" id="hero-defense" value="40" /></label>
+      <label>Armor
+        <select id="hero-armor">
+          <option value="none">No abilities</option>
+          <option value="magic">Magic Armor</option>
+          <option value="erdrick">Erdrick's Armor</option>
+        </select>
+      </label>
       <label>Agility <input type="number" id="hero-agility" value="30" /></label>
       <label>MP <input type="number" id="hero-mp" value="50" /></label>
       <label>Herbs <input type="number" id="hero-herbs" value="0" min="0" max="6" /></label>
@@ -123,14 +131,7 @@
       <label><input type="checkbox" id="hero-heal" /> HEAL</label>
       <label><input type="checkbox" id="hero-healmore" /> HEALMORE</label>
       <label><input type="checkbox" id="hero-stopspell" /> STOPSPELL</label>
-      <label>Armor
-        <select id="hero-armor">
-          <option value="none">None</option>
-          <option value="magic">Magic Armor</option>
-          <option value="erdrick">Erdrick's Armor</option>
-        </select>
-      </label>
-      <label id="flute-option" style="display:none"><input type="checkbox" id="hero-flute" /> Fairy Flute</label>
+      <label><input type="checkbox" id="hero-flute" /> Fairy Flute</label>
     </fieldset>
     <fieldset>
       <legend>Monster Stats</legend>
@@ -147,8 +148,8 @@
         <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
         <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
       </div>
-      <label>Stopspell Resist (0-15) <input type="number" id="stopspell-resist" value="0" /></label>
-      <label>Support Ability
+      <label style="margin-top:10px">Stopspell Resist (0-15) <input type="number" id="stopspell-resist" value="0" /></label>
+      <label style="margin-top:10px">Support Ability
         <select id="mon-support">
           <option value="">None</option>
           <option value="sleep">Sleep</option>
@@ -163,7 +164,7 @@
           <option value="0.75">75%</option>
         </select>
       </label>
-      <label>Attack Ability
+      <label style="margin-top:10px">Attack Ability
         <select id="mon-attack-ability">
           <option value="">None</option>
           <option value="hurt">HURT</option>
@@ -315,9 +316,6 @@
         if (usePreset.checked && enemies[0]) {
           setMonsterStats(enemies[0]);
         }
-        const selectedName = enemySelect.value || '';
-        document.getElementById('flute-option').style.display =
-          selectedName === 'Golem' ? 'block' : 'none';
         toggleMonsterStats();
         if (encodedData) {
           const json = LZString.decompressFromBase64(
@@ -328,9 +326,6 @@
       });
 
     enemySelect.addEventListener('change', () => {
-      const selectedName = enemySelect.value || '';
-      document.getElementById('flute-option').style.display =
-        selectedName === 'Golem' ? 'block' : 'none';
       if (usePreset.checked) {
         const chosen = enemies.find((e) => e.name === enemySelect.value);
         if (chosen) setMonsterStats(chosen);
@@ -431,12 +426,14 @@
             `Average herbs used per battle: ${summary.averageHerbsUsed.toFixed(2)}\n` +
             `Average fairy waters used per battle: ${summary.averageFairyWatersUsed.toFixed(2)}\n` +
             `Average battle time (s): ${summary.averageTimeSeconds.toFixed(2)}`;
+      const logLines = example.log.slice(0, 100);
       sampleEl.textContent =
         `Total Time: ${formatTime(example.timeFrames / 60)}\n` +
         `MP Spent: ${example.mpSpent}\n` +
         `Herbs Used: ${example.herbsUsed}\n` +
         `Fairy Waters Used: ${example.fairyWatersUsed}\n` +
-        example.log.join('\n');
+        logLines.join('\n');
+      if (example.log.length > 100) sampleEl.textContent += '\n...';
     });
   </script>
 </body>
