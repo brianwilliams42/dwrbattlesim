@@ -42,7 +42,7 @@ const monster = {
 const settings = {
   preBattleTime: 140,
   postBattleTime: 200,
-  heroAttackTime: 90,
+  heroAttackTime: 145,
   heroSpellTime: 180,
   heroSleepStopspellTime: 240,
   heroSleepTime: 35,
