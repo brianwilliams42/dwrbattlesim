@@ -112,7 +112,7 @@ const HERO_SPELL_COST = {
 
 export function simulateBattle(heroStats, monsterStats, settings = {}) {
   const {
-    heroAttackTime = 90,
+    heroAttackTime = 145,
     heroSpellTime = 180,
     heroSleepStopspellTime = 240,
     heroSleepTime = 35,
