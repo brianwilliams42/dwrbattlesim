@@ -171,6 +171,7 @@
         <label>Dodge (0-64) <input type="number" id="mon-dodge" value="2" /></label>
         <label>XP Reward <input type="number" id="mon-xp" value="120" /></label>
         <label>Sleep Resist (0-15) <input type="number" id="sleep-resist" value="0" /></label>
+        <label>Group (1-4) <input type="number" id="mon-group" value="2" min="1" max="4" /></label>
       </div>
       <label style="margin-top:10px">Stopspell Resist (0-15) <input type="number" id="stopspell-resist" value="0" /></label>
       <label style="margin-top:10px">Support Ability
@@ -231,6 +232,8 @@
           <label>Herb Use <input type="number" id="herb-time" value="130" /></label>
           <label>Fairy Water Use <input type="number" id="fairy-water-time" value="245" /></label>
           <label>Fairy Flute <input type="number" id="fairy-flute-time" value="470" /></label>
+          <label>Run Fail <input type="number" id="hero-run-fail-time" value="150" /></label>
+          <label>Run Success <input type="number" id="hero-run-success-time" value="40" /></label>
           <label>Herb Use Between Fights <input type="number" id="herb-between-time" value="135" /></label>
           <label>Heal Spell Between Fights <input type="number" id="heal-spell-time" value="190" /></label>
         <p><strong>Enemy actions</strong></p>
@@ -356,6 +359,7 @@
       document.getElementById('mon-xp').value = chosen.xp ?? 0;
       document.getElementById('stopspell-resist').value = chosen.stopspellResist ?? 0;
       document.getElementById('sleep-resist').value = chosen.sleepResist ?? 0;
+      document.getElementById('mon-group').value = chosen.group ?? 2;
     }
 
     function setZoneMonsterStats(idx, chosen) {
@@ -368,6 +372,7 @@
       document.getElementById(`zone-mon-xp-${idx}`).value = chosen.xp ?? 0;
       document.getElementById(`zone-stopspell-resist-${idx}`).value = chosen.stopspellResist ?? 0;
       document.getElementById(`zone-sleep-resist-${idx}`).value = chosen.sleepResist ?? 0;
+      document.getElementById(`zone-mon-group-${idx}`).value = chosen.group ?? 2;
     }
 
     function populateEnemySelect(sel) {
@@ -410,6 +415,7 @@
               <label>Dodge (0-64) <input type="number" id="zone-mon-dodge-${i}" data-ignore="1" /></label>
               <label>XP Reward <input type="number" id="zone-mon-xp-${i}" data-ignore="1" /></label>
               <label>Sleep Resist (0-15) <input type="number" id="zone-sleep-resist-${i}" data-ignore="1" /></label>
+              <label>Group (1-4) <input type="number" id="zone-mon-group-${i}" data-ignore="1" min="1" max="4" /></label>
             </div>
             <label style="margin-top:10px">Stopspell Resist (0-15) <input type="number" id="zone-stopspell-resist-${i}" data-ignore="1" /></label>
             <label style="margin-top:10px">Support Ability
@@ -442,6 +448,7 @@
                 <option value="0.75">75%</option>
               </select>
             </label>
+            <label><input type="checkbox" id="zone-run-${i}" data-ignore="1" /> Run from this enemy</label>
           </div>`,
         );
         const sel = document.getElementById(`zone-enemy-select-${i}`);
@@ -556,6 +563,7 @@
         dodge: Number(document.getElementById('mon-dodge').value),
         stopspellResist: Number(document.getElementById('stopspell-resist').value) / 16,
         sleepResist: Number(document.getElementById('sleep-resist').value) / 16,
+        group: Number(document.getElementById('mon-group').value),
         supportAbility: document.getElementById('mon-support').value,
         supportChance: Number(document.getElementById('mon-support-chance').value),
         attackAbility: document.getElementById('mon-attack-ability').value,
@@ -583,6 +591,12 @@
           ),
           fairyFluteTime: Number(
             document.getElementById('fairy-flute-time').value,
+          ),
+          heroRunFailTime: Number(
+            document.getElementById('hero-run-fail-time').value,
+          ),
+          heroRunSuccessTime: Number(
+            document.getElementById('hero-run-success-time').value,
           ),
           herbBetweenTime: Number(
             document.getElementById('herb-between-time').value,
@@ -655,6 +669,7 @@
               ) / 16,
             sleepResist:
               Number(document.getElementById(`zone-sleep-resist-${i}`).value) / 16,
+            group: Number(document.getElementById(`zone-mon-group-${i}`).value),
             supportAbility: document.getElementById(`zone-mon-support-${i}`).value,
             supportChance: Number(
               document.getElementById(`zone-mon-support-chance-${i}`).value,
@@ -665,6 +680,7 @@
             attackChance: Number(
               document.getElementById(`zone-mon-attack-chance-${i}`).value,
             ),
+            runFrom: document.getElementById(`zone-run-${i}`).checked,
           });
         }
         const encounterRate = Number(
