@@ -38,7 +38,7 @@ Visit the simulator at: https://brianwilliams42.github.io/dwrbattlesim/
 - Heroes can cast STOPSPELL to silence enemy spellcasting and SLEEP to incapacitate foes. Success depends on the monster's Stopspell or Sleep resistance (0–15 out of 16). Stopspelled monsters still attempt to cast but their spells fail and cost 165 frames, while sleeping monsters skip their turn with a 33% wake chance starting the second turn.
 - When fighting the Golem, the hero can optionally carry the Fairy Flute. Playing it (470 frames) puts the Golem to sleep for one guaranteed turn and gives it a 33% wake chance on later turns.
 - Computes experience gained, average battle duration, and XP per minute.
-- Repeated fight mode chains battles until the hero dies, allowing healing between fights and reporting total XP per life, XP per minute, enemies defeated, and MP used per fight, with a configurable 30-frame pause between battles.
+- Repeated fight mode chains battles until the hero dies, allowing healing between fights and reporting total XP per life, XP per minute, XP per minute including refill time, enemies defeated, and MP used per fight, with configurable pauses between battles and MP refills.
 - Browser interface for quick experimentation and a CLI example.
 - Web UI includes preset enemy selector with stats and an option to override them; enemy HP is randomized each fight between 75% and 100% of its listed maximum. Timing values default to the NES and Standard Flag speeds but can be tweaked in a hidden advanced section.
 

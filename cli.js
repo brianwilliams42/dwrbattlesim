@@ -60,6 +60,7 @@ const settings = {
   enemyDodgeTime: 80,
   enemySleepTime: 50,
   framesBetweenFights: 30,
+  refillTimeSeconds: 75,
   ambushTime: 50,
   monsterFleeTime: 100,
   enemyStopspelledSpellTime: 165,
@@ -91,6 +92,9 @@ console.log(
 const repeated = simulateRepeated(hero, monster, settings, 100);
 console.log(`Average XP per life: ${repeated.averageXPPerLife.toFixed(2)}`);
 console.log(`Average XP per minute: ${repeated.averageXPPerMinute.toFixed(2)}`);
+console.log(
+  `Average XP per minute (incl. refill): ${repeated.averageXPPerMinuteWithRefill.toFixed(2)}`,
+);
 console.log(`Average enemies killed per life: ${repeated.averageKills.toFixed(2)}`);
 console.log(`Average MP spent per fight: ${repeated.averageMPPerFight.toFixed(2)}`);
 console.log(`Average time per life: ${formatTime(repeated.averageTimeSeconds)}`);

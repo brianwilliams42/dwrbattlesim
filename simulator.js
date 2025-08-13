@@ -722,6 +722,7 @@ export function healBetweenFights(hero, monster, settings) {
 }
 
 export function simulateRepeated(heroStats, monsterStats, settings = {}, iterations = 1) {
+  const refillSeconds = settings.refillTimeSeconds ?? 75;
   let totalXP = 0;
   let totalFrames = 0;
   let totalKills = 0;
@@ -803,10 +804,14 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
     }
   }
   const averageXPPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
+  const totalFramesWithRefill = totalFrames + refillSeconds * 60 * iterations;
+  const averageXPPerMinuteWithRefill =
+    totalFramesWithRefill === 0 ? 0 : (totalXP * 3600) / totalFramesWithRefill;
   const averageTimeSeconds = totalFrames / iterations / 60;
   return {
     averageXPPerLife: totalXP / iterations,
     averageXPPerMinute,
+    averageXPPerMinuteWithRefill,
     averageTimeSeconds,
     averageKills: totalKills / iterations,
     averageMPPerFight: totalFights === 0 ? 0 : totalMP / totalFights,

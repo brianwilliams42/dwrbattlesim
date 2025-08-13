@@ -1148,6 +1148,44 @@ console.log('big breath mitigation distribution test passed');
   console.log('repeated battle average time test passed');
 }
 
+// simulateRepeated reports XP per minute including refill time
+{
+  const hero = {
+    hp: 1,
+    maxHp: 1,
+    attack: 0,
+    strength: 0,
+    defense: 0,
+    agility: 0,
+  };
+  const monster = {
+    name: 'Slime',
+    hp: 1,
+    attack: 100,
+    defense: 0,
+    agility: 1,
+    xp: 1,
+  };
+  const result = simulateRepeated(
+    hero,
+    monster,
+    {
+      preBattleTime: 60,
+      postBattleTime: 0,
+      enemyAttackTime: 0,
+      enemySpellTime: 0,
+      enemyBreathTime: 0,
+      enemyDodgeTime: 0,
+      framesBetweenFights: 0,
+      herbBetweenTime: 0,
+      refillTimeSeconds: 75,
+    },
+    1,
+  );
+  assert.strictEqual(result.averageXPPerMinuteWithRefill, 0);
+  console.log('repeated battle xp/min with refill test passed');
+}
+
 // simulateBattle preserves hero's max HP between fights
 {
   const seq = [0, 0, 0, 0, 0.5, 0.5, 0];
@@ -1256,6 +1294,7 @@ const fieldOrder = [
   'monster-flee-time',
   'post-battle-time',
   'frames-between-fights',
+  'refill-seconds',
   'sim-mode',
   'iterations',
 ];
@@ -1315,6 +1354,7 @@ const sampleParams = {
   'monster-flee-time': '100',
   'post-battle-time': '200',
   'frames-between-fights': '30',
+  'refill-seconds': '75',
   'sim-mode': 'single',
   'iterations': '1000',
 };
