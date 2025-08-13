@@ -207,6 +207,9 @@
     <fieldset id="zone-config" style="display:none">
       <legend>Zone Enemies</legend>
       <div id="zone-enemies-container"></div>
+    </fieldset>
+    <fieldset id="zone-settings" style="display:none">
+      <legend>Zone Settings</legend>
       <label>Encounter Rate
         <select id="zone-encounter-rate" data-ignore="1">
           <option value="8">1/8</option>
@@ -288,6 +291,7 @@
     const refillSecondsLabel = document.getElementById('refill-seconds-label');
     const simModeSelect = document.getElementById('sim-mode');
     const zoneConfig = document.getElementById('zone-config');
+    const zoneSettings = document.getElementById('zone-settings');
     const zoneEnemiesContainer = document.getElementById('zone-enemies-container');
     const fieldIds = Array.from(form.elements)
       .filter((el) => el.id && el !== shareBtn && !el.dataset.ignore)
@@ -491,6 +495,7 @@
       refillSecondsLabel.style.display = mode === 'repeated' ? 'block' : 'none';
       monsterConfig.style.display = mode === 'zone' ? 'none' : 'block';
       zoneConfig.style.display = mode === 'zone' ? 'block' : 'none';
+      zoneSettings.style.display = mode === 'zone' ? 'block' : 'none';
     }
 
     simModeSelect.addEventListener('change', toggleModeDisplays);
