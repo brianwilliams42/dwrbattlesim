@@ -903,13 +903,16 @@ function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
       repelTiles = 127;
       log.push('Hero casts REPEL.');
     }
-    totalFrames += encounterFrames;
+    const remainingFrames = maxFrames - totalFrames;
+    const walkFrames = Math.min(encounterFrames, remainingFrames);
+    totalFrames += walkFrames;
     let repelActive = false;
     if (useRepel) {
-      repelTiles -= encounterRate;
+      repelTiles -= walkFrames / tileFrames;
       repelActive = repelTiles >= 0;
       if (!repelActive) repelTiles = 0;
     }
+    if (walkFrames < encounterFrames) break;
     const monsterTemplate = monsters[Math.floor(Math.random() * monsters.length)];
     if (useRepel && repelActive && monsterTemplate.attack < hero.defense) {
       log.push(`${monsterTemplate.name} was repelled.`);

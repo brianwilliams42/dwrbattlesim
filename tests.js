@@ -192,6 +192,37 @@ console.log('big breath mitigation distribution test passed');
   console.log('zone grind repelled step time test passed');
 }
 
+// Zone grind includes partial walking time at grind end
+{
+  const hero = {
+    hp: 10,
+    maxHp: 10,
+    attack: 100,
+    strength: 100,
+    defense: 0,
+    agility: 0,
+    mp: 0,
+    spells: [],
+    armor: 'none',
+  };
+  const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 0 };
+  const result = simulateZone(hero, [monster], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    healSpellTime: 0,
+    framesBetweenFights: 0,
+    tileFrames: 16,
+    maxMinutes: 20 / 3600,
+  });
+  assert(Math.abs(result.timeFrames - 20) < 1e-6);
+  console.log('zone grind leftover walking time test passed');
+}
+
 // Zone grind heals based on strongest monster
 {
   const seq = [0];
