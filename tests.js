@@ -83,7 +83,7 @@ console.log('big breath mitigation distribution test passed');
     enemyBreathTime: 0,
     enemyDodgeTime: 0,
     maxMinutes: 0.1,
-  });
+  }, 2);
   assert(result.xpGained > 0);
   assert(result.log[0].startsWith('Encountered'));
   console.log('zone grind basic test passed');

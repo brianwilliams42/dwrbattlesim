@@ -665,7 +665,13 @@
         const encounterRate = Number(
           document.getElementById('zone-encounter-rate').value,
         );
-        const summary = simulateZone(hero, zoneMonsters, encounterRate, settings);
+        const summary = simulateZone(
+          hero,
+          zoneMonsters,
+          encounterRate,
+          settings,
+          iterations,
+        );
         metricsEl.textContent =
           `Average XP per minute: ${summary.xpPerMinute.toFixed(2)}\n` +
           `Average MP per minute: ${summary.mpPerMinute.toFixed(2)}`;

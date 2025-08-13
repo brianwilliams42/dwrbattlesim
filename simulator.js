@@ -823,7 +823,7 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
     log: sampleLog,
   };
 }
-export function simulateZone(heroStats, monsters, encounterRate = 16, settings = {}) {
+function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
   const tileFrames = settings.tileFrames ?? 15;
   const repelCastTime = settings.repelTime ?? 200;
   const maxFrames = (settings.maxMinutes ?? 10) * 60 * 60;
@@ -890,5 +890,43 @@ export function simulateZone(heroStats, monsters, encounterRate = 16, settings =
     mpSpent: totalMP,
     timeFrames: totalFrames,
     log,
+  };
+}
+
+export function simulateZone(
+  heroStats,
+  monsters,
+  encounterRate = 16,
+  settings = {},
+  iterations = 1,
+) {
+  let totalXP = 0;
+  let totalMP = 0;
+  let totalFrames = 0;
+  let sampleLog = [];
+  let sampleXP = 0;
+  let sampleMP = 0;
+  let sampleFrames = 0;
+  for (let i = 0; i < iterations; i++) {
+    const result = simulateZoneOnce(heroStats, monsters, encounterRate, settings);
+    totalXP += result.xpGained;
+    totalMP += result.mpSpent;
+    totalFrames += result.timeFrames;
+    if (i === 0) {
+      sampleLog = result.log;
+      sampleXP = result.xpGained;
+      sampleMP = result.mpSpent;
+      sampleFrames = result.timeFrames;
+    }
+  }
+  const xpPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
+  const mpPerMinute = totalFrames === 0 ? 0 : (totalMP * 3600) / totalFrames;
+  return {
+    xpPerMinute,
+    mpPerMinute,
+    xpGained: sampleXP,
+    mpSpent: sampleMP,
+    timeFrames: sampleFrames,
+    log: sampleLog,
   };
 }
