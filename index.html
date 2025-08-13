@@ -49,11 +49,11 @@
       flex-wrap: wrap;
       gap: 20px;
     }
-    #sim-form,
-    #results {
-      flex: 1 1 400px;
+    #sim-form {
+      flex: 1 1 500px;
     }
     #results {
+      flex: 1 1 400px;
       border: 2px solid #555;
       background-color: #111;
       padding: 15px;
@@ -69,6 +69,27 @@
     }
     #results pre {
       margin: 0;
+    }
+    .zone-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .zone-tab {
+      flex: 1;
+      padding: 5px;
+      border: 2px solid #555;
+      background-color: #222;
+      cursor: pointer;
+      text-align: center;
+    }
+    .zone-tab.active {
+      background-color: #333;
+    }
+    .zone-tab small {
+      display: block;
+      font-size: 10px;
+      margin-top: 2px;
     }
   </style>
 </head>
@@ -132,6 +153,7 @@
       <label><input type="checkbox" id="hero-healmore" /> HEALMORE</label>
       <label><input type="checkbox" id="hero-stopspell" /> STOPSPELL</label>
       <label><input type="checkbox" id="hero-sleep" /> SLEEP</label>
+      <label><input type="checkbox" id="hero-repel" /> REPEL</label>
       <label><input type="checkbox" id="hero-flute" /> Fairy Flute</label>
     </fieldset>
     <fieldset id="monster-config">
@@ -361,11 +383,18 @@
     }
 
     function setupZoneEnemies() {
+      zoneEnemiesContainer.innerHTML =
+        '<div id="zone-enemy-tabs" class="zone-tabs"></div><div id="zone-enemy-panels"></div>';
+      const tabs = document.getElementById('zone-enemy-tabs');
+      const panels = document.getElementById('zone-enemy-panels');
       for (let i = 0; i < 5; i++) {
-        zoneEnemiesContainer.insertAdjacentHTML(
+        tabs.insertAdjacentHTML(
           'beforeend',
-          `<div class="zone-enemy">
-            <h4>Enemy ${i + 1}</h4>
+          `<div class="zone-tab${i === 0 ? ' active' : ''}" id="zone-tab-${i}" data-index="${i}">Enemy ${i + 1}<br><small id="zone-tab-name-${i}"></small></div>`,
+        );
+        panels.insertAdjacentHTML(
+          'beforeend',
+          `<div class="zone-enemy" id="zone-enemy-${i}" style="${i === 0 ? '' : 'display:none'}">
             <label>Enemy <select id="zone-enemy-select-${i}" data-ignore="1"></select></label>
             <label><input type="checkbox" id="zone-use-preset-${i}" data-ignore="1" checked /> Use preset monster stats</label>
             <div id="zone-monster-stats-${i}" style="display:none">
@@ -414,6 +443,8 @@
         const sel = document.getElementById(`zone-enemy-select-${i}`);
         populateEnemySelect(sel);
         sel.value = enemies[0]?.name || '';
+        const tabName = document.getElementById(`zone-tab-name-${i}`);
+        tabName.textContent = sel.value || 'Custom';
         const preset = document.getElementById(`zone-use-preset-${i}`);
         const stats = document.getElementById(`zone-monster-stats-${i}`);
         function toggle() {
@@ -425,6 +456,7 @@
         }
         preset.addEventListener('change', toggle);
         sel.addEventListener('change', () => {
+          tabName.textContent = sel.value || 'Custom';
           if (preset.checked) {
             const chosen = enemies.find((e) => e.name === sel.value);
             if (chosen) setZoneMonsterStats(i, chosen);
@@ -432,6 +464,15 @@
         });
         toggle();
       }
+      tabs.addEventListener('click', (e) => {
+        const tab = e.target.closest('.zone-tab');
+        if (!tab) return;
+        const idx = Number(tab.dataset.index);
+        for (let j = 0; j < 5; j++) {
+          document.getElementById(`zone-enemy-${j}`).style.display = j === idx ? 'block' : 'none';
+          document.getElementById(`zone-tab-${j}`).classList.toggle('active', j === idx);
+        }
+      });
     }
 
     function updateMonsterStats() {
@@ -491,6 +532,7 @@
           ...(document.getElementById('hero-healmore').checked ? ['HEALMORE'] : []),
           ...(document.getElementById('hero-stopspell').checked ? ['STOPSPELL'] : []),
           ...(document.getElementById('hero-sleep').checked ? ['SLEEP'] : []),
+          ...(document.getElementById('hero-repel').checked ? ['REPEL'] : []),
         ],
       };
       const weaponAttack = Number(document.getElementById('hero-weapon').value);

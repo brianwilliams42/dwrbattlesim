@@ -98,7 +98,7 @@ console.log('big breath mitigation distribution test passed');
     defense: 20,
     agility: 10,
     mp: 2,
-    spells: [],
+    spells: ['REPEL'],
     armor: 'none',
   };
   const weak = {

@@ -13,7 +13,7 @@ const hero = {
   defense: 40,
   agility: 30,
   mp: 50,
-  spells: ['HURT', 'HEAL', 'STOPSPELL', 'SLEEP'],
+  spells: ['HURT', 'HEAL', 'STOPSPELL', 'SLEEP', 'REPEL'],
   armor: 'none',
   fairyFlute: true,
   herbs: 0,
