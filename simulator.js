@@ -834,11 +834,13 @@ export function simulateZone(heroStats, monsters, encounterRate = 16, settings =
   let totalMP = 0;
   let repelTiles = 0;
   const useRepel = hero.spells?.includes('REPEL');
+  const log = [];
   if (useRepel && hero.mp >= 2) {
     hero.mp -= 2;
     totalMP += 2;
     totalFrames += repelCastTime;
     repelTiles = 127;
+    log.push('Hero casts REPEL.');
   }
   while (totalFrames < maxFrames && (useRepel ? hero.mp > 0 || repelTiles > 0 : true)) {
     if (useRepel && repelTiles <= 0 && hero.mp >= 2) {
@@ -846,6 +848,7 @@ export function simulateZone(heroStats, monsters, encounterRate = 16, settings =
       totalMP += 2;
       totalFrames += repelCastTime;
       repelTiles = 127;
+      log.push('Hero casts REPEL.');
     }
     totalFrames += encounterFrames;
     let repelActive = false;
@@ -856,6 +859,7 @@ export function simulateZone(heroStats, monsters, encounterRate = 16, settings =
     }
     const monsterTemplate = monsters[Math.floor(Math.random() * monsters.length)];
     if (useRepel && repelActive && monsterTemplate.attack < hero.defense) {
+      log.push(`${monsterTemplate.name} was repelled.`);
       continue;
     }
     const hpMax = monsterTemplate.hp;
@@ -865,7 +869,9 @@ export function simulateZone(heroStats, monsters, encounterRate = 16, settings =
       hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
       maxHp: hpMax,
     };
+    log.push(`Encountered ${monster.name}.`);
     const result = simulateBattle(hero, monster, settings);
+    log.push(...result.log);
     totalFrames += result.timeFrames;
     hero.hp = result.heroHp;
     hero.mp -= result.mpSpent;
@@ -883,5 +889,6 @@ export function simulateZone(heroStats, monsters, encounterRate = 16, settings =
     xpGained: totalXP,
     mpSpent: totalMP,
     timeFrames: totalFrames,
+    log,
   };
 }
