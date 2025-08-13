@@ -672,7 +672,8 @@
         sampleEl.textContent =
           `Total Time: ${formatTime(summary.timeFrames / 60)}\n` +
           `XP Gained: ${summary.xpGained}\n` +
-          `MP Spent: ${summary.mpSpent}`;
+          `MP Spent: ${summary.mpSpent}\n\n` +
+          summary.log.join("\n");
         return;
       }
 

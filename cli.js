@@ -102,3 +102,4 @@ console.log(`Average time per life: ${formatTime(repeated.averageTimeSeconds)}`)
 const zone = simulateZone(hero, [monster, monster, monster, monster, monster], 8, settings);
 console.log(`Zone XP per minute: ${zone.xpPerMinute.toFixed(2)}`);
 console.log(`Zone MP per minute: ${zone.mpPerMinute.toFixed(2)}`);
+zone.log.forEach((line) => console.log(line));
