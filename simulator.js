@@ -950,6 +950,9 @@ function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
       break;
     }
   }
+  if (totalFrames >= maxFrames) {
+    log.push('Time limit reached.');
+  }
   const xpPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
   const mpPerMinute = totalFrames === 0 ? 0 : (totalMP * 3600) / totalFrames;
   return {

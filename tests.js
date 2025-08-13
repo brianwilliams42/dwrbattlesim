@@ -214,6 +214,42 @@ console.log('big breath mitigation distribution test passed');
   console.log('zone grind low MP end test passed');
 }
 
+// Zone grind ends when time limit reached
+{
+  const seq = [0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 100,
+    maxHp: 100,
+    attack: 100,
+    strength: 100,
+    defense: 0,
+    agility: 10,
+    mp: 0,
+    spells: [],
+    armor: 'none',
+  };
+  const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 0 };
+  const result = simulateZone(hero, [monster], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroCriticalTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    framesBetweenFights: 0,
+    tileFrames: 60,
+    maxMinutes: 1 / 3600,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Time limit reached.'));
+  console.log('zone grind time limit test passed');
+}
+
 // Repeated grind ends when MP too low
 {
   const seq = [0, 0, 0, 0, 0];
