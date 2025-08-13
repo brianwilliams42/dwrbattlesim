@@ -213,6 +213,7 @@
           <label>Post-Battle <input type="number" id="post-battle-time" value="200" /></label>
       </details>
       <label id="frames-between-fights-label" style="display: none; margin-top:10px">Frames Between Fights <input type="number" id="frames-between-fights" value="30" /></label>
+      <label id="refill-seconds-label" style="display: none; margin-top:10px">Refill Time (sec) <input type="number" id="refill-seconds" value="75" /></label>
       <label>Mode
         <select id="sim-mode">
           <option value="single">Single Battle</option>
@@ -249,6 +250,7 @@
     const monsterStats = document.getElementById('monster-stats');
     const shareBtn = document.getElementById('share-url');
     const betweenFightsLabel = document.getElementById('frames-between-fights-label');
+    const refillSecondsLabel = document.getElementById('refill-seconds-label');
     const simModeSelect = document.getElementById('sim-mode');
     const fieldIds = Array.from(form.elements)
       .filter((el) => el.id && el !== shareBtn)
@@ -325,6 +327,8 @@
 
     function toggleBetweenFights() {
       betweenFightsLabel.style.display =
+        simModeSelect.value === 'repeated' ? 'block' : 'none';
+      refillSecondsLabel.style.display =
         simModeSelect.value === 'repeated' ? 'block' : 'none';
     }
 
@@ -467,6 +471,9 @@
           framesBetweenFights: Number(
             document.getElementById('frames-between-fights').value,
           ),
+          refillTimeSeconds: Number(
+            document.getElementById('refill-seconds').value,
+          ),
           ambushTime: Number(document.getElementById('ambush-time').value),
           monsterFleeTime: Number(
             document.getElementById('monster-flee-time').value,
@@ -496,6 +503,7 @@
         mode === 'repeated'
           ? `Average XP per life: ${summary.averageXPPerLife.toFixed(2)}\n` +
             `Average XP per minute: ${summary.averageXPPerMinute.toFixed(2)}\n` +
+            `Average XP per minute (incl. refill): ${summary.averageXPPerMinuteWithRefill.toFixed(2)}\n` +
             `Average time per life: ${formatTime(summary.averageTimeSeconds)}\n` +
             `Average enemies defeated per life: ${summary.averageKills.toFixed(2)}\n` +
             `Average MP spent per fight: ${summary.averageMPPerFight.toFixed(2)}`
