@@ -10,6 +10,7 @@ import {
   healBetweenFights,
   baseMaxDamage,
   simulateZone,
+  randomizeMonster,
 } from './simulator.js';
 import LZString from 'lz-string';
 const { compressToBase64, decompressFromBase64 } = LZString;
@@ -130,6 +131,67 @@ console.log('big breath mitigation distribution test passed');
   console.log('zone grind repel test passed');
 }
 
+// Zone grind counts step time for encounters
+{
+  const hero = {
+    hp: 10,
+    maxHp: 10,
+    attack: 100,
+    strength: 100,
+    defense: 0,
+    agility: 0,
+    mp: 0,
+    spells: [],
+    armor: 'none',
+  };
+  const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 0 };
+  const result = simulateZone(hero, [monster], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    framesBetweenFights: 0,
+    healSpellTime: 0,
+    maxMinutes: 16 / 3600,
+  });
+  assert.strictEqual(result.timeFrames, 16);
+  console.log('zone grind encounter step time test passed');
+}
+
+// Zone grind counts step time for repelled encounters
+{
+  const hero = {
+    hp: 10,
+    maxHp: 10,
+    attack: 0,
+    strength: 0,
+    defense: 20,
+    agility: 0,
+    mp: 2,
+    spells: ['REPEL'],
+    armor: 'none',
+  };
+  const monster = { name: 'Weak', hp: 1, attack: 10, defense: 0, agility: 0, xp: 0 };
+  const result = simulateZone(hero, [monster], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    framesBetweenFights: 0,
+    repelTime: 0,
+    healSpellTime: 0,
+    maxMinutes: 16 / 3600,
+  });
+  assert.strictEqual(result.timeFrames, 16);
+  console.log('zone grind repelled step time test passed');
+}
+
 // Zone grind heals based on strongest monster
 {
   const seq = [0];
@@ -247,7 +309,67 @@ console.log('big breath mitigation distribution test passed');
   });
   Math.random = orig;
   assert(result.log.includes('Time limit reached.'));
-  console.log('zone grind time limit test passed');
+console.log('zone grind time limit test passed');
+}
+
+// Dragonlord HP randomization
+{
+  const orig = Math.random;
+  Math.random = () => 0;
+  const dl1 = randomizeMonster({
+    name: 'Dragonlord 1',
+    hp: 100,
+    attack: 90,
+    defense: 65,
+    agility: 75,
+    hurtResist: 15,
+    dodge: 0,
+    xp: 0,
+    sleepResist: 15,
+    group: 4,
+  });
+  Math.random = orig;
+  assert.strictEqual(dl1.hp, 75);
+  assert.strictEqual(dl1.maxHp, 100);
+  console.log('Dragonlord 1 HP randomization test passed');
+}
+{
+  const seq = [0, 0.999];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const dl2Min = randomizeMonster({
+    name: 'Dragonlord 2',
+    hp: 165,
+    attack: 140,
+    defense: 100,
+    agility: 200,
+    hurtResist: 15,
+    dodge: 0,
+    xp: 0,
+    sleepResist: 15,
+    group: 4,
+    hpRange: [150, 165],
+  });
+  const dl2Max = randomizeMonster({
+    name: 'Dragonlord 2',
+    hp: 165,
+    attack: 140,
+    defense: 100,
+    agility: 200,
+    hurtResist: 15,
+    dodge: 0,
+    xp: 0,
+    sleepResist: 15,
+    group: 4,
+    hpRange: [150, 165],
+  });
+  Math.random = orig;
+  assert.strictEqual(dl2Min.hp, 150);
+  assert.strictEqual(dl2Min.maxHp, 165);
+  assert.strictEqual(dl2Max.hp, 165);
+  assert.strictEqual(dl2Max.maxHp, 165);
+  console.log('Dragonlord 2 HP randomization test passed');
 }
 
 // Repeated grind ends when MP too low

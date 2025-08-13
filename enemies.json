@@ -454,5 +454,30 @@
     "xp": 350,
     "sleepResist": 15,
     "group": 2
+  },
+  {
+    "hp": 100,
+    "name": "Dragonlord 1",
+    "attack": 90,
+    "defense": 65,
+    "agility": 75,
+    "hurtResist": 15,
+    "dodge": 0,
+    "xp": 0,
+    "sleepResist": 15,
+    "group": 4
+  },
+  {
+    "hp": 165,
+    "name": "Dragonlord 2",
+    "attack": 140,
+    "defense": 100,
+    "agility": 200,
+    "hurtResist": 15,
+    "dodge": 0,
+    "xp": 0,
+    "sleepResist": 15,
+    "group": 4,
+    "hpRange": [150, 165]
   }
 ]
