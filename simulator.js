@@ -196,6 +196,9 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       xpGained: 0,
       xpPerMinute: 0,
       mpSpent,
+      herbsUsed,
+      fairyWatersUsed,
+      heroHp: hero.hp,
       log,
     };
   }
@@ -823,6 +826,17 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
       if (i === 0 && heal.log.length > 0) {
         lifeLog.push(...heal.log);
       }
+      if (
+        (hero.spells?.includes('HEAL') || hero.spells?.includes('HEALMORE')) &&
+        hero.mp < mpSpent / fights
+      ) {
+        if (i === 0) {
+          lifeLog.push(
+            `Hero abandons the grind with ${hero.hp} HP and ${hero.mp} MP.`,
+          );
+        }
+        break;
+      }
     }
     totalXP += xp;
     totalFrames += frames;
@@ -862,9 +876,15 @@ function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
   const maxFrames = (settings.maxMinutes ?? 10) * 60 * 60;
   const encounterFrames = encounterRate * tileFrames;
   let hero = { ...heroStats, mp: heroStats.mp ?? 0, hp: heroStats.hp ?? heroStats.maxHp };
+  const worstMonster = monsters.reduce(
+    (prev, m) =>
+      maxMonsterDamage(hero, m) > maxMonsterDamage(hero, prev) ? m : prev,
+    monsters[0],
+  );
   let totalFrames = 0;
   let totalXP = 0;
   let totalMP = 0;
+  let fights = 0;
   let repelTiles = 0;
   const useRepel = hero.spells?.includes('REPEL');
   const log = [];
@@ -909,10 +929,24 @@ function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
     hero.hp = result.heroHp;
     hero.mp -= result.mpSpent;
     totalMP += result.mpSpent;
+    fights++;
     if (result.winner === 'hero') {
       totalXP += result.xpGained;
     }
     if (hero.hp <= 0) break;
+    const heal = healBetweenFights(hero, worstMonster, settings);
+    totalFrames += heal.frames;
+    totalMP += heal.mpSpent;
+    if (heal.log.length > 0) {
+      log.push(...heal.log);
+    }
+    if (
+      (hero.spells?.includes('HEAL') || hero.spells?.includes('HEALMORE')) &&
+      hero.mp < totalMP / fights
+    ) {
+      log.push(`Hero abandons the grind with ${hero.hp} HP and ${hero.mp} MP.`);
+      break;
+    }
   }
   const xpPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
   const mpPerMinute = totalFrames === 0 ? 0 : (totalMP * 3600) / totalFrames;

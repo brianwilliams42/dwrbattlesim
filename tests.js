@@ -129,6 +129,132 @@ console.log('big breath mitigation distribution test passed');
   console.log('zone grind repel test passed');
 }
 
+// Zone grind heals based on strongest monster
+{
+  const seq = [0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0.5;
+  const hero = {
+    hp: 35,
+    maxHp: 50,
+    attack: 100,
+    strength: 100,
+    defense: 0,
+    agility: 10,
+    mp: 50,
+    spells: ['HEAL'],
+    armor: 'none',
+  };
+  const weak = { name: 'Weak', hp: 1, attack: 30, defense: 0, agility: 0, xp: 0 };
+  const strong = { name: 'Strong', hp: 1, attack: 40, defense: 0, agility: 0, xp: 0 };
+  const result = simulateZone(hero, [weak, strong], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroCriticalTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    healSpellTime: 0,
+    framesBetweenFights: 0,
+    tileFrames: 1,
+    maxMinutes: 1 / 3600,
+  });
+  Math.random = orig;
+  assert(result.log.some((l) => l.startsWith('Hero casts HEAL')));
+  console.log('zone grind heal between fights test passed');
+}
+
+// Zone grind ends when MP too low
+{
+  const seq = [0, 0, 0, 0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 10,
+    maxHp: 50,
+    attack: 100,
+    strength: 50,
+    defense: 0,
+    agility: 10,
+    mp: 4,
+    spells: ['HEAL'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Slime',
+    hp: 1,
+    attack: 20,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+  };
+  const result = simulateZone(hero, [monster], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroCriticalTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    healSpellTime: 0,
+    framesBetweenFights: 0,
+    tileFrames: 1,
+    maxMinutes: 1,
+  });
+  Math.random = orig;
+  assert(
+    result.log.includes('Hero abandons the grind with 28 HP and 1 MP.'),
+  );
+  console.log('zone grind low MP end test passed');
+}
+
+// Repeated grind ends when MP too low
+{
+  const seq = [0, 0, 0, 0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 10,
+    maxHp: 50,
+    attack: 100,
+    strength: 50,
+    defense: 0,
+    agility: 10,
+    mp: 4,
+    spells: ['HEAL'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Slime',
+    hp: 1,
+    attack: 20,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+  };
+  const result = simulateRepeated(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroCriticalTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    healSpellTime: 0,
+    framesBetweenFights: 0,
+  });
+  Math.random = orig;
+  assert(result.log.includes('Hero abandons the grind with 28 HP and 1 MP.'));
+  console.log('repeated grind low MP end test passed');
+}
+
 // Hero run success ends battle
 {
   const seq = [0, 0, 0.8, 0.1];
@@ -163,6 +289,41 @@ console.log('big breath mitigation distribution test passed');
   assert.strictEqual(result.winner, 'hero_fled');
   assert.strictEqual(result.timeFrames, 40);
   console.log('hero run success test passed');
+}
+
+// Monster ambush flee preserves hero HP
+{
+  const seq = [0, 0.5, 0.1];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 20,
+    maxHp: 20,
+    strength: 50,
+    attack: 40,
+    defense: 0,
+    agility: 5,
+  };
+  const monster = {
+    name: 'Coward',
+    hp: 10,
+    attack: 20,
+    defense: 0,
+    agility: 5,
+    xp: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    ambushTime: 0,
+    enemyAttackTime: 0,
+    monsterFleeTime: 0,
+  });
+  Math.random = orig;
+  assert.deepStrictEqual(result.log, ['Coward ambushes!', 'Coward runs away!']);
+  assert.strictEqual(result.heroHp, 20);
+  console.log('monster ambush flee heroHp test passed');
 }
 
 // Monster HURT and HURTMORE damage is even after mitigation
