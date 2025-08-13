@@ -1,4 +1,4 @@
-import { simulateMany, simulateRepeated } from './simulator.js';
+import { simulateMany, simulateRepeated, simulateZone } from './simulator.js';
 
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
@@ -98,3 +98,7 @@ console.log(
 console.log(`Average enemies killed per life: ${repeated.averageKills.toFixed(2)}`);
 console.log(`Average MP spent per fight: ${repeated.averageMPPerFight.toFixed(2)}`);
 console.log(`Average time per life: ${formatTime(repeated.averageTimeSeconds)}`);
+
+const zone = simulateZone(hero, [monster, monster, monster, monster, monster], 8, settings);
+console.log(`Zone XP per minute: ${zone.xpPerMinute.toFixed(2)}`);
+console.log(`Zone MP per minute: ${zone.mpPerMinute.toFixed(2)}`);

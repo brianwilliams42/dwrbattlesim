@@ -822,3 +822,61 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
     log: sampleLog,
   };
 }
+export function simulateZone(heroStats, monsters, encounterRate = 16, settings = {}) {
+  const tileFrames = settings.tileFrames ?? 15;
+  const repelCastTime = settings.repelTime ?? 200;
+  const maxFrames = (settings.maxMinutes ?? 10) * 60 * 60;
+  const encounterFrames = encounterRate * tileFrames;
+  let hero = { ...heroStats, mp: heroStats.mp ?? 0, hp: heroStats.hp ?? heroStats.maxHp };
+  let totalFrames = 0;
+  let totalXP = 0;
+  let totalMP = 0;
+  let repelTiles = 0;
+  if (hero.mp >= 2) {
+    hero.mp -= 2;
+    totalMP += 2;
+    totalFrames += repelCastTime;
+    repelTiles = 127;
+  }
+  while (totalFrames < maxFrames && (hero.mp > 0 || repelTiles > 0)) {
+    if (repelTiles <= 0 && hero.mp >= 2) {
+      hero.mp -= 2;
+      totalMP += 2;
+      totalFrames += repelCastTime;
+      repelTiles = 127;
+    }
+    totalFrames += encounterFrames;
+    repelTiles -= encounterRate;
+    let repelActive = repelTiles >= 0;
+    if (!repelActive) repelTiles = 0;
+    const monsterTemplate = monsters[Math.floor(Math.random() * monsters.length)];
+    if (repelActive && monsterTemplate.attack < hero.defense) {
+      continue;
+    }
+    const hpMax = monsterTemplate.hp;
+    const hpMin = Math.ceil(hpMax * 0.75);
+    const monster = {
+      ...monsterTemplate,
+      hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
+      maxHp: hpMax,
+    };
+    const result = simulateBattle(hero, monster, settings);
+    totalFrames += result.timeFrames;
+    hero.hp = result.heroHp;
+    hero.mp -= result.mpSpent;
+    totalMP += result.mpSpent;
+    if (result.winner === 'hero') {
+      totalXP += result.xpGained;
+    }
+    if (hero.hp <= 0) break;
+  }
+  const xpPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
+  const mpPerMinute = totalFrames === 0 ? 0 : (totalMP * 3600) / totalFrames;
+  return {
+    xpPerMinute,
+    mpPerMinute,
+    xpGained: totalXP,
+    mpSpent: totalMP,
+    timeFrames: totalFrames,
+  };
+}

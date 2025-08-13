@@ -134,7 +134,7 @@
       <label><input type="checkbox" id="hero-sleep" /> SLEEP</label>
       <label><input type="checkbox" id="hero-flute" /> Fairy Flute</label>
     </fieldset>
-    <fieldset>
+    <fieldset id="monster-config">
       <legend>Monster Stats</legend>
       <label>Enemy
         <select id="enemy-select"></select>
@@ -182,6 +182,17 @@
         </select>
       </label>
     </fieldset>
+    <fieldset id="zone-config" style="display:none">
+      <legend>Zone Enemies</legend>
+      <div id="zone-enemies-container"></div>
+      <label>Encounter Rate
+        <select id="zone-encounter-rate" data-ignore="1">
+          <option value="8">1/8</option>
+          <option value="16">1/16</option>
+          <option value="21">1/21</option>
+        </select>
+      </label>
+    </fieldset>
     <fieldset>
       <legend>Simulation Settings</legend>
       <details>
@@ -216,6 +227,7 @@
         <select id="sim-mode">
           <option value="single">Single Battle</option>
           <option value="repeated">Repeated Fights</option>
+          <option value="zone">Zone Grind</option>
         </select>
       </label>
       <label id="frames-between-fights-label" style="display: none; margin-top:10px">Frames Between Fights <input type="number" id="frames-between-fights" value="30" /></label>
@@ -240,7 +252,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
   <script type="module">
-    import { simulateMany, simulateBattle, simulateRepeated } from './simulator.js';
+    import { simulateMany, simulateBattle, simulateRepeated, simulateZone } from './simulator.js';
 
     const form = document.getElementById('sim-form');
     const metricsEl = document.getElementById('metrics');
@@ -248,12 +260,15 @@
     const enemySelect = document.getElementById('enemy-select');
     const usePreset = document.getElementById('use-preset');
     const monsterStats = document.getElementById('monster-stats');
+    const monsterConfig = document.getElementById('monster-config');
     const shareBtn = document.getElementById('share-url');
     const betweenFightsLabel = document.getElementById('frames-between-fights-label');
     const refillSecondsLabel = document.getElementById('refill-seconds-label');
     const simModeSelect = document.getElementById('sim-mode');
+    const zoneConfig = document.getElementById('zone-config');
+    const zoneEnemiesContainer = document.getElementById('zone-enemies-container');
     const fieldIds = Array.from(form.elements)
-      .filter((el) => el.id && el !== shareBtn)
+      .filter((el) => el.id && el !== shareBtn && !el.dataset.ignore)
       .map((el) => el.id);
     const encodedData = location.hash.slice(1);
 
@@ -285,7 +300,7 @@
       });
       toggleMonsterStats();
       enemySelect.dispatchEvent(new Event('change'));
-      toggleBetweenFights();
+      toggleModeDisplays();
     }
 
     shareBtn.addEventListener('click', () => {
@@ -317,6 +332,93 @@
       document.getElementById('sleep-resist').value = chosen.sleepResist ?? 0;
     }
 
+    function setZoneMonsterStats(idx, chosen) {
+      document.getElementById(`zone-mon-hp-${idx}`).value = chosen.hp;
+      document.getElementById(`zone-mon-attack-${idx}`).value = chosen.attack;
+      document.getElementById(`zone-mon-defense-${idx}`).value = chosen.defense;
+      document.getElementById(`zone-mon-agility-${idx}`).value = chosen.agility;
+      document.getElementById(`zone-hurt-resist-${idx}`).value = chosen.hurtResist;
+      document.getElementById(`zone-mon-dodge-${idx}`).value = chosen.dodge ?? 2;
+      document.getElementById(`zone-mon-xp-${idx}`).value = chosen.xp ?? 0;
+      document.getElementById(`zone-stopspell-resist-${idx}`).value = chosen.stopspellResist ?? 0;
+      document.getElementById(`zone-sleep-resist-${idx}`).value = chosen.sleepResist ?? 0;
+    }
+
+    function setupZoneEnemies() {
+      for (let i = 0; i < 5; i++) {
+        zoneEnemiesContainer.insertAdjacentHTML(
+          'beforeend',
+          `<div class="zone-enemy">
+            <h4>Enemy ${i + 1}</h4>
+            <label>Enemy <select id="zone-enemy-select-${i}" data-ignore="1"></select></label>
+            <label><input type="checkbox" id="zone-use-preset-${i}" data-ignore="1" checked /> Use preset monster stats</label>
+            <div id="zone-monster-stats-${i}" style="display:none">
+              <label>HP <input type="number" id="zone-mon-hp-${i}" data-ignore="1" /></label>
+              <label>Attack <input type="number" id="zone-mon-attack-${i}" data-ignore="1" /></label>
+              <label>Defense <input type="number" id="zone-mon-defense-${i}" data-ignore="1" /></label>
+              <label>Agility <input type="number" id="zone-mon-agility-${i}" data-ignore="1" /></label>
+              <label>HURT Resist (0-15) <input type="number" id="zone-hurt-resist-${i}" data-ignore="1" /></label>
+              <label>Dodge (0-64) <input type="number" id="zone-mon-dodge-${i}" data-ignore="1" /></label>
+              <label>XP Reward <input type="number" id="zone-mon-xp-${i}" data-ignore="1" /></label>
+              <label>Sleep Resist (0-15) <input type="number" id="zone-sleep-resist-${i}" data-ignore="1" /></label>
+            </div>
+            <label style="margin-top:10px">Stopspell Resist (0-15) <input type="number" id="zone-stopspell-resist-${i}" data-ignore="1" /></label>
+            <label style="margin-top:10px">Support Ability
+              <select id="zone-mon-support-${i}" data-ignore="1">
+                <option value="">None</option>
+                <option value="sleep">Sleep</option>
+                <option value="stopspell">Stopspell</option>
+                <option value="heal">Heal</option>
+                <option value="healmore">Healmore</option>
+              </select>
+              Chance
+              <select id="zone-mon-support-chance-${i}" data-ignore="1">
+                <option value="0.25">25%</option>
+                <option value="0.5">50%</option>
+                <option value="0.75">75%</option>
+              </select>
+            </label>
+            <label style="margin-top:10px">Attack Ability
+              <select id="zone-mon-attack-ability-${i}" data-ignore="1">
+                <option value="">None</option>
+                <option value="hurt">HURT</option>
+                <option value="hurtmore">HURTMORE</option>
+                <option value="smallbreath">Small Breath</option>
+                <option value="bigbreath">Big Breath</option>
+              </select>
+              Chance
+              <select id="zone-mon-attack-chance-${i}" data-ignore="1">
+                <option value="0.25">25%</option>
+                <option value="0.5">50%</option>
+                <option value="0.75">75%</option>
+              </select>
+            </label>
+          </div>`,
+        );
+        const sel = document.getElementById(`zone-enemy-select-${i}`);
+        sel.appendChild(new Option('Custom', ''));
+        for (const e of enemies) sel.appendChild(new Option(e.name, e.name));
+        sel.value = enemies[0]?.name || '';
+        const preset = document.getElementById(`zone-use-preset-${i}`);
+        const stats = document.getElementById(`zone-monster-stats-${i}`);
+        function toggle() {
+          stats.style.display = preset.checked ? 'none' : 'block';
+          if (preset.checked) {
+            const chosen = enemies.find((e) => e.name === sel.value);
+            if (chosen) setZoneMonsterStats(i, chosen);
+          }
+        }
+        preset.addEventListener('change', toggle);
+        sel.addEventListener('change', () => {
+          if (preset.checked) {
+            const chosen = enemies.find((e) => e.name === sel.value);
+            if (chosen) setZoneMonsterStats(i, chosen);
+          }
+        });
+        toggle();
+      }
+    }
+
     function toggleMonsterStats() {
       monsterStats.style.display = usePreset.checked ? 'none' : 'block';
       if (usePreset.checked) {
@@ -325,21 +427,23 @@
       }
     }
 
-    function toggleBetweenFights() {
-      betweenFightsLabel.style.display =
-        simModeSelect.value === 'repeated' ? 'block' : 'none';
-      refillSecondsLabel.style.display =
-        simModeSelect.value === 'repeated' ? 'block' : 'none';
+    function toggleModeDisplays() {
+      const mode = simModeSelect.value;
+      betweenFightsLabel.style.display = mode === 'repeated' ? 'block' : 'none';
+      refillSecondsLabel.style.display = mode === 'repeated' ? 'block' : 'none';
+      monsterConfig.style.display = mode === 'zone' ? 'none' : 'block';
+      zoneConfig.style.display = mode === 'zone' ? 'block' : 'none';
     }
 
     usePreset.addEventListener('change', toggleMonsterStats);
-    simModeSelect.addEventListener('change', toggleBetweenFights);
-    toggleBetweenFights();
+    simModeSelect.addEventListener('change', toggleModeDisplays);
+    toggleModeDisplays();
 
     fetch('./enemies.json')
       .then((r) => r.json())
       .then((data) => {
         enemies = data;
+        setupZoneEnemies();
         enemySelect.appendChild(new Option('Custom', ''));
         for (const e of enemies) {
           enemySelect.appendChild(new Option(e.name, e.name));
@@ -481,6 +585,53 @@
         };
       const iterations = Number(document.getElementById('iterations').value);
       const mode = document.getElementById('sim-mode').value;
+
+      if (mode === 'zone') {
+        const zoneMonsters = [];
+        for (let i = 0; i < 5; i++) {
+          zoneMonsters.push({
+            name:
+              document.getElementById(`zone-enemy-select-${i}`).value ||
+              `Custom${i + 1}`,
+            hp: Number(document.getElementById(`zone-mon-hp-${i}`).value),
+            attack: Number(document.getElementById(`zone-mon-attack-${i}`).value),
+            defense: Number(document.getElementById(`zone-mon-defense-${i}`).value),
+            agility: Number(document.getElementById(`zone-mon-agility-${i}`).value),
+            xp: Number(document.getElementById(`zone-mon-xp-${i}`).value),
+            hurtResist:
+              Number(document.getElementById(`zone-hurt-resist-${i}`).value) / 16,
+            dodge: Number(document.getElementById(`zone-mon-dodge-${i}`).value),
+            stopspellResist:
+              Number(
+                document.getElementById(`zone-stopspell-resist-${i}`).value,
+              ) / 16,
+            sleepResist:
+              Number(document.getElementById(`zone-sleep-resist-${i}`).value) / 16,
+            supportAbility: document.getElementById(`zone-mon-support-${i}`).value,
+            supportChance: Number(
+              document.getElementById(`zone-mon-support-chance-${i}`).value,
+            ),
+            attackAbility: document.getElementById(
+              `zone-mon-attack-ability-${i}`,
+            ).value,
+            attackChance: Number(
+              document.getElementById(`zone-mon-attack-chance-${i}`).value,
+            ),
+          });
+        }
+        const encounterRate = Number(
+          document.getElementById('zone-encounter-rate').value,
+        );
+        const summary = simulateZone(hero, zoneMonsters, encounterRate, settings);
+        metricsEl.textContent =
+          `Average XP per minute: ${summary.xpPerMinute.toFixed(2)}\n` +
+          `Average MP per minute: ${summary.mpPerMinute.toFixed(2)}`;
+        sampleEl.textContent =
+          `Total Time: ${formatTime(summary.timeFrames / 60)}\n` +
+          `XP Gained: ${summary.xpGained}\n` +
+          `MP Spent: ${summary.mpSpent}`;
+        return;
+      }
 
       const summary =
         mode === 'repeated'

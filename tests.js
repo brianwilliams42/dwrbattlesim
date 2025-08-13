@@ -9,6 +9,7 @@ import {
   simulateRepeated,
   healBetweenFights,
   baseMaxDamage,
+  simulateZone,
 } from './simulator.js';
 import LZString from 'lz-string';
 const { compressToBase64, decompressFromBase64 } = LZString;
@@ -50,6 +51,80 @@ for (let i = 0; i < 8; i++) {
 }
 assert.deepStrictEqual(counts, { 42: 1, 44: 3, 46: 3, 48: 1 });
 console.log('big breath mitigation distribution test passed');
+
+// Zone grind basic XP per minute
+{
+  const hero = {
+    hp: 100,
+    maxHp: 100,
+    attack: 100,
+    strength: 100,
+    defense: 0,
+    agility: 10,
+    mp: 1,
+    spells: [],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Slime',
+    hp: 1,
+    attack: 1,
+    defense: 0,
+    agility: 0,
+    xp: 10,
+  };
+  const monsters = [monster, monster, monster, monster, monster];
+  const result = simulateZone(hero, monsters, 8, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    maxMinutes: 0.1,
+  });
+  assert(result.xpGained > 0);
+  console.log('zone grind basic test passed');
+}
+
+// Zone grind repel skips weak enemies
+{
+  const hero = {
+    hp: 100,
+    maxHp: 100,
+    attack: 100,
+    strength: 100,
+    defense: 20,
+    agility: 10,
+    mp: 2,
+    spells: [],
+    armor: 'none',
+  };
+  const weak = {
+    name: 'Weak',
+    hp: 1,
+    attack: 10,
+    defense: 0,
+    agility: 0,
+    xp: 5,
+  };
+  const monsters = [weak, weak, weak, weak, weak];
+  const result = simulateZone(hero, monsters, 8, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    repelTime: 0,
+    maxMinutes: 0.05,
+  });
+  assert.strictEqual(result.xpGained, 0);
+  assert.strictEqual(result.mpSpent, 2);
+  console.log('zone grind repel test passed');
+}
 
 // Monster HURT and HURTMORE damage is even after mitigation
 {
