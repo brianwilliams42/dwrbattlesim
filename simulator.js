@@ -123,6 +123,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     fairyWaterTime = 245,
     healSpellTime = 190,
     fairyFluteTime = 470,
+    heroRunFailTime = 150,
+    heroRunSuccessTime = 40,
     enemyAttackTime = 130,
     enemyHurtSpellTime = 190,
     enemyHealSpellTime = 165,
@@ -157,11 +159,13 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     fairyFlute: heroStats.fairyFlute || false,
     herbs: heroStats.herbs || 0,
     fairyWater: heroStats.fairyWater || 0,
+    fled: false,
   };
   hero.hurtMitigation = armor === 'magic' || armor === 'erdrick';
   hero.breathMitigation = armor === 'erdrick';
   hero.stopspellImmune = armor === 'erdrick';
   const monster = { ...monsterStats };
+  monster.group = monster.group || 2;
   monster.dodge = monster.dodge ?? 2;
   monster.maxHp = monster.maxHp ?? monster.hp;
   monster.asleep = false;
@@ -253,11 +257,13 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       });
     }
 
-    const kill = killOptions.find(
-      (o) =>
-        o.min >= monsterHpKnownMax &&
-        (dodgeRateRiskFactor === 0 || o.fail <= dodgeRateRiskFactor),
-    );
+    const kill =
+      !monster.runFrom &&
+      killOptions.find(
+        (o) =>
+          o.min >= monsterHpKnownMax &&
+          (dodgeRateRiskFactor === 0 || o.fail <= dodgeRateRiskFactor),
+      );
     if (kill) return kill.action;
 
     if (hero.hp <= currentMaxDamage) {
@@ -269,6 +275,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       }
       if (hero.herbs > 0) return 'HERB';
     }
+
+    if (monster.runFrom) return 'RUN';
 
     if (
       !hero.stopspelled &&
@@ -436,6 +444,21 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       return;
     }
 
+    if (action === 'RUN') {
+      const groupFactors = { 1: 0.25, 2: 1 / 3, 3: 0.5, 4: 1 };
+      const heroRoll = Math.random() * hero.agility;
+      const factor = groupFactors[monster.group] ?? 1 / 3;
+      const enemyRoll = Math.random() * monster.agility * factor;
+      if (heroRoll >= enemyRoll) {
+        hero.fled = true;
+        log.push('Hero runs away.');
+      } else {
+        timeFrames += heroRunFailTime;
+        log.push('Hero tries to run, but cannot escape!');
+      }
+      return;
+    }
+
     const dodgeChance = (monster.dodge || 0) / 64;
     if (Math.random() < dodgeChance) {
       timeFrames += enemyDodgeTime; // replaces normal attack time
@@ -589,14 +612,14 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     log.push(`${monster.name} attacks for ${dmg} damage.`);
   }
 
-  while (hero.hp > 0 && monster.hp > 0 && !monster.fled) {
+  while (hero.hp > 0 && monster.hp > 0 && !monster.fled && !hero.fled) {
     rounds++;
     runHeroTurn();
     if (monster.hp <= 0) {
       log.push(`${monster.name} is defeated.`);
       break;
     }
-    if (hero.hp <= 0 || monster.fled) break;
+    if (hero.hp <= 0 || monster.fled || hero.fled) break;
     runMonsterTurn();
     if (hero.hp <= 0) {
       log.push('Hero is defeated.');
@@ -605,8 +628,18 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     if (monster.fled) break;
   }
 
-  timeFrames += monster.fled ? monsterFleeTime : postBattleTime;
-  const winner = monster.fled ? 'fled' : hero.hp > 0 ? 'hero' : 'monster';
+  timeFrames += monster.fled
+    ? monsterFleeTime
+    : hero.fled
+    ? heroRunSuccessTime
+    : postBattleTime;
+  const winner = monster.fled
+    ? 'fled'
+    : hero.fled
+    ? 'hero_fled'
+    : hero.hp > 0
+    ? 'hero'
+    : 'monster';
   const xpGained = winner === 'hero' ? monsterStats.xp : 0;
   const timeSeconds = timeFrames / 60;
   const xpPerMinute = xpGained * 60 / timeSeconds;

@@ -129,6 +129,42 @@ console.log('big breath mitigation distribution test passed');
   console.log('zone grind repel test passed');
 }
 
+// Hero run success ends battle
+{
+  const seq = [0, 0, 0.8, 0.1];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 10,
+    maxHp: 10,
+    attack: 0,
+    defense: 0,
+    agility: 5,
+  };
+  const monster = {
+    name: 'Test',
+    hp: 10,
+    attack: 0,
+    defense: 0,
+    agility: 5,
+    group: 4,
+    runFrom: true,
+    xp: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroRunSuccessTime: 40,
+    heroRunFailTime: 150,
+    enemyAttackTime: 0,
+  });
+  Math.random = orig;
+  assert.strictEqual(result.winner, 'hero_fled');
+  assert.strictEqual(result.timeFrames, 40);
+  console.log('hero run success test passed');
+}
+
 // Monster HURT and HURTMORE damage is even after mitigation
 {
   const hurtSet = new Set();

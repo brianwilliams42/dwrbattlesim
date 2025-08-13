@@ -8,7 +8,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 1,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 3,
@@ -19,7 +20,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 2,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 5,
@@ -30,7 +32,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 3,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 3,
@@ -41,7 +44,8 @@
     "hurtResist": 15,
     "dodge": 1,
     "xp": 255,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   },
   {
     "hp": 7,
@@ -52,7 +56,8 @@
     "hurtResist": 0,
     "dodge": 4,
     "xp": 4,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 12,
@@ -63,7 +68,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 8,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 13,
@@ -74,7 +80,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 12,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 13,
@@ -85,7 +92,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 16,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 23,
@@ -96,7 +104,8 @@
     "hurtResist": 0,
     "dodge": 6,
     "xp": 15,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 22,
@@ -107,7 +116,8 @@
     "hurtResist": 0,
     "dodge": 2,
     "xp": 14,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 16,
@@ -118,7 +128,8 @@
     "hurtResist": 0,
     "dodge": 6,
     "xp": 20,
-    "sleepResist": 2
+    "sleepResist": 2,
+    "group": 2
   },
   {
     "hp": 20,
@@ -129,7 +140,8 @@
     "hurtResist": 0,
     "dodge": 2,
     "xp": 18,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 24,
@@ -140,7 +152,8 @@
     "hurtResist": 0,
     "dodge": 4,
     "xp": 25,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 28,
@@ -151,7 +164,8 @@
     "hurtResist": 0,
     "dodge": 2,
     "xp": 28,
-    "sleepResist": 3
+    "sleepResist": 3,
+    "group": 2
   },
   {
     "hp": 18,
@@ -162,7 +176,8 @@
     "hurtResist": 0,
     "dodge": 2,
     "xp": 31,
-    "sleepResist": 0
+    "sleepResist": 0,
+    "group": 2
   },
   {
     "hp": 33,
@@ -173,7 +188,8 @@
     "hurtResist": 0,
     "dodge": 2,
     "xp": 40,
-    "sleepResist": 1
+    "sleepResist": 1,
+    "group": 2
   },
   {
     "hp": 33,
@@ -184,7 +200,8 @@
     "hurtResist": 0,
     "dodge": 4,
     "xp": 47,
-    "sleepResist": 3
+    "sleepResist": 3,
+    "group": 2
   },
   {
     "hp": 39,
@@ -195,7 +212,8 @@
     "hurtResist": 0,
     "dodge": 4,
     "xp": 42,
-    "sleepResist": 7
+    "sleepResist": 7,
+    "group": 2
   },
   {
     "hp": 35,
@@ -206,7 +224,8 @@
     "hurtResist": 0,
     "dodge": 4,
     "xp": 58,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   },
   {
     "hp": 50,
@@ -217,7 +236,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 6,
-    "sleepResist": 13
+    "sleepResist": 13,
+    "group": 2
   },
   {
     "hp": 37,
@@ -228,7 +248,8 @@
     "hurtResist": 0,
     "dodge": 2,
     "xp": 52,
-    "sleepResist": 4
+    "sleepResist": 4,
+    "group": 2
   },
   {
     "hp": 44,
@@ -239,7 +260,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 58,
-    "sleepResist": 2
+    "sleepResist": 2,
+    "group": 2
   },
   {
     "hp": 37,
@@ -250,7 +272,8 @@
     "hurtResist": 0,
     "dodge": 2,
     "xp": 64,
-    "sleepResist": 4
+    "sleepResist": 4,
+    "group": 2
   },
   {
     "hp": 40,
@@ -261,7 +284,8 @@
     "hurtResist": 0,
     "dodge": 2,
     "xp": 70,
-    "sleepResist": 7
+    "sleepResist": 7,
+    "group": 2
   },
   {
     "hp": 40,
@@ -272,7 +296,8 @@
     "hurtResist": 3,
     "dodge": 4,
     "xp": 72,
-    "sleepResist": 5
+    "sleepResist": 5,
+    "group": 2
   },
   {
     "hp": 47,
@@ -283,7 +308,8 @@
     "hurtResist": 0,
     "dodge": 1,
     "xp": 78,
-    "sleepResist": 6
+    "sleepResist": 6,
+    "group": 2
   },
   {
     "hp": 48,
@@ -294,7 +320,8 @@
     "hurtResist": 0,
     "dodge": 6,
     "xp": 83,
-    "sleepResist": 2
+    "sleepResist": 2,
+    "group": 2
   },
   {
     "hp": 38,
@@ -305,7 +332,8 @@
     "hurtResist": 15,
     "dodge": 15,
     "xp": 90,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   },
   {
     "hp": 65,
@@ -316,7 +344,8 @@
     "hurtResist": 15,
     "dodge": 2,
     "xp": 120,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   },
   {
     "hp": 70,
@@ -327,7 +356,8 @@
     "hurtResist": 0,
     "dodge": 7,
     "xp": 95,
-    "sleepResist": 7
+    "sleepResist": 7,
+    "group": 2
   },
   {
     "hp": 74,
@@ -338,7 +368,8 @@
     "hurtResist": 1,
     "dodge": 2,
     "xp": 105,
-    "sleepResist": 8
+    "sleepResist": 8,
+    "group": 2
   },
   {
     "hp": 72,
@@ -349,7 +380,8 @@
     "hurtResist": 2,
     "dodge": 2,
     "xp": 135,
-    "sleepResist": 7
+    "sleepResist": 7,
+    "group": 2
   },
   {
     "hp": 67,
@@ -360,7 +392,8 @@
     "hurtResist": 1,
     "dodge": 2,
     "xp": 130,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   },
   {
     "hp": 98,
@@ -371,7 +404,8 @@
     "hurtResist": 7,
     "dodge": 2,
     "xp": 180,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   },
   {
     "hp": 135,
@@ -382,7 +416,8 @@
     "hurtResist": 7,
     "dodge": 1,
     "xp": 155,
-    "sleepResist": 2
+    "sleepResist": 2,
+    "group": 2
   },
   {
     "hp": 99,
@@ -393,7 +428,8 @@
     "hurtResist": 1,
     "dodge": 2,
     "xp": 172,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   },
   {
     "hp": 153,
@@ -404,7 +440,8 @@
     "hurtResist": 15,
     "dodge": 0,
     "xp": 350,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   },
   {
     "hp": 106,
@@ -415,6 +452,7 @@
     "hurtResist": 15,
     "dodge": 2,
     "xp": 350,
-    "sleepResist": 15
+    "sleepResist": 15,
+    "group": 2
   }
 ]
