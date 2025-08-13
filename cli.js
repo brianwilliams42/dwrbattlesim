@@ -99,6 +99,13 @@ console.log(`Average enemies killed per life: ${repeated.averageKills.toFixed(2)
 console.log(`Average MP spent per fight: ${repeated.averageMPPerFight.toFixed(2)}`);
 console.log(`Average time per life: ${formatTime(repeated.averageTimeSeconds)}`);
 
-const zone = simulateZone(hero, [monster, monster, monster, monster, monster], 8, settings);
+const zone = simulateZone(
+  hero,
+  [monster, monster, monster, monster, monster],
+  8,
+  settings,
+  1000,
+);
 console.log(`Zone XP per minute: ${zone.xpPerMinute.toFixed(2)}`);
 console.log(`Zone MP per minute: ${zone.mpPerMinute.toFixed(2)}`);
+zone.log.forEach((line) => console.log(line));

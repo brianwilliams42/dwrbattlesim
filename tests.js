@@ -83,8 +83,9 @@ console.log('big breath mitigation distribution test passed');
     enemyBreathTime: 0,
     enemyDodgeTime: 0,
     maxMinutes: 0.1,
-  });
+  }, 2);
   assert(result.xpGained > 0);
+  assert(result.log[0].startsWith('Encountered'));
   console.log('zone grind basic test passed');
 }
 
@@ -123,6 +124,8 @@ console.log('big breath mitigation distribution test passed');
   });
   assert.strictEqual(result.xpGained, 0);
   assert.strictEqual(result.mpSpent, 2);
+  assert.strictEqual(result.log[0], 'Hero casts REPEL.');
+  assert(result.log.includes('Weak was repelled.'));
   console.log('zone grind repel test passed');
 }
 
