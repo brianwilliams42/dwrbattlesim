@@ -143,6 +143,8 @@ console.log('big breath mitigation distribution test passed');
 
 // Zone grind counts step time for encounters
 {
+  const orig = Math.random;
+  Math.random = () => 0.5;
   const hero = {
     hp: 10,
     maxHp: 10,
@@ -167,6 +169,7 @@ console.log('big breath mitigation distribution test passed');
     healSpellTime: 0,
     maxMinutes: 16 / 3600,
   });
+  Math.random = orig;
   assert.strictEqual(result.timeFrames, 16);
   console.log('zone grind encounter step time test passed');
 }
@@ -389,6 +392,47 @@ console.log('big breath mitigation distribution test passed');
   Math.random = orig;
   assert(result.log.includes('Time limit reached.'));
 console.log('zone grind time limit test passed');
+}
+
+// simulateZone reports averages and XP/min including refill
+{
+  const seq = [0, 0, 0, 0, 0, 0.5, 0.5, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0.5;
+  const hero = {
+    hp: 10,
+    maxHp: 10,
+    attack: 100,
+    strength: 100,
+    defense: 0,
+    agility: 0,
+    mp: 0,
+    spells: [],
+    armor: 'none',
+  };
+  const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 1 };
+  const result = simulateZone(hero, [monster], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    framesBetweenFights: 0,
+    healSpellTime: 0,
+    tileFrames: 1,
+    maxMinutes: 1 / 3600,
+    refillTimeSeconds: 75,
+  });
+  Math.random = orig;
+  const expectedWithRefill = (1 * 3600) / (1 + 75 * 60);
+  assert.strictEqual(result.averageXPPerLife, 1);
+  assert.strictEqual(result.timeFrames, 1);
+  assert(Math.abs(result.averageTimeSeconds - 1 / 60) < 1e-9);
+  assert(Math.abs(result.xpPerMinuteWithRefill - expectedWithRefill) < 1e-9);
+  console.log('zone grind averages and refill test passed');
 }
 
 // Dragonlord HP randomization

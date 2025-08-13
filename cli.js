@@ -109,6 +109,11 @@ const zone = simulateZone(
   settings,
   1000,
 );
+console.log(`Zone XP per life: ${zone.averageXPPerLife.toFixed(2)}`);
 console.log(`Zone XP per minute: ${zone.xpPerMinute.toFixed(2)}`);
+console.log(
+  `Zone XP per minute (incl. refill): ${zone.xpPerMinuteWithRefill.toFixed(2)}`,
+);
+console.log(`Zone time per life: ${formatTime(zone.averageTimeSeconds)}`);
 console.log(`Zone MP per minute: ${zone.mpPerMinute.toFixed(2)}`);
 zone.log.forEach((line) => console.log(line));
