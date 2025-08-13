@@ -101,6 +101,18 @@ export function maxMonsterDamage(heroStats, monsterStats) {
   return maxDamage;
 }
 
+export function randomizeMonster(monster) {
+  const hpMax = monster.hpRange ? monster.hpRange[1] : monster.hp;
+  const hpMin = monster.hpRange
+    ? monster.hpRange[0]
+    : Math.ceil(hpMax * 0.75);
+  return {
+    ...monster,
+    hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
+    maxHp: hpMax,
+  };
+}
+
 const HERO_SPELL_COST = {
   HURT: 2,
   HURTMORE: 5,
@@ -672,13 +684,7 @@ export function simulateMany(hero, monster, settings = {}, iterations = 1) {
   let totalHerbs = 0;
   let totalFairyWater = 0;
   for (let i = 0; i < iterations; i++) {
-    const hpMax = monster.hp;
-    const hpMin = Math.ceil(hpMax * 0.75);
-    const m = {
-      ...monster,
-      hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
-      maxHp: hpMax,
-    };
+    const m = randomizeMonster(monster);
     const result = simulateBattle(hero, m, settings);
     totalXP += result.xpGained;
     totalFrames += result.timeFrames;
@@ -787,13 +793,7 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
     let fairyWatersUsed = 0;
     const lifeLog = [];
     while (hero.hp > 0) {
-      const hpMax = monsterStats.hp;
-      const hpMin = Math.ceil(hpMax * 0.75);
-      const m = {
-        ...monsterStats,
-        hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
-        maxHp: hpMax,
-      };
+      const m = randomizeMonster(monsterStats);
       if (i === 0) {
         lifeLog.push(
           fights === 0
@@ -871,10 +871,10 @@ export function simulateRepeated(heroStats, monsterStats, settings = {}, iterati
   };
 }
 function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
-  const tileFrames = settings.tileFrames ?? 15;
+  const tileFrames = settings.tileFrames ?? 16;
   const repelCastTime = settings.repelTime ?? 200;
   const maxFrames = (settings.maxMinutes ?? 10) * 60 * 60;
-  const encounterFrames = encounterRate * tileFrames;
+  const encounterChance = 1 / encounterRate;
   let hero = { ...heroStats, mp: heroStats.mp ?? 0, hp: heroStats.hp ?? heroStats.maxHp };
   const worstMonster = monsters.reduce(
     (prev, m) =>
@@ -885,43 +885,37 @@ function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
   let totalXP = 0;
   let totalMP = 0;
   let fights = 0;
-  let repelTiles = 0;
+  let repelSteps = 0;
   const useRepel = hero.spells?.includes('REPEL');
   const log = [];
   if (useRepel && hero.mp >= 2) {
     hero.mp -= 2;
     totalMP += 2;
     totalFrames += repelCastTime;
-    repelTiles = 127;
+    repelSteps = 128;
     log.push('Hero casts REPEL.');
   }
-  while (totalFrames < maxFrames && (useRepel ? hero.mp > 0 || repelTiles > 0 : true)) {
-    if (useRepel && repelTiles <= 0 && hero.mp >= 2) {
+  while (totalFrames < maxFrames && (useRepel ? hero.mp > 0 || repelSteps > 0 : true)) {
+    if (useRepel && repelSteps <= 0 && hero.mp >= 2) {
       hero.mp -= 2;
       totalMP += 2;
       totalFrames += repelCastTime;
-      repelTiles = 127;
+      repelSteps = 128;
       log.push('Hero casts REPEL.');
     }
-    totalFrames += encounterFrames;
-    let repelActive = false;
-    if (useRepel) {
-      repelTiles -= encounterRate;
-      repelActive = repelTiles >= 0;
-      if (!repelActive) repelTiles = 0;
-    }
+    const remainingFrames = maxFrames - totalFrames;
+    const stepFrames = Math.min(tileFrames, remainingFrames);
+    totalFrames += stepFrames;
+    if (stepFrames < tileFrames) break;
+    const repelActive = useRepel && repelSteps > 0;
+    if (useRepel && repelSteps > 0) repelSteps--;
+    if (Math.random() >= encounterChance) continue;
     const monsterTemplate = monsters[Math.floor(Math.random() * monsters.length)];
-    if (useRepel && repelActive && monsterTemplate.attack < hero.defense) {
+    if (repelActive && monsterTemplate.attack < hero.defense) {
       log.push(`${monsterTemplate.name} was repelled.`);
       continue;
     }
-    const hpMax = monsterTemplate.hp;
-    const hpMin = Math.ceil(hpMax * 0.75);
-    const monster = {
-      ...monsterTemplate,
-      hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
-      maxHp: hpMax,
-    };
+    const monster = randomizeMonster(monsterTemplate);
     log.push(
       `Encountered ${monster.name}. Hero has ${hero.hp} HP and ${hero.mp} MP.`,
     );
