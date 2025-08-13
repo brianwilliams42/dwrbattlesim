@@ -1889,3 +1889,36 @@ const fullHumanUrl = `https://example.com/?${humanParams}`;
 console.log(`Full encoded URL length: ${fullEncodedUrl.length}`);
 console.log(`Full human-readable URL length: ${fullHumanUrl.length}`);
 
+// Zone URL encoding round trip test
+{
+  const zoneMonsters = [
+    [1, 'Slime', 0],
+    [
+      0,
+      'Custom',
+      2,
+      5,
+      1,
+      3,
+      0,
+      1,
+      1,
+      0,
+      0,
+      2,
+      '',
+      0.25,
+      '',
+      0.25,
+      0,
+    ],
+  ];
+  const zoneData = [8, zoneMonsters];
+  const dataArrayWithZone = fieldOrder.map((id) => sampleParams[id]);
+  dataArrayWithZone.push(zoneData);
+  const enc = toBase64Url(compressToBase64(JSON.stringify(dataArrayWithZone)));
+  const dec = JSON.parse(decompressFromBase64(fromBase64Url(enc)));
+  assert.deepStrictEqual(dec, dataArrayWithZone);
+  console.log('zone URL encode/decode round trip test passed');
+}
+
