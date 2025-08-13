@@ -874,7 +874,7 @@ function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
   const tileFrames = settings.tileFrames ?? 16;
   const repelCastTime = settings.repelTime ?? 200;
   const maxFrames = (settings.maxMinutes ?? 10) * 60 * 60;
-  const encounterFrames = encounterRate * tileFrames;
+  const encounterChance = 1 / encounterRate;
   let hero = { ...heroStats, mp: heroStats.mp ?? 0, hp: heroStats.hp ?? heroStats.maxHp };
   const worstMonster = monsters.reduce(
     (prev, m) =>
@@ -885,36 +885,33 @@ function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
   let totalXP = 0;
   let totalMP = 0;
   let fights = 0;
-  let repelTiles = 0;
+  let repelSteps = 0;
   const useRepel = hero.spells?.includes('REPEL');
   const log = [];
   if (useRepel && hero.mp >= 2) {
     hero.mp -= 2;
     totalMP += 2;
     totalFrames += repelCastTime;
-    repelTiles = 127;
+    repelSteps = 128;
     log.push('Hero casts REPEL.');
   }
-  while (totalFrames < maxFrames && (useRepel ? hero.mp > 0 || repelTiles > 0 : true)) {
-    if (useRepel && repelTiles <= 0 && hero.mp >= 2) {
+  while (totalFrames < maxFrames && (useRepel ? hero.mp > 0 || repelSteps > 0 : true)) {
+    if (useRepel && repelSteps <= 0 && hero.mp >= 2) {
       hero.mp -= 2;
       totalMP += 2;
       totalFrames += repelCastTime;
-      repelTiles = 127;
+      repelSteps = 128;
       log.push('Hero casts REPEL.');
     }
     const remainingFrames = maxFrames - totalFrames;
-    const walkFrames = Math.min(encounterFrames, remainingFrames);
-    totalFrames += walkFrames;
-    let repelActive = false;
-    if (useRepel) {
-      repelTiles -= walkFrames / tileFrames;
-      repelActive = repelTiles >= 0;
-      if (!repelActive) repelTiles = 0;
-    }
-    if (walkFrames < encounterFrames) break;
+    const stepFrames = Math.min(tileFrames, remainingFrames);
+    totalFrames += stepFrames;
+    if (stepFrames < tileFrames) break;
+    const repelActive = useRepel && repelSteps > 0;
+    if (useRepel && repelSteps > 0) repelSteps--;
+    if (Math.random() >= encounterChance) continue;
     const monsterTemplate = monsters[Math.floor(Math.random() * monsters.length)];
-    if (useRepel && repelActive && monsterTemplate.attack < hero.defense) {
+    if (repelActive && monsterTemplate.attack < hero.defense) {
       log.push(`${monsterTemplate.name} was repelled.`);
       continue;
     }

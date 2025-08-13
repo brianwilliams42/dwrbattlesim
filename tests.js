@@ -55,6 +55,10 @@ console.log('big breath mitigation distribution test passed');
 
 // Zone grind basic XP per minute
 {
+  const seq = [0, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0.5;
   const hero = {
     hp: 100,
     maxHp: 100,
@@ -85,6 +89,7 @@ console.log('big breath mitigation distribution test passed');
     enemyDodgeTime: 0,
     maxMinutes: 0.1,
   }, 2);
+  Math.random = orig;
   assert(result.xpGained > 0);
   assert(result.log[0].startsWith('Encountered'));
   assert(/Hero has \d+ HP and \d+ MP\./.test(result.log[0]));
@@ -93,6 +98,10 @@ console.log('big breath mitigation distribution test passed');
 
 // Zone grind repel skips weak enemies
 {
+  const seq = [0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0.5;
   const hero = {
     hp: 100,
     maxHp: 100,
@@ -124,6 +133,7 @@ console.log('big breath mitigation distribution test passed');
     repelTime: 0,
     maxMinutes: 0.05,
   });
+  Math.random = orig;
   assert.strictEqual(result.xpGained, 0);
   assert.strictEqual(result.mpSpent, 2);
   assert.strictEqual(result.log[0], 'Hero casts REPEL.');
@@ -190,6 +200,44 @@ console.log('big breath mitigation distribution test passed');
   });
   assert.strictEqual(result.timeFrames, 16);
   console.log('zone grind repelled step time test passed');
+}
+
+// Zone grind repel expires after 128 steps
+{
+  const orig = Math.random;
+  Math.random = () => 0;
+  const hero = {
+    hp: 10,
+    maxHp: 10,
+    attack: 100,
+    strength: 100,
+    defense: 20,
+    agility: 0,
+    mp: 2,
+    spells: ['REPEL'],
+    armor: 'none',
+  };
+  const monster = { name: 'Weak', hp: 1, attack: 10, defense: 0, agility: 0, xp: 1 };
+  const result = simulateZone(hero, [monster], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    framesBetweenFights: 0,
+    repelTime: 0,
+    healSpellTime: 0,
+    tileFrames: 1,
+    maxMinutes: 1000 / 3600,
+  });
+  Math.random = orig;
+  const repelled = result.log.filter((l) => l === 'Weak was repelled.');
+  assert.strictEqual(repelled.length, 128);
+  assert.strictEqual(result.xpGained, 0);
+  assert.strictEqual(result.timeFrames, 128);
+  console.log('zone grind repel duration test passed');
 }
 
 // Zone grind includes partial walking time at grind end
