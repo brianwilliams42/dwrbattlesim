@@ -7,7 +7,7 @@ Visit the simulator at: https://brianwilliams42.github.io/dwrbattlesim/
 ## Features
 - Monster ambushes determined by comparing `hero agility * rand(0-255)` with `enemy agility * 0.25 * rand(0-255)`. If the monster ambushes, it takes a full turn before the hero acts.
 - After any ambush, the hero always acts before the monster each round.
-- Supports hero spells HURT, HURTMORE, HEAL, HEALMORE, STOPSPELL, and SLEEP with per-spell MP costs and enemy resistances.
+- Supports hero spells HURT, HURTMORE, HEAL, HEALMORE, STOPSPELL, SLEEP, and REPEL with per-spell MP costs and enemy resistances.
 - Tracks MP spent by the hero across a battle.
 - Optional consumables: Herbs heal 23–30 HP (130 frames) while Fairy Water or Torches deal 9–16 damage (245 frames, 0–1 against Metal Slimes) and both ignore Stopspell.
 - Hero attack is derived from Strength, chosen weapon, and optional gear (Fighter's Ring +2 attack, Death Necklace +10 attack).

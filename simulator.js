@@ -108,6 +108,7 @@ const HERO_SPELL_COST = {
   HEALMORE: 8,
   STOPSPELL: 2,
   SLEEP: 2,
+  REPEL: 2,
 };
 
 export function simulateBattle(heroStats, monsterStats, settings = {}) {
@@ -832,25 +833,29 @@ export function simulateZone(heroStats, monsters, encounterRate = 16, settings =
   let totalXP = 0;
   let totalMP = 0;
   let repelTiles = 0;
-  if (hero.mp >= 2) {
+  const useRepel = hero.spells?.includes('REPEL');
+  if (useRepel && hero.mp >= 2) {
     hero.mp -= 2;
     totalMP += 2;
     totalFrames += repelCastTime;
     repelTiles = 127;
   }
-  while (totalFrames < maxFrames && (hero.mp > 0 || repelTiles > 0)) {
-    if (repelTiles <= 0 && hero.mp >= 2) {
+  while (totalFrames < maxFrames && (useRepel ? hero.mp > 0 || repelTiles > 0 : true)) {
+    if (useRepel && repelTiles <= 0 && hero.mp >= 2) {
       hero.mp -= 2;
       totalMP += 2;
       totalFrames += repelCastTime;
       repelTiles = 127;
     }
     totalFrames += encounterFrames;
-    repelTiles -= encounterRate;
-    let repelActive = repelTiles >= 0;
-    if (!repelActive) repelTiles = 0;
+    let repelActive = false;
+    if (useRepel) {
+      repelTiles -= encounterRate;
+      repelActive = repelTiles >= 0;
+      if (!repelActive) repelTiles = 0;
+    }
     const monsterTemplate = monsters[Math.floor(Math.random() * monsters.length)];
-    if (repelActive && monsterTemplate.attack < hero.defense) {
+    if (useRepel && repelActive && monsterTemplate.attack < hero.defense) {
       continue;
     }
     const hpMax = monsterTemplate.hp;
