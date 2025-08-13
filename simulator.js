@@ -922,7 +922,9 @@ function simulateZoneOnce(heroStats, monsters, encounterRate, settings) {
       hp: hpMin + Math.floor(Math.random() * (hpMax - hpMin + 1)),
       maxHp: hpMax,
     };
-    log.push(`Encountered ${monster.name}.`);
+    log.push(
+      `Encountered ${monster.name}. Hero has ${hero.hp} HP and ${hero.mp} MP.`,
+    );
     const result = simulateBattle(hero, monster, settings);
     log.push(...result.log);
     totalFrames += result.timeFrames;

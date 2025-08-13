@@ -86,6 +86,7 @@ console.log('big breath mitigation distribution test passed');
   }, 2);
   assert(result.xpGained > 0);
   assert(result.log[0].startsWith('Encountered'));
+  assert(/Hero has \d+ HP and \d+ MP\./.test(result.log[0]));
   console.log('zone grind basic test passed');
 }
 
