@@ -571,7 +571,8 @@
     function toggleModeDisplays() {
       const mode = simModeSelect.value;
       betweenFightsLabel.style.display = mode === 'repeated' ? 'block' : 'none';
-      refillSecondsLabel.style.display = mode === 'repeated' ? 'block' : 'none';
+      refillSecondsLabel.style.display =
+        mode === 'repeated' || mode === 'zone' ? 'block' : 'none';
       monsterConfig.style.display = mode === 'zone' ? 'none' : 'block';
       zoneConfig.style.display = mode === 'zone' ? 'block' : 'none';
       zoneSettings.style.display = mode === 'zone' ? 'block' : 'none';
@@ -766,7 +767,10 @@
           iterations,
         );
         metricsEl.textContent =
+          `Average XP per life: ${summary.averageXPPerLife.toFixed(2)}\n` +
           `Average XP per minute: ${summary.xpPerMinute.toFixed(2)}\n` +
+          `Average XP per minute (incl. refill): ${summary.xpPerMinuteWithRefill.toFixed(2)}\n` +
+          `Average time per life: ${formatTime(summary.averageTimeSeconds)}\n` +
           `Average MP per minute: ${summary.mpPerMinute.toFixed(2)}`;
         sampleEl.textContent =
           `Total Time: ${formatTime(summary.timeFrames / 60)}\n` +

@@ -985,11 +985,22 @@ export function simulateZone(
       sampleFrames = result.timeFrames;
     }
   }
+  const refillSeconds = settings.refillTimeSeconds ?? 75;
   const xpPerMinute = totalFrames === 0 ? 0 : (totalXP * 3600) / totalFrames;
   const mpPerMinute = totalFrames === 0 ? 0 : (totalMP * 3600) / totalFrames;
+  const totalFramesWithRefill = totalFrames + refillSeconds * 60 * iterations;
+  const xpPerMinuteWithRefill =
+    totalFramesWithRefill === 0
+      ? 0
+      : (totalXP * 3600) / totalFramesWithRefill;
+  const averageXPPerLife = totalXP / iterations;
+  const averageTimeSeconds = totalFrames / iterations / 60;
   return {
     xpPerMinute,
+    xpPerMinuteWithRefill,
     mpPerMinute,
+    averageXPPerLife,
+    averageTimeSeconds,
     xpGained: sampleXP,
     mpSpent: sampleMP,
     timeFrames: sampleFrames,
