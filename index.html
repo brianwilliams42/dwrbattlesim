@@ -766,8 +766,11 @@
           settings,
           iterations,
         );
+        const avgXPPerLife =
+          summary.averageXPPerLife ??
+          (summary.xpPerMinute * summary.averageTimeSeconds) / 60;
         metricsEl.textContent =
-          `Average XP per life: ${summary.averageXPPerLife.toFixed(2)}\n` +
+          `Average XP per life: ${avgXPPerLife.toFixed(2)}\n` +
           `Average XP per minute: ${summary.xpPerMinute.toFixed(2)}\n` +
           `Average XP per minute (incl. refill): ${summary.xpPerMinuteWithRefill.toFixed(2)}\n` +
           `Average time per life: ${formatTime(summary.averageTimeSeconds)}\n` +
