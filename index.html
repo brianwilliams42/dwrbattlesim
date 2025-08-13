@@ -344,6 +344,22 @@
       document.getElementById(`zone-sleep-resist-${idx}`).value = chosen.sleepResist ?? 0;
     }
 
+    function populateEnemySelect(sel) {
+      sel.appendChild(new Option('Custom', ''));
+      for (const e of enemies) sel.appendChild(new Option(e.name, e.name));
+    }
+
+    function setupSingleEnemyUI() {
+      populateEnemySelect(enemySelect);
+      enemySelect.value = enemies[0]?.name || '';
+      if (usePreset.checked && enemies[0]) setMonsterStats(enemies[0]);
+      usePreset.addEventListener('change', toggleMonsterStats);
+      enemySelect.addEventListener('change', () => {
+        if (usePreset.checked) updateMonsterStats();
+      });
+      toggleMonsterStats();
+    }
+
     function setupZoneEnemies() {
       for (let i = 0; i < 5; i++) {
         zoneEnemiesContainer.insertAdjacentHTML(
@@ -396,8 +412,7 @@
           </div>`,
         );
         const sel = document.getElementById(`zone-enemy-select-${i}`);
-        sel.appendChild(new Option('Custom', ''));
-        for (const e of enemies) sel.appendChild(new Option(e.name, e.name));
+        populateEnemySelect(sel);
         sel.value = enemies[0]?.name || '';
         const preset = document.getElementById(`zone-use-preset-${i}`);
         const stats = document.getElementById(`zone-monster-stats-${i}`);
@@ -419,12 +434,14 @@
       }
     }
 
+    function updateMonsterStats() {
+      const chosen = enemies.find((e) => e.name === enemySelect.value);
+      if (chosen) setMonsterStats(chosen);
+    }
+
     function toggleMonsterStats() {
       monsterStats.style.display = usePreset.checked ? 'none' : 'block';
-      if (usePreset.checked) {
-        const chosen = enemies.find((e) => e.name === enemySelect.value);
-        if (chosen) setMonsterStats(chosen);
-      }
+      if (usePreset.checked) updateMonsterStats();
     }
 
     function toggleModeDisplays() {
@@ -435,7 +452,6 @@
       zoneConfig.style.display = mode === 'zone' ? 'block' : 'none';
     }
 
-    usePreset.addEventListener('change', toggleMonsterStats);
     simModeSelect.addEventListener('change', toggleModeDisplays);
     toggleModeDisplays();
 
@@ -443,16 +459,8 @@
       .then((r) => r.json())
       .then((data) => {
         enemies = data;
+        setupSingleEnemyUI();
         setupZoneEnemies();
-        enemySelect.appendChild(new Option('Custom', ''));
-        for (const e of enemies) {
-          enemySelect.appendChild(new Option(e.name, e.name));
-        }
-        enemySelect.value = enemies[0]?.name || '';
-        if (usePreset.checked && enemies[0]) {
-          setMonsterStats(enemies[0]);
-        }
-        toggleMonsterStats();
         if (encodedData) {
           const json = LZString.decompressFromBase64(
             fromBase64Url(encodedData),
@@ -460,13 +468,6 @@
           if (json) setFormData(JSON.parse(json));
         }
       });
-
-    enemySelect.addEventListener('change', () => {
-      if (usePreset.checked) {
-        const chosen = enemies.find((e) => e.name === enemySelect.value);
-        if (chosen) setMonsterStats(chosen);
-      }
-    });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
