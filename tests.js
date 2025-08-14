@@ -806,6 +806,51 @@ console.log('zone grind time limit test passed');
   console.log('stopspell logic test passed');
 }
 
+// Zone monster config can disable hero stopspell usage
+{
+  const orig = Math.random;
+  Math.random = () => 0;
+  const hero = {
+    hp: 10,
+    maxHp: 10,
+    attack: 5,
+    strength: 0,
+    defense: 0,
+    agility: 10,
+    mp: 5,
+    spells: ['STOPSPELL'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Mage',
+    hp: 20,
+    attack: 20,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+    supportAbility: 'sleep',
+    supportChance: 1,
+    stopspellResist: 0,
+    useStopspell: false,
+  };
+  const result = simulateZone(hero, [monster], 1, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    heroSleepStopspellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    framesBetweenFights: 0,
+    maxMinutes: 0.1,
+  });
+  Math.random = orig;
+  assert(!result.log.includes('Hero casts STOPSPELL.'));
+  console.log('zone stopspell toggle test passed');
+}
+
 // Hero always acts before the monster after any ambush check
 {
   const seq = [0.99, 0, 0.5, 0.99, 0];
