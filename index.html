@@ -323,8 +323,11 @@
         const usePreset = document.getElementById(`zone-use-preset-${i}`).checked;
         const name = document.getElementById(`zone-enemy-select-${i}`).value;
         const runFrom = document.getElementById(`zone-run-${i}`).checked ? 1 : 0;
+        const useStopspell = document.getElementById(`zone-stopspell-${i}`).checked
+          ? 1
+          : 0;
         if (usePreset) {
-          zoneMonsters.push([1, name, runFrom]);
+          zoneMonsters.push([1, name, runFrom, useStopspell]);
         } else {
           zoneMonsters.push([
             0,
@@ -344,6 +347,7 @@
             document.getElementById(`zone-mon-attack-ability-${i}`).value,
             Number(document.getElementById(`zone-mon-attack-chance-${i}`).value),
             runFrom,
+            useStopspell,
           ]);
         }
       }
@@ -371,11 +375,20 @@
         const usePreset = m[0] === 1;
         const sel = document.getElementById(`zone-enemy-select-${i}`);
         const preset = document.getElementById(`zone-use-preset-${i}`);
-        const run = m[m.length - 1];
         sel.value = m[1];
         preset.checked = usePreset;
-        document.getElementById(`zone-run-${i}`).checked = Boolean(run);
-        if (!usePreset) {
+
+        let runFrom = 0;
+        let useStopspell = 1;
+
+        if (usePreset) {
+          // [1, name, runFrom?, useStopspell?]
+          runFrom = m[2] ?? 0;
+          useStopspell = m[3] ?? 1;
+        } else {
+          // [0, name, hp, attack, defense, agility, hurtResist, dodge, xp,
+          //  stopspellResist, sleepResist, group, supportAbility, supportChance,
+          //  attackAbility, attackChance, runFrom?, useStopspell?]
           document.getElementById(`zone-mon-hp-${i}`).value = m[2];
           document.getElementById(`zone-mon-attack-${i}`).value = m[3];
           document.getElementById(`zone-mon-defense-${i}`).value = m[4];
@@ -390,7 +403,14 @@
           document.getElementById(`zone-mon-support-chance-${i}`).value = m[13];
           document.getElementById(`zone-mon-attack-ability-${i}`).value = m[14];
           document.getElementById(`zone-mon-attack-chance-${i}`).value = m[15];
+          runFrom = m[16] ?? 0;
+          useStopspell = m[17] ?? 1;
         }
+
+        document.getElementById(`zone-run-${i}`).checked = Boolean(runFrom);
+        document.getElementById(`zone-stopspell-${i}`).checked = Boolean(
+          useStopspell,
+        );
         preset.dispatchEvent(new Event('change'));
         sel.dispatchEvent(new Event('change'));
       });
@@ -527,6 +547,7 @@
               </select>
             </label>
             <label><input type="checkbox" id="zone-run-${i}" data-ignore="1" /> Run from this enemy</label>
+            <label><input type="checkbox" id="zone-stopspell-${i}" data-ignore="1" checked /> Use stopspell on this enemy</label>
           </div>`,
         );
         const sel = document.getElementById(`zone-enemy-select-${i}`);
@@ -762,6 +783,7 @@
               document.getElementById(`zone-mon-attack-chance-${i}`).value,
             ),
             runFrom: document.getElementById(`zone-run-${i}`).checked,
+            useStopspell: document.getElementById(`zone-stopspell-${i}`).checked,
           });
         }
         const encounterRate = Number(

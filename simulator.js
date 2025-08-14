@@ -315,6 +315,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       hero.spells.includes('STOPSPELL') &&
       hero.mp >= HERO_SPELL_COST.STOPSPELL &&
       !monster.stopspelled &&
+      monster.useStopspell !== false &&
       (monster.supportAbility ||
         monster.attackAbility === 'hurt' ||
         monster.attackAbility === 'hurtmore') &&
