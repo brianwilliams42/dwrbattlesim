@@ -150,6 +150,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     preBattleTime = 140,
     postBattleTime = 200,
     dodgeRateRiskFactor = 0,
+    spellResistThreshold = 5 / 16,
   } = settings;
 
   let log = [];
@@ -242,7 +243,11 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       fail: (monster.dodge || 0) / 64,
     });
 
-    if (!hero.stopspelled && hero.spells) {
+    if (
+      !hero.stopspelled &&
+      hero.spells &&
+      (monster.hurtResist || 0) < spellResistThreshold
+    ) {
       if (
         hero.spells.includes('HURTMORE') &&
         hero.mp >= HERO_SPELL_COST.HURTMORE
@@ -298,7 +303,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       hero.spells &&
       hero.spells.includes('SLEEP') &&
       hero.mp >= HERO_SPELL_COST.SLEEP &&
-      !monster.asleep
+      !monster.asleep &&
+      (monster.sleepResist || 0) < spellResistThreshold
     ) {
       return 'SLEEP';
     }
@@ -309,7 +315,10 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       hero.spells.includes('STOPSPELL') &&
       hero.mp >= HERO_SPELL_COST.STOPSPELL &&
       !monster.stopspelled &&
-      (monster.supportAbility || monster.attackAbility === 'hurt' || monster.attackAbility === 'hurtmore')
+      (monster.supportAbility ||
+        monster.attackAbility === 'hurt' ||
+        monster.attackAbility === 'hurtmore') &&
+      (monster.stopspellResist || 0) < spellResistThreshold
     ) {
       return 'STOPSPELL';
     }
@@ -317,8 +326,15 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     let best = 'attack';
     let bestDamage = averagePhysicalDamage(hero.attack, monster.defense, true);
 
-    if (!hero.stopspelled && hero.spells) {
-      if (hero.spells.includes('HURTMORE') && hero.mp >= HERO_SPELL_COST.HURTMORE) {
+    if (
+      !hero.stopspelled &&
+      hero.spells &&
+      (monster.hurtResist || 0) < spellResistThreshold
+    ) {
+      if (
+        hero.spells.includes('HURTMORE') &&
+        hero.mp >= HERO_SPELL_COST.HURTMORE
+      ) {
         const avg = 61.5 * (1 - (monster.hurtResist || 0));
         if (avg > bestDamage) {
           bestDamage = avg;
