@@ -220,6 +220,12 @@
       </label>
     </fieldset>
     <fieldset>
+      <legend>Battle Strategy</legend>
+      <label>Spell Resistance Threshold (0-15)
+        <input type="number" id="spell-resist-threshold" value="5" min="0" max="15" />
+      </label>
+    </fieldset>
+    <fieldset>
       <legend>Simulation Settings</legend>
       <details>
         <summary>Timing Settings (frames, optional)</summary>
@@ -717,6 +723,8 @@
           monsterFleeTime: Number(
             document.getElementById('monster-flee-time').value,
           ),
+          spellResistThreshold:
+            Number(document.getElementById('spell-resist-threshold').value) / 16,
         };
       const iterations = Number(document.getElementById('iterations').value);
       const mode = document.getElementById('sim-mode').value;

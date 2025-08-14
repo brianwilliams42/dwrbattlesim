@@ -435,6 +435,43 @@ console.log('zone grind time limit test passed');
   console.log('zone grind averages and refill test passed');
 }
 
+// Hero avoids high-resistance spells
+{
+  const orig = Math.random;
+  Math.random = () => 0.5;
+  const hero = {
+    hp: 50,
+    maxHp: 50,
+    attack: 30,
+    strength: 30,
+    defense: 0,
+    agility: 10,
+    mp: 5,
+    spells: ['HURTMORE'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Golem',
+    hp: 10,
+    attack: 20,
+    defense: 0,
+    agility: 0,
+    xp: 0,
+    hurtResist: 1,
+  };
+  const result = simulateBattle(hero, monster, {
+    heroAttackTime: 0,
+    enemyAttackTime: 0,
+    preBattleTime: 0,
+    postBattleTime: 0,
+    spellResistThreshold: 5 / 16,
+  });
+  Math.random = orig;
+  assert.strictEqual(result.mpSpent, 0);
+  assert(result.log.some((l) => l.startsWith('Hero attacks')));
+  console.log('spell resistance threshold test passed');
+}
+
 // Dragonlord HP randomization
 {
   const orig = Math.random;
@@ -683,7 +720,7 @@ console.log('zone grind time limit test passed');
 
 // Sleep spell respects monster sleep resistance
 {
-  const seq = [0, 0, 0.4];
+  const seq = [0, 0, 0.2];
   let i = 0;
   const orig = Math.random;
   Math.random = () => seq[i++] ?? 0.6;
@@ -705,7 +742,7 @@ console.log('zone grind time limit test passed');
     defense: 0,
     agility: 0,
     xp: 0,
-    sleepResist: 0.5,
+    sleepResist: 0.25,
   };
   const result = simulateBattle(hero, monster, {
     preBattleTime: 0,
@@ -912,7 +949,7 @@ console.log('zone grind time limit test passed');
     defense: 0,
     agility: 10,
     mp: 16,
-    spells: ['HURTMORE', 'HEALMORE'],
+    spells: ['HURTMORE'],
     armor: 'none',
   };
   const monster = {
@@ -940,14 +977,8 @@ console.log('zone grind time limit test passed');
   const hurtmoreCasts = result.log.filter((l) =>
     l.startsWith('Hero casts HURTMORE'),
   ).length;
-  const healmoreCasts = result.log.filter((l) =>
-    l.startsWith('Hero casts HEALMORE'),
-  ).length;
-  assert.strictEqual(hurtmoreCasts, 2);
-  assert.strictEqual(healmoreCasts, 0);
-  console.log(
-    'second hurtmore used despite hurt resist when risk factor is default test passed',
-  );
+  assert.strictEqual(hurtmoreCasts, 0);
+  console.log('high hurt resist blocks hero hurtmore test passed');
 }
 
 // When low on HP, hero heals if a killing blow is not guaranteed
@@ -1828,6 +1859,7 @@ const fieldOrder = [
   'mon-support-chance',
   'mon-attack-ability',
   'mon-attack-chance',
+  'spell-resist-threshold',
   'hero-attack-time',
   'hero-spell-time',
   'hero-sleep-stopspell-time',
@@ -1888,6 +1920,7 @@ const sampleParams = {
   'mon-support-chance': '0.25',
   'mon-attack-ability': '',
   'mon-attack-chance': '0.25',
+  'spell-resist-threshold': '5',
   'hero-attack-time': '90',
   'hero-spell-time': '180',
   'hero-sleep-stopspell-time': '240',
