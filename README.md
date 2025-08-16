@@ -15,6 +15,7 @@ Visit the simulator at: https://brianwilliams42.github.io/dwrbattlesim/
 - When the monster's known remaining HP is lower than the potential damage from an attack, the hero will attempt the finishing blow instead of healing. A `dodgeRateRiskFactor` setting (0–1, default 0) lets the hero heal instead when the chance of a dodge or resist exceeds the chosen threshold; the default 0 ignores the risk entirely.
 - Physical attacks have a 1/32 chance to become critical hits dealing 50–100% of attack power and adding 30 frames.
 - When the hero's attack is less than the monster's defense + 2, normal attack damage is replaced with a 50% chance of dealing 0 or 1 damage.
+- When the hero's defense is at least the monster's attack, enemy physical attacks deal a random 0 to one-sixth of their attack power.
 - Monsters may flee at the start of their turn if the hero's strength is at least twice the monster's attack (25% chance), ending the battle early with a 100-frame message and no experience.
 - Enemies that act first add a 50-frame delay before their opening move.
 - Enemies have a configurable chance to dodge attacks.

@@ -23,7 +23,7 @@ function averageDamage(attack, defense) {
   let total = 0;
   for (let i = 0; i < n; i++) {
     const rng = () => (i + 0.5) / n;
-    total += computeDamage(attack, defense, rng);
+    total += computeDamage(attack, defense, rng, true);
   }
   return total / n;
 }
@@ -42,6 +42,17 @@ console.log('computeDamage average test passed');
   assert.strictEqual(dmgLow, 0);
   assert.strictEqual(dmgHigh, 1);
   console.log('hero weak attack damage test passed');
+}
+
+// When hero defense is at least enemy attack, enemy damage is reduced
+{
+  const attack = 24;
+  const defense = 12; // hero defense is double the value passed
+  const dmgMin = computeDamage(attack, defense, () => 0);
+  const dmgMax = computeDamage(attack, defense, () => 0.999);
+  assert.strictEqual(dmgMin, 0);
+  assert.strictEqual(dmgMax, 4);
+  console.log('enemy weak attack damage test passed');
 }
 
 const counts = {};

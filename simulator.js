@@ -8,6 +8,10 @@ export function computeDamage(
   rng = Math.random,
   heroAttack = false,
 ) {
+  if (!heroAttack && defense * 2 >= attack) {
+    const max = Math.floor(attack / 6);
+    return Math.floor(rng() * (max + 1));
+  }
   if (heroAttack && attack < defense + 2) {
     return rng() < 0.5 ? 0 : 1;
   }
