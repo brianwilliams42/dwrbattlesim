@@ -12,6 +12,7 @@ Visit the simulator at: https://brianwilliams42.github.io/dwrbattlesim/
 - Optional consumables: Herbs heal 23–30 HP (130 frames) while Fairy Water or Torches deal 9–16 damage (245 frames, 0–1 against Metal Slimes) and both ignore Stopspell.
 - Hero attack is derived from Strength, chosen weapon, and optional gear (Fighter's Ring +2 attack, Death Necklace +10 attack).
 - Hero picks the offensive action (attack, HURT, HURTMORE, or Fairy Water) with the highest expected damage.
+- Optional strategy to force the hero to land a physical attack before using HURTMORE.
 - When the monster's known remaining HP is lower than the potential damage from an attack, the hero will attempt the finishing blow instead of healing. A `dodgeRateRiskFactor` setting (0–1, default 0) lets the hero heal instead when the chance of a dodge or resist exceeds the chosen threshold; the default 0 ignores the risk entirely.
 - Physical attacks have a 1/32 chance to become critical hits dealing 50–100% of attack power and adding 30 frames.
 - When the hero's attack is less than the monster's defense + 2, normal attack damage is replaced with a 50% chance of dealing 0 or 1 damage.
