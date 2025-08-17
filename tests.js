@@ -1063,6 +1063,7 @@ console.log('zone grind time limit test passed');
     agility: 0,
     xp: 0,
     dodge: 0,
+    attackBeforeHurtmore: true,
   };
   const result = simulateBattle(hero, monster, {
     preBattleTime: 0,
@@ -1073,7 +1074,6 @@ console.log('zone grind time limit test passed');
     enemySpellTime: 0,
     enemyBreathTime: 0,
     enemyDodgeTime: 0,
-    attackBeforeHurtmore: true,
   });
   Math.random = orig;
   const heroActions = result.log.filter((l) => l.startsWith('Hero'));

@@ -155,7 +155,6 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     postBattleTime = 200,
     dodgeRateRiskFactor = 0,
     spellResistThreshold = 5 / 16,
-    attackBeforeHurtmore = false,
   } = settings;
 
   let log = [];
@@ -257,7 +256,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       if (
         hero.spells.includes('HURTMORE') &&
         hero.mp >= HERO_SPELL_COST.HURTMORE &&
-        (!attackBeforeHurtmore || hero.didDamage)
+        (!monster.attackBeforeHurtmore || hero.didDamage)
       ) {
         killOptions.push({
           action: 'HURTMORE',
@@ -342,7 +341,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
       if (
         hero.spells.includes('HURTMORE') &&
         hero.mp >= HERO_SPELL_COST.HURTMORE &&
-        (!attackBeforeHurtmore || hero.didDamage)
+        (!monster.attackBeforeHurtmore || hero.didDamage)
       ) {
         const avg = 61.5 * (1 - (monster.hurtResist || 0));
         if (avg > bestDamage) {

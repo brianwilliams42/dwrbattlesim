@@ -327,8 +327,13 @@
         const useStopspell = document.getElementById(`zone-stopspell-${i}`).checked
           ? 1
           : 0;
+        const attackBeforeHurtmore = document.getElementById(
+          `zone-attack-before-hurtmore-${i}`,
+        ).checked
+          ? 1
+          : 0;
         if (usePreset) {
-          zoneMonsters.push([1, name, runFrom, useStopspell]);
+          zoneMonsters.push([1, name, runFrom, useStopspell, attackBeforeHurtmore]);
         } else {
           zoneMonsters.push([
             0,
@@ -349,6 +354,7 @@
             Number(document.getElementById(`zone-mon-attack-chance-${i}`).value),
             runFrom,
             useStopspell,
+            attackBeforeHurtmore,
           ]);
         }
       }
@@ -381,15 +387,17 @@
 
         let runFrom = 0;
         let useStopspell = 1;
+        let attackBeforeHurtmore = 0;
 
         if (usePreset) {
-          // [1, name, runFrom?, useStopspell?]
+          // [1, name, runFrom?, useStopspell?, attackBeforeHurtmore?]
           runFrom = m[2] ?? 0;
           useStopspell = m[3] ?? 1;
+          attackBeforeHurtmore = m[4] ?? 0;
         } else {
           // [0, name, hp, attack, defense, agility, hurtResist, dodge, xp,
           //  stopspellResist, sleepResist, group, supportAbility, supportChance,
-          //  attackAbility, attackChance, runFrom?, useStopspell?]
+          //  attackAbility, attackChance, runFrom?, useStopspell?, attackBeforeHurtmore?]
           document.getElementById(`zone-mon-hp-${i}`).value = m[2];
           document.getElementById(`zone-mon-attack-${i}`).value = m[3];
           document.getElementById(`zone-mon-defense-${i}`).value = m[4];
@@ -406,12 +414,16 @@
           document.getElementById(`zone-mon-attack-chance-${i}`).value = m[15];
           runFrom = m[16] ?? 0;
           useStopspell = m[17] ?? 1;
+          attackBeforeHurtmore = m[18] ?? 0;
         }
 
         document.getElementById(`zone-run-${i}`).checked = Boolean(runFrom);
         document.getElementById(`zone-stopspell-${i}`).checked = Boolean(
           useStopspell,
         );
+        document.getElementById(
+          `zone-attack-before-hurtmore-${i}`,
+        ).checked = Boolean(attackBeforeHurtmore);
         preset.dispatchEvent(new Event('change'));
         sel.dispatchEvent(new Event('change'));
       });
@@ -459,6 +471,9 @@
       document.getElementById('stopspell-resist').value = chosen.stopspellResist ?? 0;
       document.getElementById('sleep-resist').value = chosen.sleepResist ?? 0;
       document.getElementById('mon-group').value = chosen.group ?? 2;
+      document.getElementById('attack-before-hurtmore').checked = Boolean(
+        chosen.attackBeforeHurtmore,
+      );
     }
 
     function setZoneMonsterStats(idx, chosen) {
@@ -472,6 +487,9 @@
       document.getElementById(`zone-stopspell-resist-${idx}`).value = chosen.stopspellResist ?? 0;
       document.getElementById(`zone-sleep-resist-${idx}`).value = chosen.sleepResist ?? 0;
       document.getElementById(`zone-mon-group-${idx}`).value = chosen.group ?? 2;
+      document.getElementById(
+        `zone-attack-before-hurtmore-${idx}`,
+      ).checked = Boolean(chosen.attackBeforeHurtmore);
     }
 
     function populateEnemySelect(sel) {
@@ -549,6 +567,7 @@
             </label>
             <label><input type="checkbox" id="zone-run-${i}" data-ignore="1" /> Run from this enemy</label>
             <label><input type="checkbox" id="zone-stopspell-${i}" data-ignore="1" checked /> Use stopspell on this enemy</label>
+            <label><input type="checkbox" id="zone-attack-before-hurtmore-${i}" data-ignore="1" /> Attack before HURTMORE</label>
           </div>`,
         );
         const sel = document.getElementById(`zone-enemy-select-${i}`);
@@ -669,6 +688,7 @@
         supportChance: Number(document.getElementById('mon-support-chance').value),
         attackAbility: document.getElementById('mon-attack-ability').value,
         attackChance: Number(document.getElementById('mon-attack-chance').value),
+        attackBeforeHurtmore: document.getElementById('attack-before-hurtmore').checked,
       };
         const settings = {
           heroAttackTime: Number(
@@ -747,7 +767,6 @@
           ),
           spellResistThreshold:
             Number(document.getElementById('spell-resist-threshold').value) / 16,
-          attackBeforeHurtmore: document.getElementById('attack-before-hurtmore').checked,
         };
       const iterations = Number(document.getElementById('iterations').value);
       const mode = document.getElementById('sim-mode').value;
@@ -786,6 +805,9 @@
             ),
             runFrom: document.getElementById(`zone-run-${i}`).checked,
             useStopspell: document.getElementById(`zone-stopspell-${i}`).checked,
+            attackBeforeHurtmore: document.getElementById(
+              `zone-attack-before-hurtmore-${i}`,
+            ).checked,
           });
         }
         const encounterRate = Number(
