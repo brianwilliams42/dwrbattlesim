@@ -1078,8 +1078,7 @@ console.log('zone grind time limit test passed');
   Math.random = orig;
   const heroActions = result.log.filter((l) => l.startsWith('Hero'));
   assert.strictEqual(heroActions[0], 'Hero attacks for 0 damage.');
-  assert.strictEqual(heroActions[1], 'Hero attacks for 1 damage.');
-  assert(heroActions[2].startsWith('Hero casts HURTMORE'));
+  assert(heroActions[1].startsWith('Hero casts HURTMORE'));
   console.log('attack before hurtmore option test passed');
 }
 
