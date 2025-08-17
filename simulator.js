@@ -155,6 +155,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     postBattleTime = 200,
     dodgeRateRiskFactor = 0,
     spellResistThreshold = 5 / 16,
+    attackBeforeHurtmore = false,
   } = settings;
 
   let log = [];
@@ -177,6 +178,7 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     herbs: heroStats.herbs || 0,
     fairyWater: heroStats.fairyWater || 0,
     fled: false,
+    didDamage: false,
   };
   hero.hurtMitigation = armor === 'magic' || armor === 'erdrick';
   hero.breathMitigation = armor === 'erdrick';
@@ -254,7 +256,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     ) {
       if (
         hero.spells.includes('HURTMORE') &&
-        hero.mp >= HERO_SPELL_COST.HURTMORE
+        hero.mp >= HERO_SPELL_COST.HURTMORE &&
+        (!attackBeforeHurtmore || hero.didDamage)
       ) {
         killOptions.push({
           action: 'HURTMORE',
@@ -338,7 +341,8 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
     ) {
       if (
         hero.spells.includes('HURTMORE') &&
-        hero.mp >= HERO_SPELL_COST.HURTMORE
+        hero.mp >= HERO_SPELL_COST.HURTMORE &&
+        (!attackBeforeHurtmore || hero.didDamage)
       ) {
         const avg = 61.5 * (1 - (monster.hurtResist || 0));
         if (avg > bestDamage) {
@@ -508,12 +512,14 @@ export function simulateBattle(heroStats, monsterStats, settings = {}) {
         monsterHpKnownMax = Math.max(0, monsterHpKnownMax - dmg);
         timeFrames += heroAttackTime + heroCriticalTime;
         log.push(`Hero performs a critical hit for ${dmg} damage.`);
+        hero.didDamage = true;
       } else {
         const dmg = computeDamage(hero.attack, monster.defense, Math.random, true);
         monster.hp -= dmg;
         monsterHpKnownMax = Math.max(0, monsterHpKnownMax - dmg);
         timeFrames += heroAttackTime;
         log.push(`Hero attacks for ${dmg} damage.`);
+        if (dmg > 0) hero.didDamage = true;
       }
     }
   }

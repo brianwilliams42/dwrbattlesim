@@ -167,7 +167,7 @@ console.log('big breath mitigation distribution test passed');
     spells: [],
     armor: 'none',
   };
-  const monster = { name: 'Slime', hp: 1, attack: 0, defense: 0, agility: 0, xp: 0 };
+  const monster = { name: 'Slime', hp: 1, attack: 1, defense: 0, agility: 0, xp: 0 };
   const result = simulateZone(hero, [monster], 1, {
     preBattleTime: 0,
     postBattleTime: 0,
@@ -190,7 +190,7 @@ console.log('big breath mitigation distribution test passed');
   const hero = {
     hp: 10,
     maxHp: 10,
-    attack: 0,
+    attack: 1,
     strength: 0,
     defense: 20,
     agility: 0,
@@ -594,7 +594,7 @@ console.log('zone grind time limit test passed');
   const hero = {
     hp: 10,
     maxHp: 10,
-    attack: 0,
+    attack: 1,
     defense: 0,
     agility: 5,
   };
@@ -1035,6 +1035,52 @@ console.log('zone grind time limit test passed');
   ).length;
   assert.strictEqual(hurtmoreCasts, 0);
   console.log('high hurt resist blocks hero hurtmore test passed');
+}
+
+// Hero attacks until dealing damage before using HURTMORE when option enabled
+{
+  const seq = [0, 0, 0, 0.1, 0.4, 0.5, 0, 0.1, 0.6, 0.5, 0];
+  let i = 0;
+  const orig = Math.random;
+  Math.random = () => seq[i++] ?? 0;
+  const hero = {
+    hp: 100,
+    maxHp: 100,
+    attack: 10,
+    strength: 0,
+    defense: 0,
+    agility: 10,
+    mp: 10,
+    spells: ['HURTMORE'],
+    armor: 'none',
+  };
+  const monster = {
+    name: 'Tank',
+    hp: 59,
+    maxHp: 59,
+    attack: 1,
+    defense: 20,
+    agility: 0,
+    xp: 0,
+    dodge: 0,
+  };
+  const result = simulateBattle(hero, monster, {
+    preBattleTime: 0,
+    postBattleTime: 0,
+    heroAttackTime: 0,
+    heroSpellTime: 0,
+    enemyAttackTime: 0,
+    enemySpellTime: 0,
+    enemyBreathTime: 0,
+    enemyDodgeTime: 0,
+    attackBeforeHurtmore: true,
+  });
+  Math.random = orig;
+  const heroActions = result.log.filter((l) => l.startsWith('Hero'));
+  assert.strictEqual(heroActions[0], 'Hero attacks for 0 damage.');
+  assert.strictEqual(heroActions[1], 'Hero attacks for 1 damage.');
+  assert(heroActions[2].startsWith('Hero casts HURTMORE'));
+  console.log('attack before hurtmore option test passed');
 }
 
 // When low on HP, hero heals if a killing blow is not guaranteed

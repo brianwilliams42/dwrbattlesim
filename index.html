@@ -204,6 +204,7 @@
           <option value="0.75">75%</option>
         </select>
       </label>
+      <label style="margin-top:10px"><input type="checkbox" id="attack-before-hurtmore" /> Always physical attack successfully before HURTMORE</label>
     </fieldset>
     <fieldset id="zone-config" style="display:none">
       <legend>Zone Enemies</legend>
@@ -746,6 +747,7 @@
           ),
           spellResistThreshold:
             Number(document.getElementById('spell-resist-threshold').value) / 16,
+          attackBeforeHurtmore: document.getElementById('attack-before-hurtmore').checked,
         };
       const iterations = Number(document.getElementById('iterations').value);
       const mode = document.getElementById('sim-mode').value;
